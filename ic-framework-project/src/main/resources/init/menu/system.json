@@ -1,0 +1,212 @@
+[
+  {
+    "path": "/org",
+    "menuType": "Layout",
+    "redirect": "/org/dept-index",
+    "name": "组织架构",
+    "iconType": 1,
+    "icon": "org.svg",
+    "userType": "SYSTEM_USER",
+    "orderNo": 0,
+    "children": [
+      {
+        "path": "dept-index",
+        "url": "/org/dept/index.vue",
+        "name": "部门列表"
+      },
+      {
+        "path": "dept-edit",
+        "url": "/org/dept/edit.vue",
+        "belong": "/org/dept-index",
+        "hidden": true,
+        "name": "编辑部门"
+      },
+      {
+        "path": "position-index",
+        "url": "/org/position/index.vue",
+        "name": "职位列表"
+      },
+      {
+        "path": "position-edit",
+        "url": "/org/position/edit.vue",
+        "belong": "/org/position-index",
+        "hidden": true,
+        "name": "编辑职位"
+      },
+      {
+        "path": "position-user-index",
+        "url": "/org/position-user/index.vue",
+        "name": "职位用户"
+      }
+    ]
+  },
+  {
+    "path": "/role",
+    "menuType": "Layout",
+    "redirect": "/role/role-index",
+    "name": "角色",
+    "iconType": 1,
+    "icon": "rp.svg",
+    "userType": "SYSTEM_USER",
+    "orderNo": 1,
+    "children": [
+      {
+        "path": "role-index",
+        "name": "角色列表",
+        "url": "/role/role/index.vue"
+      },
+      {
+        "path": "role-edit",
+        "name": "编辑角色",
+        "url": "/role/role/edit.vue",
+        "belong": "/role/role-index",
+        "hidden": true
+      },
+      {
+        "path": "rp-index",
+        "name": "角色权限",
+        "url": "/role/rp/index.vue"
+      },
+      {
+        "path": "role-menu-index",
+        "name": "角色菜单",
+        "url": "/role/role-menu/index.vue"
+      },
+      {
+        "path": "role-menu-edit",
+        "name": "编辑角色菜单",
+        "url": "/role/role-menu/edit.vue",
+        "belong": "/role/role-menu-index",
+        "hidden": true
+      }
+    ]
+  },
+  {
+    "path": "/user",
+    "menuType": "Layout",
+    "redirect": "/user/user-index",
+    "name": "用户管理",
+    "iconType": 1,
+    "icon": "user.svg",
+    "userType": "SYSTEM_USER",
+    "orderNo": 2,
+    "children": [
+      {
+        "path": "user-index",
+        "name": "用户",
+        "url": "/user/user/index.vue",
+        "orderNo": 0
+      },
+      {
+        "path": "user-edit",
+        "name": "编辑用户",
+        "url": "/user/user/edit.vue",
+        "belong": "/user/user-index",
+        "hidden": true
+      }
+    ]
+  },
+  {
+    "path": "/file",
+    "menuType": "Layout",
+    "redirect": "/file/sys-file-index",
+    "name": "文件管理",
+    "iconType": 1,
+    "userType": "SYSTEM_USER",
+    "orderNo": 3,
+    "icon": "file.svg",
+    "children": [
+      {
+        "path": "sys-file-index",
+        "name": "文件列表",
+        "url": "/sys/sys-file/index.vue"
+      },
+      {
+        "path": "sys-file-edit",
+        "name": "编辑文件",
+        "url": "/sys/sys-file/edit.vue",
+        "belong": "/file/sys-file-index",
+        "hidden": true
+      }
+    ]
+  },
+  {
+    "path": "/sys",
+    "menuType": "Layout",
+    "redirect": "/sys/manager-index",
+    "name": "系统管理",
+    "iconType": 1,
+    "userType": "SYSTEM_USER",
+    "orderNo": 4,
+    "icon": "setting.svg",
+    "children": [
+      {
+        "orderNo": 0,
+        "path": "online-user-index",
+        "url": "/sys/online-user/index.vue",
+        "name": "在线用户"
+      },
+      {
+        "orderNo": 1,
+        "path": "basic-dic-index",
+        "name": "字典",
+        "url": "/sys/dic/index.vue"
+      },
+      {
+        "path": "basic-dic-edit",
+        "name": "编辑字典",
+        "url": "/sys/dic/edit.vue",
+        "belong": "/sys/basic-dic-index",
+        "hidden": true
+      },
+      {
+        "orderNo": 2,
+        "path": "menu-index",
+        "name": "菜单列表",
+        "url": "/sys/menu/index.vue"
+      },
+      {
+        "path": "menu-edit",
+        "name": "编辑菜单",
+        "url": "/sys/menu/edit.vue",
+        "belong": "/sys/menu-index",
+        "hidden": true
+      },
+      {
+        "orderNo": 3,
+        "path": "notice-index",
+        "url": "/sys/notice/index.vue",
+        "name": "通知列表"
+      },
+      {
+        "path": "notice-edit",
+        "url": "/sys/notice/edit.vue",
+        "belong": "/sys/notice-index",
+        "hidden": true,
+        "name": "编辑通知"
+      },
+      {
+        "orderNo": 4,
+        "path": "system-setting",
+        "name": "系统设置",
+        "url": "/sys/setting/edit.vue"
+      }
+    ]
+  },
+  {
+    "path": "/chat",
+    "name": "消息",
+    "menuType": "Layout",
+    "redirect": "/chat/chat-index",
+    "iconType": 2,
+    "userType": "SYSTEM_USER",
+    "icon": "chat-double",
+    "children": [
+      {
+        "path": "chat-index",
+        "url": "/chat/chat/index.vue",
+        "name": "聊天列表"
+      }
+    ]
+  }
+]

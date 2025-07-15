@@ -1,0 +1,14 @@
+[
+  {
+    "sign": "manager",
+    "permissions": [
+      {
+        "groupPath": ":manage:dept",
+        "paths": [
+          ":delete",
+          ":all"
+        ]
+      }
+    ]
+  }
+]

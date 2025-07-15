@@ -1,0 +1,51 @@
+server:
+  port: 9999
+  servlet:
+    context-path: /api
+#mybatis的配置
+mybatis:
+  config-location: classpath:mybatis-config.xml
+spring:
+  application:
+    name: ic-project
+  redis:
+    pool:
+      lettuce:
+        max-idle: 8
+        min-idle: 2
+        max-active: 16
+        max-wait: 2000ms
+        max-connection-idle-timeout: 30000ms
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=500,expireAfterWrite=10m
+  profiles:
+    active:
+    - dev
+  messages:
+    basename: i18n/messages
+    encoding: UTF-8
+  datasource:
+    hikari:
+      idleTimeout: 30000  # 连接空闲超时时间，单位毫秒
+      minimum-idle: 3
+      maximum-pool-size: 10
+      max-lifetime: 30000   #不能小于30秒，否则默认回到1800秒
+      connection-test-query: SELECT 1
+app:
+  #系统激活需要使用
+  rsa-public: MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCMqoHkG61EKtpD3BM1tjOGdD40NLTZkHgZHHKqbSNpbeKR41URyLqbEqH88jS1e+g2yNdNv2CZgQZ1czI9UY5hHxI2xkNrUVb5bl/AoGDSZpaT6rmyHYvkkBy2Zsyw2sclGZhlttVdl+oJJl5P4bsHwx8utTu9oFXUzRQsIHlNHQIDAQAB
+  grant: IceFire
+  oss:
+    access-key-id:
+    access-key-secret:
+    bucket-name: ic-framework
+    endpoint:
+ic:
+  jwt:
+    secret: iceFire_123
+    timeout: 5
+  snowflake:
+    worker-id: 1
+    data-center-id: 1

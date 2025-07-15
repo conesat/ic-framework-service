@@ -1,0 +1,17 @@
+server:
+  port: 9999
+  servlet:
+    context-path: /api
+spring:
+  datasource:
+    username: root
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ic_test?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true
+  messages:
+    basename: i18n/messages
+    encoding: UTF-8
+#mybatis的配置
+mybatis:
+  config-location: classpath:mybatis-config-dev.xml
+
