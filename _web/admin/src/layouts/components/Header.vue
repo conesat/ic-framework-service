@@ -146,7 +146,7 @@ const handleLogout = () => {
 };
 
 const navToHelper = () => {
-  window.open('hhtp://icframework.chinahg.top');
+  window.open('http://icframework.chinahg.top');
 };
 </script>
 <style lang="less" scoped>
