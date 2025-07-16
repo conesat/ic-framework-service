@@ -33,3 +33,4 @@ build/
 .vscode/
 /src/main/resources/application-dev.yml
 /md5/*
+/src/test/resources/application-dev.yml
