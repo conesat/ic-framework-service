@@ -4,7 +4,7 @@
 
 在线文档 [http://icframework.chinahg.top](http://icframework.chinahg.top)
 
-hotel是作者另外提供了酒店管理模块，包括酒店、房间、设施、房态等模块。
+hotel是作者另外开发的酒店管理模块，包括酒店、房间、设施、房态等模块【目前还处于开发中】。
 
 > 预览地址：[http://hotel.chinahg.top/](http://hotel.chinahg.top/)
 > 账号 test 密码 Aa23456
