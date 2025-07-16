@@ -6,12 +6,96 @@
 
 hotel是作者另外提供了酒店管理模块，包括酒店、房间、设施、房态等模块。
 
-> 预览地址：[http://hotel.chinahg.top/](http://hotel.chinahg.top/) 
+> 预览地址：[http://hotel.chinahg.top/](http://hotel.chinahg.top/)
 > 账号 test 密码 Aa23456
 
-## 📋 项目概述
+## 📋 预览
 
-IC Framework Service 是一个现代化的企业级应用开发框架，采用微服务架构设计，提供了完整的前后端分离解决方案。项目包含多个业务模块和多端应用支持。
+<table>
+<tr>
+<td valign="top">
+<img src="/doc/imgs/1.png" height="400" alt="ic-framework-service">
+</td>
+<td valign="top"><img src="/doc/imgs/2.png" height="400" alt="ic-framework-service">
+</td>
+</tr>
+<tr>
+<td valign="top">
+<img src="/doc/imgs/3.png" height="400" alt="ic-framework-service">
+</td>
+<td valign="top"><img src="/doc/imgs/4.png" height="400" alt="ic-framework-service">
+</td>
+</tr>
+<tr>
+<td valign="top">
+<img src="/doc/imgs/5.png" height="400" alt="ic-framework-service">
+</td>
+<td valign="top"><img src="/doc/imgs/6.png" height="400" alt="ic-framework-service">
+</td>
+</tr>
+
+<tr>
+<td valign="top">
+<img src="/doc/imgs/7.png" height="400" alt="ic-framework-service">
+</td>
+<td valign="top"><img src="/doc/imgs/8.png" height="400" alt="ic-framework-service">
+</td>
+</tr>
+<tr>
+<td valign="top">
+<img src="/doc/imgs/9.png" height="400" alt="ic-framework-service">
+</td>
+<td valign="top"><img src="/doc/imgs/10.png" height="400" alt="ic-framework-service">
+</td>
+</tr>
+<tr>
+<td valign="top">
+<img src="/doc/imgs/11.png" height="400" alt="ic-framework-service">
+</td>
+<td valign="top"><img src="/doc/imgs/12.png" height="400" alt="ic-framework-service">
+</td>
+</tr>
+</table>
+
+
+#### hotel内容
+<table>
+<tr>
+<td valign="top">
+<img src="/doc/imgs/91.png" height="400" alt="ic-framework-service">
+</td>
+<td valign="top"><img src="/doc/imgs/92.png" height="400" alt="ic-framework-service">
+</td>
+</tr>
+<tr>
+<td valign="top">
+<img src="/doc/imgs/93.png" height="400" alt="ic-framework-service">
+</td>
+<td valign="top"><img src="/doc/imgs/94.png" height="400" alt="ic-framework-service">
+</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td valign="top"><img src="/doc/imgs/p7.png" height="300" alt="ic-framework-service">
+</td>
+<td valign="top"><img src="/doc/imgs/p6.png" height="300" alt="ic-framework-service">
+</td>
+<td valign="top"><img src="/doc/imgs/p4.png" height="300" alt="ic-framework-service">
+</td>
+<td valign="top">
+<img src="/doc/imgs/p5.png" height="300" alt="ic-framework-service">
+</td>
+<td valign="top"><img src="/doc/imgs/p3.png" height="300" alt="ic-framework-service">
+</td>
+<td valign="top"><img src="/doc/imgs/p2.png" height="300" alt="ic-framework-service">
+</td>
+<td valign="top">
+<img src="/doc/imgs/p1.png" height="300" alt="ic-framework-service">
+</td>
+</tr>
+</table>
 
 ### 🏗️ 项目架构
 
@@ -31,6 +115,7 @@ ic-framework-service/
 ## 🚀 技术栈
 
 ### 后端技术栈
+
 - **Java 21** - 最新 LTS 版本
 - **Spring Boot 3.x** - 微服务框架
 - **MyBatis** - 数据持久层框架
@@ -42,6 +127,7 @@ ic-framework-service/
 - **Docker** - 容器化部署
 
 ### 前端技术栈
+
 - **Vue 3** + **TypeScript** - 管理后台
 - **TDesign Vue Next** - UI 组件库
 - **Vite** - 构建工具
@@ -50,6 +136,7 @@ ic-framework-service/
 - **Axios** - HTTP 客户端
 
 ### 移动端技术栈
+
 - **Flutter** - 跨平台移动应用开发
 - **Dart** - 编程语言
 - **UniApp** - 跨平台小程序开发
@@ -57,7 +144,9 @@ ic-framework-service/
 ## 📦 模块说明
 
 ### ic-framework-system
+
 系统核心模块，提供基础功能：
+
 - 用户认证与授权
 - 组织架构管理（部门、职位）
 - 用户管理
@@ -68,10 +157,13 @@ ic-framework-service/
 - 在线用户管理
 
 ### ic-framework-project
+
 最基本的项目模块，业务代码可以在这里完善
 
 ### ic-framework-hotel
+
 酒店管理模块，提供酒店业务功能：
+
 - 酒店信息管理
 - 房间管理
 - 楼栋管理
@@ -80,15 +172,18 @@ ic-framework-service/
 - 酒店用户管理
 
 ### Web 前端应用
+
 - **admin**: 基于 Vue 3 + TDesign 的管理后台
 - **uni**: 基于 UniApp 的跨平台应用
 
 ### 移动端应用
+
 - **app**: 基于 Flutter 的原生移动应用
 
 ## 🛠️ 开发环境要求
 
 ### 后端环境
+
 - **JDK 21** 或更高版本
 - **Maven 3.6+**
 - **MySQL 8.0+**
@@ -96,10 +191,12 @@ ic-framework-service/
 - **Docker** (可选，用于容器化部署)
 
 ### 前端环境
+
 - **Node.js 18.0+**
 - **pnpm** (推荐) 或 **npm**
 
 ### 移动端环境
+
 - **Flutter SDK 3.3.3+**
 - **Dart SDK**
 - **Android Studio** (Android 开发)
@@ -108,6 +205,7 @@ ic-framework-service/
 ## 🚀 快速开始
 
 ### 1. 克隆项目
+
 ```bash
 git clone <repository-url>
 cd ic-framework-service
@@ -116,12 +214,14 @@ cd ic-framework-service
 ### 2. 后端启动
 
 #### 环境准备
+
 1. 安装 JDK 21
 2. 安装 MySQL 8.0+ 并创建数据库
 3. 安装 Redis 6.0+
 4. 配置数据库连接信息
 
 #### 编译和运行
+
 ```bash
 # 编译整个项目
 mvn clean compile
@@ -138,14 +238,17 @@ mvn spring-boot:run
 ### 3. 前端启动
 
 #### 管理后台
+
 ```bash
 cd _web/admin
 pnpm install
 pnpm dev
 ```
+
 访问地址: http://localhost:3002
 
 #### UniApp 应用
+
 ```bash
 cd _web/uni
 # 使用 HBuilderX 打开项目并运行
@@ -154,6 +257,7 @@ cd _web/uni
 ### 4. 移动端启动
 
 #### Flutter 应用
+
 ```bash
 cd app
 flutter pub get
@@ -165,6 +269,7 @@ flutter run
 项目支持 Docker 容器化部署：
 
 ### 构建镜像
+
 ```bash
 # 构建项目模块
 cd ic-framework-project
@@ -178,6 +283,7 @@ docker build -t ic-framework-hotel .
 ```
 
 ### 运行容器
+
 ```bash
 # 运行项目模块
 docker run -p 9999:9999 ic-framework-project
@@ -189,7 +295,9 @@ docker run -p 9999:9999 ic-framework-hotel
 ## 📝 配置说明
 
 ### 数据库配置
+
 在 `application-dev.yml` 中配置数据库连接：
+
 ```yaml
 spring:
   datasource:
@@ -199,6 +307,7 @@ spring:
 ```
 
 ### Redis 配置
+
 ```yaml
 spring:
   redis:
@@ -208,21 +317,25 @@ spring:
 ```
 
 ### 文件上传配置
+
 支持阿里云 OSS 文件上传，需要配置相关参数。
 
 ## 🔧 开发指南
 
 ### 代码生成
+
 项目集成了代码生成功能，可以快速生成 CRUD 代码：
+
 - 实体类
 - Mapper 接口
 - Service 层
 - Controller 层
 - 前端页面
 
-
 ### 权限控制
+
 使用基于角色的权限控制（RBAC）：
+
 - 用户类型：系统用户、普通用户
 - 菜单权限控制
 - 接口权限验证
@@ -230,6 +343,7 @@ spring:
 ## 📱 功能特性
 
 ### 系统管理
+
 - ✅ 用户管理
 - ✅ 角色权限
 - ✅ 组织架构
@@ -240,12 +354,14 @@ spring:
 - ✅ 文件管理
 
 ### 项目管理
+
 - ✅ 项目创建
 - ✅ 任务管理
 - ✅ 进度跟踪
 - ✅ 团队协作
 
 ### 酒店管理
+
 - ✅ 酒店信息
 - ✅ 房间管理
 - ✅ 房态监控
@@ -253,6 +369,7 @@ spring:
 - ✅ 用户管理
 
 ### 多端支持
+
 - ✅ Web 管理后台
 - ✅ 移动端 App
 - ✅ 小程序支持
@@ -273,6 +390,7 @@ spring:
 ## 📞 联系我们
 
 如有问题或建议，请通过以下方式联系：
+
 - 提交 Issue
 - 发送邮件至: [1092501244@qq.com]
 - 项目主页: [https://github.com/conesat/ic-framework-service]

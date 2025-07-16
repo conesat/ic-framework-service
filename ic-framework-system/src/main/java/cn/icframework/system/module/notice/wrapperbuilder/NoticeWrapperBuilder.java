@@ -118,7 +118,7 @@ public class NoticeWrapperBuilder extends BasicWrapperBuilder<NoticeDef> {
      * 分发通知到岗位
      *
      * @param noticeId
-     * @param depIds
+     * @param posIds
      * @return
      */
     public SqlWrapper distributePos(Long noticeId, Long[] posIds) {
@@ -139,7 +139,7 @@ public class NoticeWrapperBuilder extends BasicWrapperBuilder<NoticeDef> {
      * 分发通知到用户
      *
      * @param noticeId
-     * @param depIds
+     * @param userIds
      * @return
      */
     public SqlWrapper distributeUser(Long noticeId, Long[] userIds) {
@@ -148,9 +148,11 @@ public class NoticeWrapperBuilder extends BasicWrapperBuilder<NoticeDef> {
         SqlWrapper select = SELECT(AS(noticeId, NoticeReceiver::getNoticeId), userDef.id.as(NoticeReceiver::getUserId))
                 .FROM(userDef)
                 .WHERE(userDef.id.in(userIds))
-                .AND(NOT_EXISTS(SELECT(1)
-                        .FROM(noticeReceiverDef).
-                        WHERE(noticeReceiverDef.noticeId.eq(noticeId), noticeReceiverDef.userId.eq(userDef.id))));
+                .AND(
+                        NOT_EXISTS(
+                            SELECT(1) .FROM(noticeReceiverDef).WHERE(noticeReceiverDef.noticeId.eq(noticeId), noticeReceiverDef.userId.eq(userDef.id))
+                        )
+                );
         return INSERT().INTO(NoticeReceiver.class)
                 .COLUMNS(NoticeReceiver::getNoticeId, NoticeReceiver::getUserId)
                 .VALUES(select);
