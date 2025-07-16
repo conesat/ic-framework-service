@@ -2,6 +2,8 @@
 
 一个基于 [Ic Framework](https://github.com/conesat/ic-framework)的服务框架，提供完整的前后端解决方案，包括system模块提供了权限校验、岗位部门等模块基础模块。
 
+在线文档 [http://icframework.chinahg.top](http://icframework.chinahg.top)
+
 hotel是作者另外提供了酒店管理模块，包括酒店、房间、设施、房态等模块。
 
 > 预览地址：[http://hotel.chinahg.top/](http://hotel.chinahg.top/) 
