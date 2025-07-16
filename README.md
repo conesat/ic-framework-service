@@ -13,86 +13,86 @@ hotel是作者另外提供了酒店管理模块，包括酒店、房间、设施
 
 <table>
 <tr>
-<td valign="top">
-<img src="/doc/imgs/1.png" height="400" alt="ic-framework-service">
+<td>
+<img src="/doc/imgs/1.png"  alt="ic-framework-service">
 </td>
-<td valign="top"><img src="/doc/imgs/2.png" height="400" alt="ic-framework-service">
-</td>
-</tr>
-<tr>
-<td valign="top">
-<img src="/doc/imgs/3.png" height="400" alt="ic-framework-service">
-</td>
-<td valign="top"><img src="/doc/imgs/4.png" height="400" alt="ic-framework-service">
+<td><img src="/doc/imgs/2.png"  alt="ic-framework-service">
 </td>
 </tr>
 <tr>
-<td valign="top">
-<img src="/doc/imgs/5.png" height="400" alt="ic-framework-service">
+<td>
+<img src="/doc/imgs/3.png"  alt="ic-framework-service">
 </td>
-<td valign="top"><img src="/doc/imgs/6.png" height="400" alt="ic-framework-service">
+<td><img src="/doc/imgs/4.png"  alt="ic-framework-service">
+</td>
+</tr>
+<tr>
+<td>
+<img src="/doc/imgs/5.png"  alt="ic-framework-service">
+</td>
+<td><img src="/doc/imgs/6.png"  alt="ic-framework-service">
 </td>
 </tr>
 
 <tr>
-<td valign="top">
-<img src="/doc/imgs/7.png" height="400" alt="ic-framework-service">
+<td>
+<img src="/doc/imgs/7.png"  alt="ic-framework-service">
 </td>
-<td valign="top"><img src="/doc/imgs/8.png" height="400" alt="ic-framework-service">
-</td>
-</tr>
-<tr>
-<td valign="top">
-<img src="/doc/imgs/9.png" height="400" alt="ic-framework-service">
-</td>
-<td valign="top"><img src="/doc/imgs/10.png" height="400" alt="ic-framework-service">
+<td><img src="/doc/imgs/8.png"  alt="ic-framework-service">
 </td>
 </tr>
 <tr>
-<td valign="top">
-<img src="/doc/imgs/11.png" height="400" alt="ic-framework-service">
+<td>
+<img src="/doc/imgs/9.png"  alt="ic-framework-service">
 </td>
-<td valign="top"><img src="/doc/imgs/12.png" height="400" alt="ic-framework-service">
+<td><img src="/doc/imgs/10.png"  alt="ic-framework-service">
+</td>
+</tr>
+<tr>
+<td>
+<img src="/doc/imgs/11.png"  alt="ic-framework-service">
+</td>
+<td><img src="/doc/imgs/12.png"  alt="ic-framework-service">
 </td>
 </tr>
 </table>
-
 
 #### hotel内容
+
 <table>
 <tr>
-<td valign="top">
-<img src="/doc/imgs/91.png" height="400" alt="ic-framework-service">
+<td>
+<img src="/doc/imgs/91.png"  alt="ic-framework-service">
 </td>
-<td valign="top"><img src="/doc/imgs/92.png" height="400" alt="ic-framework-service">
+<td><img src="/doc/imgs/92.png"  alt="ic-framework-service">
 </td>
 </tr>
 <tr>
-<td valign="top">
-<img src="/doc/imgs/93.png" height="400" alt="ic-framework-service">
+<td>
+<img src="/doc/imgs/93.png"  alt="ic-framework-service">
 </td>
-<td valign="top"><img src="/doc/imgs/94.png" height="400" alt="ic-framework-service">
+<td><img src="/doc/imgs/94.png"  alt="ic-framework-service">
 </td>
 </tr>
 </table>
 
 <table>
 <tr>
-<td valign="top"><img src="/doc/imgs/p7.png" height="300" alt="ic-framework-service">
+<td><img src="/doc/imgs/p7.png"  alt="ic-framework-service">
 </td>
-<td valign="top"><img src="/doc/imgs/p6.png" height="300" alt="ic-framework-service">
+<td><img src="/doc/imgs/p6.png"  alt="ic-framework-service">
 </td>
-<td valign="top"><img src="/doc/imgs/p4.png" height="300" alt="ic-framework-service">
+<td><img src="/doc/imgs/p4.png"  alt="ic-framework-service">
 </td>
-<td valign="top">
-<img src="/doc/imgs/p5.png" height="300" alt="ic-framework-service">
+<td>
+<img src="/doc/imgs/p5.png"  alt="ic-framework-service">
 </td>
-<td valign="top"><img src="/doc/imgs/p3.png" height="300" alt="ic-framework-service">
+<td><img src="/doc/imgs/p3.png"  alt="ic-framework-service">
 </td>
-<td valign="top"><img src="/doc/imgs/p2.png" height="300" alt="ic-framework-service">
+<td><img src="/doc/imgs/p2.png"  alt="ic-framework-service">
 </td>
-<td valign="top">
-<img src="/doc/imgs/p1.png" height="300" alt="ic-framework-service">
+<td>
+<img src="/doc/imgs/p1.png"  alt="ic-framework-service">
 </td>
 </tr>
 </table>
