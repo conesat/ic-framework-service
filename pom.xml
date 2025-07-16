@@ -13,7 +13,6 @@
     <packaging>pom</packaging>
     <modules>
         <module>ic-framework-system</module>
-        <module>ic-framework-project</module>
         <module>ic-framework-hotel</module>
     </modules>
 
