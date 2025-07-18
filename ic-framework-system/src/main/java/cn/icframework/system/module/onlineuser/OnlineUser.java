@@ -70,8 +70,4 @@ public class OnlineUser {
      */
     @TableField(comment = "过期时间")
     private LocalDateTime expireTime;
-
-    public static OnlineUser def() {
-        return new OnlineUser();
-    }
 }

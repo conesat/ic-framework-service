@@ -8,13 +8,10 @@ import lombok.Setter;
 
 /**
  * @author hzl
- * @date 2023/6/20
+ * @since 2023/6/20
  */
 @Getter
 @Setter
 @Table(value = "sys_permission", comment = "权限")
 public class Permission extends BasicPermission {
-    public static Permission def() {
-        return new Permission();
-    }
 }

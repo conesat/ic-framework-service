@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 /**
 * @author ic
-* @date 2024/09/12
+* @since 2024/09/12
 */
 @Mapper
 public interface NoticeMapper extends BasicMapper<Notice> {

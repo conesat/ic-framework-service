@@ -21,7 +21,7 @@ import java.util.List;
 
 /**
  * @author ic generator
- * @date 2023/08/07
+ * @since 2023/08/07
  */
 @RestController
 @RequestMapping(value = Api.API_SYS + "/setting", name = "系统设置")

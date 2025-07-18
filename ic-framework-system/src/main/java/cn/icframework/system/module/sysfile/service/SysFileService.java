@@ -16,7 +16,7 @@ import java.util.Date;
 
 /**
  * @author create by ic gen
- * @date 2023/06/21
+ * @since 2023/06/21
  */
 @Service
 @RequiredArgsConstructor
@@ -51,7 +51,7 @@ public class SysFileService extends BasicService<SysFileMapper, SysFile> {
      */
     @Transactional
     public void edit(SysFileDTO dto) {
-        SysFile entity = dto.getId() != null ? selectById(dto.getId()) : SysFile.def();
+        SysFile entity = dto.getId() != null ? selectById(dto.getId()) : new SysFile();
         BeanUtils.copyExcludeProps(dto, entity);
         if (dto.getId() != null) {
             updateById(entity);

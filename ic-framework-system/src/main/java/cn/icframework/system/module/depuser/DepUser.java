@@ -18,23 +18,29 @@ public class DepUser {
     @Id(idType = IdType.SNOWFLAKE)
     private Long id;
 
+    /**
+     * 部门id
+     */
     @ForeignKey(references = Dept.class, onDelete = ForeignKeyAction.CASCADE)
-    @TableField(value = "dep_id", notNull = true, comment = "部门id")
+    @TableField(notNull = true, comment = "部门id")
     private Long depId;
 
+    /**
+     * 用户id
+     */
     @ForeignKey(references = User.class, onDelete = ForeignKeyAction.CASCADE)
-    @TableField(value = "user_id", notNull = true, comment = "用户id")
+    @TableField(notNull = true, comment = "用户id")
     private Long userId;
 
-    @TableField(value = "manager", notNull = true, defaultValue = "0", comment = "是否负责人")
+    /**
+     * 是否负责人
+     */
+    @TableField(notNull = true, defaultValue = "false", comment = "是否负责人")
     private Boolean manager;
 
-    @TableField(value = "create_time", notNull = true, comment = "创建时间", onInsertValue = "now()")
+    /**
+     * 创建时间
+     */
+    @TableField(notNull = true, comment = "创建时间", onInsertValue = "now()")
     private LocalDateTime createTime;
-
-    public static DepUser def() {
-        DepUser depUser = new DepUser();
-        depUser.setManager(false);
-        return depUser;
-    }
 }

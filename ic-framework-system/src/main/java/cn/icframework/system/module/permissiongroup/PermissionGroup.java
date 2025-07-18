@@ -6,15 +6,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * @Author hzl
- * @Date 2023/6/20 0020
- * @Description
+ * @author hzl
+ * @since  2023/6/20 0020
  */
 @Getter
 @Setter
 @Table(value = "sys_permission_group", comment = "权限分组")
 public class PermissionGroup extends BasicPermissionGroup {
-    public static PermissionGroup def() {
-        return new PermissionGroup();
-    }
 }

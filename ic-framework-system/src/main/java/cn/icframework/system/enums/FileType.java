@@ -4,7 +4,7 @@ import cn.icframework.common.interfaces.IEnum;
 
 /**
  * @author hzl
- * @date 2023/6/21
+ * @since 2023/6/21
  */
 public enum FileType implements IEnum {
     UNKNOWN(-1, "未知"),

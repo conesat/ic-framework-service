@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 /**
 * @author ic
-* @date 2024/08/20
+* @since 2024/08/20
 */
 @Mapper
 public interface MenuMapper extends BasicMapper<Menu> {

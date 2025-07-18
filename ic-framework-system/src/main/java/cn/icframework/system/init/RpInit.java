@@ -31,7 +31,7 @@ import static cn.icframework.mybatis.wrapper.Wrapper.SELECT;
 
 /**
  * @author hzl
- * @date 2024/9/4
+ * @since 2024/9/4
  */
 @Component
 @RequiredArgsConstructor
@@ -53,7 +53,7 @@ public class RpInit {
     /**
      * 只处理新增护具
      *
-     * @param newSigns
+     * @param newRoles
      * @throws IOException
      */
     private void initRPs(List<Role> newRoles) {
@@ -104,7 +104,7 @@ public class RpInit {
     private void insertRP(List<Long> allPermissionIds, Role role) {
         List<RolePermission> insertRolePermissions = new ArrayList<>();
         for (Long permissionId : allPermissionIds) {
-            RolePermission rp = RolePermission.def();
+            RolePermission rp = new RolePermission();
             rp.setPermissionId(permissionId);
             rp.setRoleId(role.getId());
             insertRolePermissions.add(rp);
@@ -124,7 +124,7 @@ public class RpInit {
                 String name = object.getString("name");
                 String userType = object.getString("userType");
                 if (role == null) {
-                    role = Role.def();
+                    role = new Role();
                     role.setSystem(ConvertUtils.toBoolean(object.getString("system"), false));
                     role.setStatus(Status.ENABLE);
                     role.setSign(object.getString("sign"));

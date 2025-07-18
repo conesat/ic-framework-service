@@ -16,7 +16,7 @@ import java.util.List;
 
 /**
  * @author ic generator
- * @date 2023/07/11
+ * @since 2023/07/11
  */
 @Component
 public class DicWrapperBuilder extends BasicWrapperBuilder<DicDef> {

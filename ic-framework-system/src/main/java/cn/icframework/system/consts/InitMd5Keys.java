@@ -3,7 +3,7 @@ package cn.icframework.system.consts;
 /**
  *
  * @author hzl
- * @date 2024/8/28
+ * @since 2024/8/28
  */
 public interface InitMd5Keys {
     String MENU_INIT_MD5 = "MENU_INIT";

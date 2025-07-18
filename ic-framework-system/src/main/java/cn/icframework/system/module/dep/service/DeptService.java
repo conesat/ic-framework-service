@@ -19,7 +19,7 @@ import java.util.Objects;
 
 /**
  * @author create by ic gen
- * @date 2023/06/21
+ * @since 2023/06/21
  */
 @Service
 @RequiredArgsConstructor
@@ -48,7 +48,7 @@ public class DeptService extends BasicService<DeptMapper, Dept> {
                 form.setParentPath(ConvertUtils.toString(parent.getParentPath(), "") + form.getParentId() + Dept.PATH_CHAR);
             }
         }
-        Dept entity = form.getId() != null ? selectById(form.getId()) : Dept.def();
+        Dept entity = form.getId() != null ? selectById(form.getId()) : new Dept();
         BeanUtils.copyExcludeProps(form, entity, Dept::getCreateTime);
         if (form.getId() != null) {
             updateById(entity);

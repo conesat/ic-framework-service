@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 用于公开内容
  *
  * @author ic
- * @date 2025/01/17
+ * @since 2025/01/17
  */
 @RestController
 @RequestMapping(value = Api.API_PUBLIC + "/chat-msg", name ="消息")

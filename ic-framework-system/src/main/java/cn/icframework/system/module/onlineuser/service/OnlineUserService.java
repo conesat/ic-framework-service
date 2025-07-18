@@ -35,7 +35,7 @@ import java.util.Objects;
 
 /**
  * @author ic
- * @date 2024/09/11
+ * @since 2024/09/11
  */
 @Service
 @Slf4j
@@ -55,7 +55,7 @@ public class OnlineUserService extends BasicService<OnlineUserMapper, OnlineUser
      */
     @Transactional
     public void edit(OnlineUserDTO dto) {
-        OnlineUser entity = dto.getSessionId() != null ? selectById(dto.getSessionId()) : OnlineUser.def();
+        OnlineUser entity = dto.getSessionId() != null ? selectById(dto.getSessionId()) : new OnlineUser();
         BeanUtils.copyExcludeProps(dto, entity);
         if (dto.getSessionId() != null) {
             updateById(entity);
@@ -132,7 +132,7 @@ public class OnlineUserService extends BasicService<OnlineUserMapper, OnlineUser
 
     @Override
     public void login(OnlineInfo onlineInfo) {
-        OnlineUser onlineUser = OnlineUser.def();
+        OnlineUser onlineUser = new OnlineUser();
         onlineUser.setSessionId(onlineInfo.getSessionId());
         onlineUser.setUserId((Long) onlineInfo.getUserId());
         onlineUser.setLoginTime(LocalDateTimeUtils.parse(onlineInfo.getLoginTime()));

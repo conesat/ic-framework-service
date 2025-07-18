@@ -20,7 +20,7 @@ import java.util.List;
  * app 接口
  *
  * @author ic
- * @date 2025/01/17
+ * @since 2025/01/17
  */
 @RequireAuth(userType = UserType.SYSTEM_USER)
 @RestController

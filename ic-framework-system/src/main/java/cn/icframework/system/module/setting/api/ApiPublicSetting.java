@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author hzl
- * @date 2023/6/5
+ * @since 2023/6/5
  */
 @RestController
 @RequestMapping(value = Api.API_PUBLIC + "/setting", name = "系统设置")

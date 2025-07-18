@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 /**
  * @author ic generator
- * @date 2023/08/09
+ * @since 2023/08/09
  */
 @Getter
 @Setter

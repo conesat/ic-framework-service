@@ -33,7 +33,7 @@ import java.util.List;
  * manage接口，用于管理后台
  *
  * @author ic
- * @date 2024/08/11
+ * @since 2024/08/11
  */
 @RestController
 @RequestMapping(value = Api.API_SYS + "/dep-user", name = "部门用户")
@@ -49,7 +49,6 @@ public class ApiSysDepUser extends BasicApi {
      * 获取单个详情
      *
      * @param id [Serializable] *id
-     * @return
      */
     @GetMapping(value = "/item/{id}", name = "获取详情")
     public Response<DepUserVO> detail(@PathVariable("id") Serializable id) {
@@ -59,9 +58,7 @@ public class ApiSysDepUser extends BasicApi {
     /**
      * 获取列表
      *
-     * @param pageIndex  [int] 当前页码
-     * @param pageSize [int] 分页大小
-     * @return
+     * @param page [int] 分页
      */
     @PostMapping(value = "/page", name = "分页查询")
     public PageResponse<DepUserVO> page(HttpServletRequest request, PageRequest page) {
@@ -72,9 +69,7 @@ public class ApiSysDepUser extends BasicApi {
     /**
      * 获取详情列表
      *
-     * @param pageIndex  [int] 当前页码
-     * @param pageSize [int] 分页大小
-     * @return
+     * @param page [int] 分页
      */
     @PostMapping(value = "/page-detail", name = "获取详情列表")
     public PageResponse<DepUserDetailVO> pageDetail(HttpServletRequest request, PageRequest page) {
@@ -87,7 +82,6 @@ public class ApiSysDepUser extends BasicApi {
      * 删除
      *
      * @param ids [Serializable[]] id列表
-     * @return
      */
     @DeleteMapping(name = "删除")
     public Response<Void> delete(@RequestParam("ids") List<Serializable> ids) {
@@ -117,7 +111,6 @@ public class ApiSysDepUser extends BasicApi {
      * 设置为负责人
      *
      * @param id [long] 部门用户id
-     * @return
      */
     @PostMapping(value = "/manager/{id}", name = "设置部门负责人")
     public Response<Void> setManager(@PathVariable("id") Long id, @RequestParam Boolean manager) {

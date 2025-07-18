@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 /**
  * @author IceFire
- * @date 2023/8/7
+ * @since 2023/8/7
  */
 @Getter
 @Setter
@@ -20,21 +20,25 @@ import java.time.LocalDateTime;
 @Table(value = "sys_role_permission", comment = "角色权限")
 public class RolePermission {
     @Id(idType = IdType.SNOWFLAKE)
-    @TableField
     private Long id;
 
+    /**
+     * 角色id
+     */
     @ForeignKey(references = Role.class, onDelete = ForeignKeyAction.CASCADE)
-    @TableField(value = "role_id", notNull = true, comment = "角色id")
+    @TableField(notNull = true, comment = "角色id")
     private Long roleId;
 
+    /**
+     * 权限id
+     */
     @ForeignKey(references = Permission.class, onDelete = ForeignKeyAction.CASCADE)
-    @TableField(value = "permission_id", notNull = true, comment = "权限id")
+    @TableField(notNull = true, comment = "权限id")
     private Long permissionId;
 
-    @TableField(value = "update_time", notNull = true, comment = "更新时间", onInsertValue = "now()", onUpdateValue = "now()")
+    /**
+     * 创建时间
+     */
+    @TableField(notNull = true, comment = "更新时间", onInsertValue = "now()", onUpdateValue = "now()")
     private LocalDateTime updateTime;
-
-    public static RolePermission def() {
-        return new RolePermission();
-    }
 }

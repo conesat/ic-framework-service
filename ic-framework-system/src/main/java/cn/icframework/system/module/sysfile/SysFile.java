@@ -15,38 +15,59 @@ import java.time.LocalDateTime;
 @Table(value = "sys_file", comment = "系统文件")
 public class SysFile {
     @Id(idType = IdType.SNOWFLAKE)
-    @TableField
     private Long id;
 
-    @TableField(value = "size", notNull = true, length = 11, comment = "文件大小", defaultValue = "0")
+    /**
+     * 文件大小
+     */
+    @TableField(notNull = true, length = 11, comment = "文件大小", defaultValue = "0")
     private long size;
 
-    @TableField(value = "oss_object_name", notNull = true, comment = "ossObjectName")
+    /**
+     * 文件路径
+     */
+    @TableField(notNull = true, comment = "ossObjectName")
     private String ossObjectName;
 
-    @TableField(value = "bucket_name", notNull = true, comment = "bucketName")
+    /**
+     * 文件bucketName
+     */
+    @TableField(notNull = true, comment = "bucketName")
     private String bucketName;
 
-    @TableField(value = "name", notNull = true, comment = "文件名称")
+    /**
+     * 文件名称
+     */
+    @TableField(notNull = true, comment = "文件名称")
     private String name;
 
-    @TableField(value = "bucket_url", notNull = true, comment = "bucketUrl")
+    /**
+     * 文件bucketUrl
+     */
+    @TableField(notNull = true, comment = "bucketUrl")
     private String bucketUrl;
 
-    @TableField(value = "ref_count", notNull = true, comment = "引用次数", defaultValue = "0")
+    /**
+     * 文件引用次数
+     */
+    @TableField(notNull = true, comment = "引用次数", defaultValue = "0")
     private int refCount;
 
-    @TableField(value = "type", notNull = true, comment = "文件系统类型")
+    /**
+     * 文件系统类型
+     */
+    @TableField(notNull = true, comment = "文件系统类型")
     private FileType type;
 
-    @TableField(value = "user_id", comment = "所属用户")
+    /**
+     * 文件所属用户
+     */
+    @TableField(comment = "所属用户")
     private Long userId;
 
-
-    @TableField(value = "create_time", notNull = true, comment = "创建时间", onInsertValue = "now()")
+    /**
+     * 文件创建时间
+     */
+    @TableField(notNull = true, comment = "创建时间", onInsertValue = "now()")
     private LocalDateTime createTime;
-
-    public static SysFile def() {
-        return new SysFile();
-    }
 }

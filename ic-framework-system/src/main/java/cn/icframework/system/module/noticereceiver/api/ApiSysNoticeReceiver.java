@@ -23,7 +23,7 @@ import java.util.List;
  * manage接口，用于管理后台
  *
  * @author ic
- * @date 2024/09/13
+ * @since 2024/09/13
  */
 @RestController
 @RequestMapping(value = Api.API_SYS + "/notice-receiver", name ="通知接收对象")

@@ -6,7 +6,7 @@ import lombok.Setter;
 
 /**
  * @author ic generator
- * @date 2023/08/07
+ * @since 2023/08/07
  */
 @Getter
 @Setter

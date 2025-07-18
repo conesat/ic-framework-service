@@ -20,8 +20,9 @@ import java.util.Objects;
 
 /**
  * 初始化菜单栏
+ *
  * @author hzl
- * @date 2024/9/4
+ * @since 2024/9/4
  */
 @Component
 @RequiredArgsConstructor
@@ -66,7 +67,7 @@ public class MenuInit {
             Menu menu = menuService.selectOne(menuDef.menuPlatformType.eq(MenuPlatformType.SYS).path.eq(menuInitDTO.getPath()));
             boolean update = false;
             if (menu == null) {
-                menu = Menu.def();
+                menu = new Menu();
             } else if (!Objects.equals(menu.getName(), menuInitDTO.getName()) ||
                     !Objects.equals(menu.getRedirect(), menuInitDTO.getRedirect()) ||
                     !Objects.equals(menu.getIcon(), menuInitDTO.getIcon()) ||

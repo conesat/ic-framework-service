@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * @author ic
- * @date 2024/08/25
+ * @since 2024/08/25
  */
 @AllArgsConstructor
 @Service
@@ -33,7 +33,7 @@ public class RoleMenuService extends BasicService<RoleMenuMapper, RoleMenu> {
         delete(roleMenuDef.roleId.eq(roleId));
         List<RoleMenu> roleMenus = new ArrayList<>();
         for (Long menuId : menuIds) {
-            RoleMenu menu = RoleMenu.def();
+            RoleMenu menu = new RoleMenu();
             menu.setRoleId(roleId);
             menu.setMenuId(menuId);
             roleMenus.add(menu);
@@ -44,10 +44,10 @@ public class RoleMenuService extends BasicService<RoleMenuMapper, RoleMenu> {
     /**
      * 获取角色菜单
      *
-     * @param roleIds
-     * @return
+     * @param menuPlatformType 平台类型
+     * @return 菜单列表
      */
-    @Cacheable(cacheNames = "menu", key = "#menuPlatformType")
+    @Cacheable(cacheNames = "menu", key = "#menuPlatformType.code()")
     public List<MenuWithChildrenVO> getMenu(MenuPlatformType menuPlatformType) {
         return select(wrapperBuilder.roleMenuForType(menuPlatformType.code()), MenuWithChildrenVO.class);
     }

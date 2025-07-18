@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * wrapper构建器
  * @author ic
- * @date 2024/09/11
+ * @since 2024/09/11
  */
 @Component
 public class OnlineUserWrapperBuilder extends BasicWrapperBuilder<OnlineUserDef> {

@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author create by ic gen
- * @date 2023/06/20
+ * @since 2023/06/20
  */
 @Service
 @RequiredArgsConstructor
@@ -31,7 +31,7 @@ public class RoleService extends BasicService<RoleMapper, Role> {
      */
     @Transactional
     public void edit(RoleDTO dto) {
-        Role entity = dto.getId() != null ? selectById(dto.getId()) : Role.def();
+        Role entity = dto.getId() != null ? selectById(dto.getId()) : new Role();
         BeanUtils.copyExcludeProps(dto, entity, Role::getCreateTime);
         if (dto.getId() != null) {
             updateById(entity);

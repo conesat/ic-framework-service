@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author create by ic gen
- * @date 2023/06/20
+ * @since 2023/06/20
  */
 @Component
 public class RoleVOConverter extends BasicConverter<Role, RoleVO> {

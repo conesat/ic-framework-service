@@ -18,7 +18,7 @@ import java.util.List;
  * wrapper构建器
  *
  * @author ic
- * @date 2025/01/17
+ * @since 2025/01/17
  */
 @Component
 public class ChatUserWrapperBuilder extends BasicWrapperBuilder<ChatUserDef> {

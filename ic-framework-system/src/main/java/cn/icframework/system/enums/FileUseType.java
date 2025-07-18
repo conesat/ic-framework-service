@@ -5,7 +5,7 @@ import cn.icframework.common.interfaces.IEnum;
 /**
  * 文件用途
  * @author hzl
- * @date 2023/6/21
+ * @since 2023/6/21
  */
 public enum FileUseType implements IEnum {
     /**

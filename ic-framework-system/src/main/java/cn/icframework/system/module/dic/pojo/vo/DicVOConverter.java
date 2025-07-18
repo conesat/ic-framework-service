@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author ic generator
- * @date 2023/07/11
+ * @since 2023/07/11
  */
 @Component
 public class DicVOConverter extends BasicConverter<Dic, DicVO> {

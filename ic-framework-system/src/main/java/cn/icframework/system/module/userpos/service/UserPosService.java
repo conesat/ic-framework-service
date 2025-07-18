@@ -15,7 +15,7 @@ import java.util.List;
 
 /**
  * @author ic
- * @date 2024/09/09
+ * @since 2024/09/09
  */
 @Service
 public class UserPosService extends BasicService<UserPosMapper, UserPos> {
@@ -26,7 +26,7 @@ public class UserPosService extends BasicService<UserPosMapper, UserPos> {
      */
     @Transactional
     public void edit(UserPosDTO dto) {
-        UserPos entity = dto.getId() != null ? selectById(dto.getId()) : UserPos.def();
+        UserPos entity = dto.getId() != null ? selectById(dto.getId()) : new UserPos();
         BeanUtils.copyExcludeProps(dto, entity);
         if (dto.getId() != null) {
             updateById(entity);
@@ -62,7 +62,7 @@ public class UserPosService extends BasicService<UserPosMapper, UserPos> {
                 if (dbPosIdSet != null && dbPosIdSet.contains(posId)) {
                     continue;
                 }
-                UserPos userPos = UserPos.def();
+                UserPos userPos = new UserPos();
                 userPos.setUserId(userId);
                 userPos.setPositionId(posId);
                 userPosList.add(userPos);
@@ -79,7 +79,7 @@ public class UserPosService extends BasicService<UserPosMapper, UserPos> {
     public void createBatch(Long posId, Long[] userIds) {
         List<UserPos> userPosList = new ArrayList<>();
         for (Long userId : userIds) {
-            UserPos userPos = UserPos.def();
+            UserPos userPos = new UserPos();
             userPos.setUserId(userId);
             userPos.setPositionId(posId);
             userPosList.add(userPos);

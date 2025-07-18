@@ -25,7 +25,7 @@ import static cn.icframework.mybatis.wrapper.FunctionWrapper.EXISTS;
  * wrapper构建器
  *
  * @author ic
- * @date 2025/01/17
+ * @since 2025/01/17
  */
 @Component
 public class ChatWrapperBuilder extends BasicWrapperBuilder<ChatDef> {

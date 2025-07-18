@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author ic
- * @date 2024/09/12
+ * @since 2024/09/12
  */
 @Component
 public class NoticeVOConverter extends BasicConverter<Notice, NoticeVO> {

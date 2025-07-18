@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * @author ic
- * @date 2024/08/02
+ * @since 2024/08/02
  */
 @Service
 @RequiredArgsConstructor
@@ -31,7 +31,7 @@ public class PermissionGroupService extends BasicService<PermissionGroupMapper, 
      */
     @Transactional
     public void edit(PermissionGroupDTO dto) {
-        PermissionGroup entity = dto.getId() != null ? selectById(dto.getId()) : PermissionGroup.def();
+        PermissionGroup entity = dto.getId() != null ? selectById(dto.getId()) : new PermissionGroup();
         BeanUtils.copyExcludeProps(dto, entity);
         if (dto.getId() == null) {
             updateById(entity);

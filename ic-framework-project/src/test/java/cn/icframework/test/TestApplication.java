@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * @author hzl
- * @date 2025/7/11
+ * @since 2025/7/11
  */
 @SpringBootApplication
 @MapperScan({"cn.icframework.test.*.dao"})

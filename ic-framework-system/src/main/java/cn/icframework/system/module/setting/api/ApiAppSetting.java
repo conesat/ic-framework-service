@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author create by ic gen
- * @date 2023/06/17
+ * @since 2023/06/17
  */
 @RequireAuth(userType = UserType.SYSTEM_USER)
 @RestController

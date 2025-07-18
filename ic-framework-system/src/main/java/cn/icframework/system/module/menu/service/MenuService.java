@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author ic
- * @date 2024/08/20
+ * @since 2024/08/20
  */
 @Service
 @RequiredArgsConstructor
@@ -44,7 +44,7 @@ public class MenuService extends BasicService<MenuMapper, Menu> {
      */
     @Transactional
     public void edit(MenuDTO dto) {
-        Menu entity = dto.getId() != null ? selectById(dto.getId()) : Menu.def();
+        Menu entity = dto.getId() != null ? selectById(dto.getId()) : new Menu();
         BeanUtils.copyExcludeProps(dto, entity);
         if (dto.getId() != null) {
             updateById(entity, true);

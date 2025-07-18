@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 用于公开内容
  *
  * @author ic
- * @date 2024/09/13
+ * @since 2024/09/13
  */
 @RestController
 @RequestMapping(value = Api.API_PUBLIC + "/notice-receiver", name ="通知接收对象")

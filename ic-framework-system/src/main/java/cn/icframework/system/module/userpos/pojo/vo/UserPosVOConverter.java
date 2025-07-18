@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author ic
- * @date 2024/09/09
+ * @since 2024/09/09
  */
 @Component
 public class UserPosVOConverter extends BasicConverter<UserPos, UserPosVO> {

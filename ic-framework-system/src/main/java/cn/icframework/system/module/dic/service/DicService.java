@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * @author create by ic gen
- * @date 2023/06/14
+ * @since 2023/06/14
  */
 @Service
 public class DicService extends BasicService<DicMapper, Dic> {
@@ -26,7 +26,7 @@ public class DicService extends BasicService<DicMapper, Dic> {
      */
     @Transactional
     public void edit(DicDTO dto) {
-        Dic entity = dto.getId() != null ? selectById(dto.getId()) : Dic.def();
+        Dic entity = dto.getId() != null ? selectById(dto.getId()) : new Dic();
         BeanUtils.copyExcludeProps(dto, entity, Dic::getCreateTime);
         if (dto.getId() != null) {
             updateById(entity);
