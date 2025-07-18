@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author ic
- * @date 2024/09/09
+ * @since 2024/09/09
  */
 @Service
 public class PositionService extends BasicService<PositionMapper, Position> {
@@ -21,7 +21,7 @@ public class PositionService extends BasicService<PositionMapper, Position> {
      */
     @Transactional
     public void edit(PositionDTO dto) {
-        Position entity = dto.getId() != null ? selectById(dto.getId()) : Position.def();
+        Position entity = dto.getId() != null ? selectById(dto.getId()) : new Position();
         BeanUtils.copyExcludeProps(dto, entity);
         if (dto.getId() != null) {
             updateById(entity);

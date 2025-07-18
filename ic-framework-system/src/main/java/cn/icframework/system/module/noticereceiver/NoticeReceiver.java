@@ -14,19 +14,27 @@ import java.time.LocalDateTime;
 @Table(value = "sys_notice_receiver", comment = "通知接收对象")
 public class NoticeReceiver {
 
-    @TableField(value = "notice_id", comment = "通知id")
+    /**
+     * 通知id
+     */
+    @TableField(comment = "通知id")
     private Long noticeId;
 
-    @TableField(value = "user_id", comment = "用户id")
+    /**
+     * 用户id
+     */
+    @TableField(comment = "用户id")
     private Long userId;
 
-    @TableField(value = "hidden", notNull = true, defaultValue = "false", comment = "隐藏，不在列表显示")
+    /**
+     * 隐藏，不在列表显示
+     */
+    @TableField(notNull = true, defaultValue = "false", comment = "隐藏，不在列表显示")
     private Boolean hidden;
 
-    @TableField(value = "read_time", comment = "查阅时间")
+    /**
+     * 创建时间
+     */
+    @TableField(comment = "查阅时间")
     private LocalDateTime readTime;
-
-    public static NoticeReceiver def() {
-        return new NoticeReceiver();
-    }
 }

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 用于登录用户相关内容
  *
  * @author ic
- * @date 2024/08/20
+ * @since 2024/08/20
  */
 @RequireAuth(userType = UserType.SYSTEM_USER)
 @RestController

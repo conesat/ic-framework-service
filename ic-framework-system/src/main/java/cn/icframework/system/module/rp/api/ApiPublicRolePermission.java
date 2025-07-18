@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author ic generator
- * @date 2023/08/07
+ * @since 2023/08/07
  */
 @RestController
 @RequestMapping(value = Api.API_PUBLIC + "/role-permission", name = "角色权限")

@@ -35,7 +35,7 @@ import java.util.Objects;
 
 /**
  * @author hzl
- * @date 2023/5/31
+ * @since 2023/5/31
  */
 @Slf4j
 @Service
@@ -62,7 +62,7 @@ public class UserService extends BasicService<UserMapper, User> {
         // 判断冲突
         long count = count(UserDef.table().id.ne(dto.getId()).username.eq(dto.getUsername()));
         Assert.is0(count, "账号已存在");
-        User entity = dto.getId() != null ? selectById(dto.getId()) : User.def();
+        User entity = dto.getId() != null ? selectById(dto.getId()) : new User();
 
         Long oldAvatarFileId = entity.getAvatarFileId();
         boolean su = entity.getSu() != null && entity.getSu();

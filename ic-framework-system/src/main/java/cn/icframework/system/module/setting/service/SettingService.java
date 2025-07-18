@@ -39,7 +39,7 @@ import java.time.ZoneId;
 
 /**
  * @author hzl
- * @date 2023/6/5
+ * @since 2023/6/5
  */
 @Service
 @RequiredArgsConstructor
@@ -107,7 +107,7 @@ public class SettingService extends BasicService<SettingMapper, Setting> {
         ActivationInfoVO activationInfoVO = activitySystem(code);
         Setting setting = selectOne();
         if (setting == null) {
-            setting = Setting.def();
+            setting = new Setting();
             setting.setName("");
             setting.setDomain("");
             setting.setActivateTime(LocalDateTime.now());
@@ -134,7 +134,7 @@ public class SettingService extends BasicService<SettingMapper, Setting> {
         ActivationInfoVO activationInfoVO = activitySystem(activationCode);
         Setting setting = selectOne();
         if (setting == null) {
-            setting = Setting.def();
+            setting = new Setting();
             setting.setName(initDTO.getName());
             setting.setDomain(initDTO.getUrl());
             setting.setActivateTime(LocalDateTime.now());
@@ -150,7 +150,7 @@ public class SettingService extends BasicService<SettingMapper, Setting> {
         if (user == null) {
             Role adminRole = roleService.selectOne(RoleDef.table().su.eq(true));
             if (adminRole == null) {
-                adminRole = Role.def();
+                adminRole = new Role();
                 adminRole.setSu(true);
                 adminRole.setSystem(true);
                 adminRole.setUserType(UserType.SYSTEM_USER);

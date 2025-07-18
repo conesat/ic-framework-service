@@ -34,7 +34,7 @@ import java.util.List;
  * manage接口，用于管理后台
  *
  * @author ic
- * @date 2025/01/17
+ * @since 2025/01/17
  */
 @RestController
 @RequestMapping(value = Api.API_SYS + "/chat", name = "聊天")

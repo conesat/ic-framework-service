@@ -20,17 +20,14 @@ public class RoleMenu {
      * 菜单id
      */
     @ForeignKey(references = Menu.class, onDelete = ForeignKeyAction.CASCADE)
-    @TableField(value = "menu_id", comment = "菜单id")
+    @TableField(comment = "菜单id")
     private Long menuId;
 
     /**
      * 角色id
      */
     @ForeignKey(references = Role.class, onDelete = ForeignKeyAction.CASCADE)
-    @TableField(value = "role_id", comment = "角色id")
+    @TableField(comment = "角色id")
     private Long roleId;
 
-    public static RoleMenu def() {
-        return new RoleMenu();
-    }
 }

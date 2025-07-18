@@ -19,7 +19,7 @@ import java.util.List;
 
 /**
  * @author ic generator
- * @date 2023/08/09
+ * @since 2023/08/09
  */
 @Service
 @RequiredArgsConstructor
@@ -33,7 +33,7 @@ public class UserRoleService extends BasicService<UserRoleMapper, UserRole> {
      */
     @Transactional
     public void edit(UserRoleDTO dto) {
-        UserRole entity = dto.getId() != null ? selectById(dto.getId()) : UserRole.def();
+        UserRole entity = dto.getId() != null ? selectById(dto.getId()) : new UserRole();
         BeanUtils.copyExcludeProps(dto, entity);
         if (StringUtils.hasLength(dto.getId())) {
             updateById(entity);
@@ -84,7 +84,7 @@ public class UserRoleService extends BasicService<UserRoleMapper, UserRole> {
                 if (dbRoleIdSet != null && dbRoleIdSet.contains(roleId)) {
                     continue;
                 }
-                UserRole userRole = UserRole.def();
+                UserRole userRole = new UserRole();
                 userRole.setUserId(userId);
                 userRole.setRoleId(roleId);
                 userRoles.add(userRole);

@@ -26,75 +26,66 @@ public class Chat {
     /**
      * 最新的一条内容
      */
-    @TableField(value = "message", length = 500, comment = "内容")
+    @TableField(length = 500, comment = "内容")
     private String message;
 
     /**
      * 聊天名称，如果是空则会获取关联用户名
      */
-    @TableField(value = "name", length = 20, comment = "名称")
+    @TableField(length = 20, comment = "名称")
     private String name;
 
     /**
      * 头像文件
      */
-    @TableField(value = "avatar_file_id", comment = "头像文件", length = 255)
+    @TableField(comment = "头像文件", length = 255)
     private Long avatarFileId;
 
     /**
      * 头像文件地址
      */
-    @TableField(value = "avatar_file_url", comment = "头像文件地址", length = 500)
+    @TableField(comment = "头像文件地址", length = 500)
     private String avatarFileUrl;
 
     /**
      * 最新的一条概要
      */
-    @TableField(value = "summary", length = 30, comment = "概要")
+    @TableField(length = 30, comment = "概要")
     private String summary;
 
     /**
      * 类型
      */
-    @TableField(value = "msg_type", length = 4, comment = "类型")
+    @TableField(length = 4, comment = "类型")
     private MsgType msgType;
 
     /**
      * 聊天类型
      */
-    @TableField(value = "chat_type", length = 4, notNull = true, comment = "聊天类型")
+    @TableField(length = 4, notNull = true, comment = "聊天类型")
     private ChatType chatType;
 
     /**
      * 是否临时
      */
-    @TableField(value = "temporary", notNull = true, defaultValue = "false", comment = "是否临时")
+    @TableField(notNull = true, defaultValue = "false", comment = "是否临时")
     private Boolean temporary;
 
     /**
      * 所属人
      */
-    @TableField(value = "owner_id", notNull = true, comment = "所属人id")
+    @TableField(notNull = true, comment = "所属人id")
     private String ownerId;
 
     /**
      * 最新消息创建时间
      */
-    @TableField(value = "last_msg_time", comment = "最新消息创建时间")
+    @TableField(comment = "最新消息创建时间")
     private LocalDateTime lastMsgTime;
 
     /**
      * 创建时间
      */
-    @TableField(value = "create_time", notNull = true, comment = "创建时间", onInsertValue = "now()")
+    @TableField(notNull = true, comment = "创建时间", onInsertValue = "now()")
     private LocalDateTime createTime;
-
-    /**
-     * 一般创建对象通过这个方法
-     * 可以统一为对象赋初始值
-     */
-    public static Chat def() {
-        Chat def = new Chat();
-        return def;
-    }
 }

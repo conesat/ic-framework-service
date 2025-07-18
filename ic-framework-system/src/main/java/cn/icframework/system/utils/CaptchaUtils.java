@@ -4,7 +4,7 @@ import java.util.Random;
 
 /**
  * @author iceFire
- * @date 2023/6/3
+ * @since 2023/6/3
  */
 public class CaptchaUtils {
 

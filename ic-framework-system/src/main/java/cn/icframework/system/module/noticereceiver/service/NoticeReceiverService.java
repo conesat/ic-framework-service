@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * @author ic
- * @date 2024/09/13
+ * @since 2024/09/13
  */
 @Service
 @RequiredArgsConstructor
@@ -31,7 +31,7 @@ public class NoticeReceiverService extends BasicService<NoticeReceiverMapper, No
      */
     @Transactional
     public void edit(NoticeReceiverDTO dto) {
-        NoticeReceiver entity = dto.getId() != null ? selectById(dto.getId()) : NoticeReceiver.def();
+        NoticeReceiver entity = dto.getId() != null ? selectById(dto.getId()) : new NoticeReceiver();
         BeanUtils.copyExcludeProps(dto, entity);
         if (dto.getId() != null) {
             updateById(entity);

@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 /**
 * @author ic
-* @date 2024/08/02
+* @since 2024/08/02
 */
 @Mapper
 public interface PermissionGroupMapper extends BasicMapper<PermissionGroup> {

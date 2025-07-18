@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  * 程序启动完成 需要初始化权限
  *
  * @author hzl
- * @date 2022/6/21 10:37
+ * @since 2022/6/21 10:37
  */
 
 @Component

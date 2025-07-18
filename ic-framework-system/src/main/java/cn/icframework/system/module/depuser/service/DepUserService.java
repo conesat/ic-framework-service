@@ -15,7 +15,7 @@ import java.util.List;
 
 /**
  * @author ic
- * @date 2024/08/11
+ * @since 2024/08/11
  */
 @Service
 public class DepUserService extends BasicService<DepUserMapper, DepUser> {
@@ -27,7 +27,7 @@ public class DepUserService extends BasicService<DepUserMapper, DepUser> {
      */
     @Transactional
     public void edit(DepUserDTO dto) {
-        DepUser entity = dto.getId() != null ? selectById(dto.getId()) : DepUser.def();
+        DepUser entity = dto.getId() != null ? selectById(dto.getId()) : new DepUser();
         BeanUtils.copyExcludeProps(dto, entity);
         if (dto.getId() != null) {
             updateById(entity);
@@ -40,7 +40,7 @@ public class DepUserService extends BasicService<DepUserMapper, DepUser> {
     public void createBatch(Long depId, Long[] userIds) {
         List<DepUser> depUsers = new ArrayList<>();
         for (Long userId : userIds) {
-            DepUser depUser = DepUser.def();
+            DepUser depUser = new DepUser();
             depUser.setUserId(userId);
             depUser.setDepId(depId);
             depUsers.add(depUser);
@@ -76,7 +76,7 @@ public class DepUserService extends BasicService<DepUserMapper, DepUser> {
         DepUserDef depUserDef = DepUserDef.table();
         DepUser depUser = selectOne(depUserDef.depId.eq(depId).userId.eq(userId));
         if (depUser == null) {
-            depUser = DepUser.def();
+            depUser = new DepUser();
             depUser.setDepId(depId);
             depUser.setUserId(userId);
             insert(depUser);
@@ -111,7 +111,7 @@ public class DepUserService extends BasicService<DepUserMapper, DepUser> {
                 if (dbDepIdSet != null && dbDepIdSet.contains(depId)) {
                     continue;
                 }
-                DepUser depUser = DepUser.def();
+                DepUser depUser = new DepUser();
                 depUser.setUserId(userId);
                 depUser.setDepId(depId);
                 depUsers.add(depUser);

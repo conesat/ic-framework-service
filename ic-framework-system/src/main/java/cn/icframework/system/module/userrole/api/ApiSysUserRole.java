@@ -32,7 +32,7 @@ import java.util.List;
  * @RequireAuth(UserType.R_ADMIN) 指定这类用户才能访问
  *
  * @author ic generator
- * @date 2023/08/09
+ * @since 2023/08/09
  */
 @RestController
 @RequestMapping(value = Api.API_SYS + "/user-role", name ="用户权限")

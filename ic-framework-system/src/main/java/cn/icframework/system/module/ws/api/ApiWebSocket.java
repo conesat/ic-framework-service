@@ -70,7 +70,7 @@ public class ApiWebSocket extends TextWebSocketHandler {
         String payload = message.getPayload();
         ChatMsgSendDTO wsMessage = JSONObject.parseObject(payload, ChatMsgSendDTO.class);
         if (StringUtils.hasLength(wsMessage.getToUserId())) {
-            ChatMsg msg = ChatMsg.def();
+            ChatMsg msg = new ChatMsg();
             BeanUtils.copyExcludeProps(wsMessage, msg, ChatMsgDTO::getId);
             msgService.insert(msg);
         }

@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 /**
 * @author ic generator
-* @date 2023/08/07
+* @since 2023/08/07
 */
 @Mapper
 public interface RolePermissionMapper extends BasicMapper<RolePermission> {

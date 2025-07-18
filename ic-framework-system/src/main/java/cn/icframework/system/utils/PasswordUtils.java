@@ -7,7 +7,7 @@ import java.security.SecureRandom;
 /**
  *
  * @author hzl
- * @date 2024/9/11
+ * @since 2024/9/11
  */
 public class PasswordUtils {
     public static String generateRandomPassword(int length) {

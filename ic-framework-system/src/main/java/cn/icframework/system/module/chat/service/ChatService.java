@@ -31,7 +31,7 @@ import java.util.Objects;
 
 /**
  * @author ic
- * @date 2025/01/17
+ * @since 2025/01/17
  */
 @Service
 @RequiredArgsConstructor
@@ -48,7 +48,7 @@ public class ChatService extends BasicService<ChatMapper, Chat> {
      */
     @Transactional
     public void edit(ChatDTO dto) {
-        Chat entity = dto.getId() != null ? selectById(dto.getId()) : Chat.def();
+        Chat entity = dto.getId() != null ? selectById(dto.getId()) : new Chat();
         BeanUtils.copyExcludeProps(dto, entity);
         if (dto.getId() != null) {
             updateById(entity);
@@ -70,18 +70,18 @@ public class ChatService extends BasicService<ChatMapper, Chat> {
 
         Chat chat = getChat(subject, userId);
         if (chat != null) return chat;
-        chat = Chat.def();
+        chat = new Chat();
         chat.setChatType(ChatType.USER);
         chat.setOwnerId(subject);
         insert(chat);
 
-        ChatUser chatMy = ChatUser.def();
+        ChatUser chatMy = new ChatUser();
         chatMy.setChatId(chat.getId());
         chatMy.setUserId(subject);
         chatMy.setUserType(UserType.SYSTEM_USER);
         chatUserService.insert(chatMy);
 
-        ChatUser chatUser = ChatUser.def();
+        ChatUser chatUser = new ChatUser();
         chatUser.setChatId(chat.getId());
         chatUser.setUserId(userId);
         chatUser.setUserType(UserType.SYSTEM_USER);

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 用于公开内容
  *
  * @author ic generator
- * @date 2023/08/09
+ * @since 2023/08/09
  */
 @RestController
 @RequestMapping(value = Api.API_PUBLIC + "/user-role", name ="用户权限")

@@ -24,7 +24,7 @@ import static cn.icframework.mybatis.wrapper.FunctionWrapper.NOT_EXISTS;
 
 /**
  * @author iceFire
- * @date 2023/6/15
+ * @since 2023/6/15
  */
 @Component
 public class UserWrapperBuilder extends BasicWrapperBuilder<UserDef> {

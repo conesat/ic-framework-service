@@ -24,7 +24,7 @@ import static cn.icframework.system.module.notice.wrapperbuilder.MineNoticeWrapp
  * wrapper构建器
  *
  * @author ic
- * @date 2024/09/12
+ * @since 2024/09/12
  */
 @Component
 public class MineNoticeWrapperBuilder extends BasicWrapperBuilder<NoticeDef> {

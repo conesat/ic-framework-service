@@ -3,7 +3,7 @@ package cn.icframework.system.enums;
 /**
  * 用户类型枚举
  * @author hzl
- * @date 2023/6/21
+ * @since 2023/6/21
  */
 public enum UserType {
     /**

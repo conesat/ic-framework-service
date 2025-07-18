@@ -27,7 +27,7 @@ import java.util.List;
  * manage接口，用于管理后台
  *
  * @author ic
- * @date 2024/09/12
+ * @since 2024/09/12
  */
 @RestController
 @RequestMapping(value = Api.API_SYS + "/notice", name ="通知")

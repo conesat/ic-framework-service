@@ -15,7 +15,7 @@ import java.io.IOException;
 
 /**
  * @author hzl
- * @date 2024/9/4
+ * @since 2024/9/4
  */
 @Component
 @RequiredArgsConstructor
@@ -32,7 +32,7 @@ public class PosInit {
                 JSONObject object = rolesArr.getJSONObject(i);
                 Position position = positionService.selectOne(positionDef.sign.eq(object.getString("sign")));
                 if (position == null) {
-                    position = Position.def();
+                    position = new Position();
                     position.setStatus(Status.instanceOf(object.getInteger("status")));
                     position.setSign(object.getString("sign"));
                     position.setName(object.getString("name"));

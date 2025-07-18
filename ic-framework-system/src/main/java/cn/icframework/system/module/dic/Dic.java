@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 
 /**
  * @author iceFire
- * @date 2023/6/14
+ * @since 2023/6/14
  */
 @Getter
 @Setter
@@ -24,28 +24,39 @@ public class Dic {
     @Id(idType = IdType.SNOWFLAKE)
     private Long id;
 
-    @TableField(value = "dic_key", notNull = true, comment = "键")
+    /**
+     * 键
+     */
+    @TableField(notNull = true, comment = "键")
     private String dicKey;
 
-    @TableField(value = "dic_val", notNull = true, comment = "值")
+    /**
+     * 值
+     */
+    @TableField(notNull = true, comment = "值")
     private String dicVal;
 
-    @TableField(value = "system", notNull = true, comment = "是否系统值")
+    /**
+     * 是否系统值
+     */
+    @TableField(defaultValue = "false", notNull = true, comment = "是否系统值")
     private Boolean system;
 
-    @TableField(value = "status", notNull = true, comment = "是否有效")
+    /**
+     * 状态
+     */
+    @TableField(defaultValue = "1", notNull = true, comment = "是否有效")
     private Status status;
 
-    @TableField(value = "create_time", notNull = true, comment = "创建时间", onInsertValue = "now()")
+    /**
+     * 创建时间
+     */
+    @TableField(notNull = true, comment = "创建时间", onInsertValue = "now()")
     private LocalDateTime createTime;
 
-    @TableField(value = "update_time", comment = "更新时间", onUpdateValue = "now()")
+    /**
+     * 更新时间
+     */
+    @TableField(comment = "更新时间", onUpdateValue = "now()")
     private LocalDateTime updateTime;
-
-    public static Dic def() {
-        Dic dic = new Dic();
-        dic.setSystem(false);
-        dic.setStatus(Status.ENABLE);
-        return dic;
-    }
 }

@@ -23,7 +23,7 @@ import java.util.List;
 
 /**
  * @author ic generator
- * @date 2023/08/07
+ * @since 2023/08/07
  */
 @Service
 @AllArgsConstructor
@@ -40,7 +40,7 @@ public class RolePermissionService extends BasicService<RolePermissionMapper, Ro
      */
     @Transactional
     public void edit(RolePermissionDTO dto) {
-        RolePermission entity = dto.getId() != null ? selectById(dto.getId()) : RolePermission.def();
+        RolePermission entity = dto.getId() != null ? selectById(dto.getId()) : new RolePermission();
         BeanUtils.copyExcludeProps(dto, entity);
         if (dto.getId() == null) {
             updateById(entity);
@@ -67,7 +67,7 @@ public class RolePermissionService extends BasicService<RolePermissionMapper, Ro
             if (pidsSet.contains(permissionId)) {
                 continue;
             }
-            RolePermission rolePermission = RolePermission.def();
+            RolePermission rolePermission = new RolePermission();
             rolePermission.setRoleId(roleId);
             rolePermission.setPermissionId(permissionId);
             rolePermissions.add(rolePermission);

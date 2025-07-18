@@ -14,24 +14,19 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Index(name = "user_position_idx", columns = {"user_id", "position_id"}, unique = true)
-@Table("sys_user_pos")
+@Table(value = "sys_user_pos", comment = "用户岗位关联")
 public class UserPos {
     @Id(idType = IdType.SNOWFLAKE)
-    @TableField
     private Long id;
 
     @ForeignKey(references = Position.class, onDelete = ForeignKeyAction.CASCADE)
-    @TableField(value = "position_id", notNull = true, comment = "职位id")
+    @TableField(notNull = true, comment = "职位id")
     private Long positionId;
 
     @ForeignKey(references = User.class, onDelete = ForeignKeyAction.CASCADE)
-    @TableField(value = "user_id", notNull = true, comment = "用户id")
+    @TableField(notNull = true, comment = "用户id")
     private Long userId;
 
-    @TableField(value = "create_time", notNull = true, comment = "创建时间", onInsertValue = "now()")
+    @TableField(notNull = true, comment = "创建时间", onInsertValue = "now()")
     private LocalDateTime createTime;
-
-    public static UserPos def() {
-        return new UserPos();
-    }
 }

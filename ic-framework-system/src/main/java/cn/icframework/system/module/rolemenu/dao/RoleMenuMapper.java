@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 /**
 * @author ic
-* @date 2024/08/25
+* @since 2024/08/25
 */
 @Mapper
 public interface RoleMenuMapper extends BasicMapper<RoleMenu> {

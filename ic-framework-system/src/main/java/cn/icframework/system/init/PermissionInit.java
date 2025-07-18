@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author IceFire
- * @date 2023/7/22
+ * @since 2023/7/22
  */
 @Service
 @RequiredArgsConstructor
@@ -78,7 +78,7 @@ public class PermissionInit implements IPermissionInitService {
                 permissionGroupService.updateById(permissionGroup);
             } else if (permissionGroup == null) {
                 newGroup = true;
-                permissionGroup = PermissionGroup.def();
+                permissionGroup = new PermissionGroup();
                 permissionGroup.setPath(permissionGroupInit.getPath());
                 permissionGroup.setName(permissionGroupInit.getName());
                 permissionGroupService.insert(permissionGroup);
@@ -100,7 +100,7 @@ public class PermissionInit implements IPermissionInitService {
             for (PermissionGroupInit.Permission p : permissionGroupInit.getPermissions()) {
                 Permission permission = dbPermissionMap.get(p.getPath());
                 if (permission == null) {
-                    permission = Permission.def();
+                    permission = new Permission();
                     permission.setGroupId(permissionGroup.getId());
                     permission.setName(p.getName());
                     permission.setPath(p.getPath());

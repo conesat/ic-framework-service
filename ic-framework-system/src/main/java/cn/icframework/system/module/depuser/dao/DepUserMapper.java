@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 /**
 * @author ic
-* @date 2024/08/11
+* @since 2024/08/11
 */
 @Mapper
 public interface DepUserMapper extends BasicMapper<DepUser> {

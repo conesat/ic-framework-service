@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
  * app 接口
  *
  * @author ic
- * @date 2024/09/13
+ * @since 2024/09/13
  */
 @RequireAuth(userType = UserType.SYSTEM_USER)
 @RestController

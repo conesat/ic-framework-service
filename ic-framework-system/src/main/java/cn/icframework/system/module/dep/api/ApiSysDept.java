@@ -23,7 +23,7 @@ import java.util.List;
 
 /**
  * @author create by ic gen
- * @date 2023/06/21
+ * @since 2023/06/21
  */
 @RestController
 @RequestMapping(value = Api.API_SYS + "/dept", name = "部门")

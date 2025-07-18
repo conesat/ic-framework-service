@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author ic
- * @date 2024/09/12
+ * @since 2024/09/12
  */
 @Service
 @RequiredArgsConstructor
@@ -21,11 +21,12 @@ public class NoticeService extends BasicService<NoticeMapper, Notice> {
 
     /**
      * 编辑或者保存
+     *
      * @param dto
      */
     @Transactional
     public void edit(NoticeDTO dto) {
-        Notice entity = dto.getId() != null ? selectById(dto.getId()) : Notice.def();
+        Notice entity = dto.getId() != null ? selectById(dto.getId()) : new Notice();
         BeanUtils.copyExcludeProps(dto, entity);
         if (dto.getId() != null) {
             updateById(entity);

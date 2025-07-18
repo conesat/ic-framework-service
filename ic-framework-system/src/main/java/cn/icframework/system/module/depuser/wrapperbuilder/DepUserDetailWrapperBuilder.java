@@ -26,7 +26,7 @@ import static cn.icframework.mybatis.wrapper.FunctionWrapper.MAX;
 
 /**
  * @author ic
- * @date 2024/08/11
+ * @since 2024/08/11
  */
 @Component
 public class DepUserDetailWrapperBuilder extends BasicWrapperBuilder<DepUserDef> {

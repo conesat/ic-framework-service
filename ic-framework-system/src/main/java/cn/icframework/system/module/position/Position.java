@@ -23,41 +23,36 @@ public class Position {
     /**
      * 名称
      */
-    @TableField(value = "name", length = 10, comment = "名称")
+    @TableField(length = 10, comment = "名称")
     private String name;
 
     /**
      * 编码
      */
-    @TableField(value = "sign", length = 50, comment = "编码")
+    @TableField(length = 50, comment = "编码")
     private String sign;
 
     /**
      * 职级
      */
-    @TableField(value = "level", length = 3, comment = "职级")
+    @TableField(length = 3, comment = "职级")
     private Integer level;
 
     /**
      * 是与否有效
      */
-    @TableField(value = "status", comment = "是与否有效")
+    @TableField(comment = "是与否有效")
     private Status status;
 
     /**
      * 创建时间
      */
-    @TableField(value = "create_time", notNull = true, comment = "创建时间", onInsertValue = "now()")
+    @TableField(notNull = true, comment = "创建时间", onInsertValue = "now()")
     private LocalDateTime createTime;
 
     /**
      * 更新时间
      */
-    @TableField(value = "update_time", comment = "更新时间", onUpdateValue = "now()")
+    @TableField(comment = "更新时间", onUpdateValue = "now()")
     private LocalDateTime updateTime;
-
-
-    public static Position def() {
-        return new Position();
-    }
 }

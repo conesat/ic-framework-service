@@ -19,7 +19,7 @@ import java.util.List;
  * wrapper构建器
  *
  * @author ic
- * @date 2024/09/13
+ * @since 2024/09/13
  */
 @Component
 public class NoticeReceiverWrapperBuilder extends BasicWrapperBuilder<NoticeReceiverDef> {

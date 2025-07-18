@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 /**
  * @author hzl
- * @date 2023/6/5
+ * @since 2023/6/5
  */
 @Mapper
 public interface SettingMapper extends BasicMapper<Setting> {

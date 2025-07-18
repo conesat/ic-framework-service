@@ -12,7 +12,7 @@ import static com.google.code.kaptcha.Constants.*;
 
 /**
  * @author iceFire
- * @date 2023/6/3
+ * @since 2023/6/3
  */
 @Component
 public class CaptchaConfig {

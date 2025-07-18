@@ -2,7 +2,7 @@ package cn.icframework.system.consts;
 
 /**
  * @author iceFire
- * @date 2023/6/3
+ * @since 2023/6/3
  */
 public interface R {
     /**

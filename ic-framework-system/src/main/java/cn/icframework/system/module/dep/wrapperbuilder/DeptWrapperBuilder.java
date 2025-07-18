@@ -20,7 +20,7 @@ import static cn.icframework.mybatis.wrapper.FunctionWrapper.NOT_EXISTS;
 
 /**
  * @author ic generator
- * @date 2023/07/11
+ * @since 2023/07/11
  */
 @Component
 public class DeptWrapperBuilder extends BasicWrapperBuilder<DeptDef> {

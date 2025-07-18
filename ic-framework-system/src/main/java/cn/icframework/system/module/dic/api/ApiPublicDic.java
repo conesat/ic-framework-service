@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author create by ic gen
- * @date 2023/06/14
+ * @since 2023/06/14
  */
 @RestController
 @RequestMapping(value = Api.API_PUBLIC + "/dic", name = "字典")
