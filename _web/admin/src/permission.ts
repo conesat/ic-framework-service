@@ -4,7 +4,7 @@ import NProgress from 'nprogress'; // progress bar
 import { MessagePlugin } from 'tdesign-vue-next';
 
 import router from '@/router';
-import { getPermissionStore, useUserStore } from '@/store';
+import { usePermissionStore, useUserStore } from '@/store';
 import { PAGE_NOT_FOUND_ROUTE } from '@/utils/route/constant';
 
 NProgress.configure({ showSpinner: false });
@@ -12,7 +12,7 @@ NProgress.configure({ showSpinner: false });
 router.beforeEach(async (to, from, next) => {
   NProgress.start();
 
-  const permissionStore = getPermissionStore();
+  const permissionStore = usePermissionStore();
   const { whiteListRouters } = permissionStore;
 
   const userStore = useUserStore();
@@ -82,7 +82,7 @@ router.beforeEach(async (to, from, next) => {
 router.afterEach((to) => {
   if (to.path === '/login') {
     const userStore = useUserStore();
-    const permissionStore = getPermissionStore();
+    const permissionStore = usePermissionStore();
     userStore.logout();
     permissionStore.restoreRoutes();
   }

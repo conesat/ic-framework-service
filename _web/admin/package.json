@@ -20,6 +20,7 @@
     "test:coverage": "echo \"no test:coverage specified,work in process\""
   },
   "dependencies": {
+    "@fingerprintjs/fingerprintjs": "^4.6.2",
     "@tdesign-vue-next/chat": "^0.2.4",
     "@types/dplayer": "^1.25.5",
     "@vueuse/core": "^12.5.0",
@@ -28,7 +29,6 @@
     "dayjs": "^1.11.13",
     "dplayer": "^1.27.1",
     "echarts": "^5.6.0",
-    "fingerprintjs2": "^2.1.4",
     "hls.js": "^1.5.20",
     "js-md5": "^0.7.3",
     "jsencrypt": "^3.3.2",
@@ -61,8 +61,6 @@
     "@commitlint/config-conventional": "^19.6.0",
     "@types/crypto-js": "^4.2.2",
     "@types/dplayer": "^1.25.5",
-    "@types/echarts": "^5.0.0",
-    "@types/js-md5": "^0.8.0",
     "@types/lodash": "^4.17.14",
     "@types/nprogress": "^0.2.3",
     "@types/qs": "^6.9.18",
@@ -78,7 +76,6 @@
     "chokidar": "^3.6.0",
     "commitizen": "^4.3.1",
     "cz-conventional-changelog": "^3.3.0",
-    "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-prettier": "^5.2.3",
@@ -100,7 +97,8 @@
     "vite": "^5.3.5",
     "vite-plugin-mock": "^3.0.2",
     "vite-svg-loader": "^5.1.0",
-    "vue-tsc": "^2.2.10"
+    "vue-tsc": "^2.2.10",
+    "eslint": "^9.10.0"
   },
   "config": {
     "commitizen": {
