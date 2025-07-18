@@ -1,50 +1,50 @@
 import { defineStore } from 'pinia';
+import { ref } from 'vue';
 import { RouteRecordRaw } from 'vue-router';
 
 import { RouteItem } from '@/api/model/permissionModel';
 import { getMenuList } from '@/api/permission';
 import router, { fixedRouterList, homepageRouterList } from '@/router';
-import { store } from '@/store';
 import { transformObjectToRoute } from '@/utils/route';
 
-export const usePermissionStore = defineStore('permission', {
-  state: () => ({
-    whiteListRouters: ['/login'],
-    routers: [] as Array<RouteRecordRaw>,
-    removeRoutes: [] as Array<RouteRecordRaw>,
-    asyncRoutes: [] as Array<RouteRecordRaw>,
-  }),
-  actions: {
-    async initRoutes() {
-      const accessedRouters = this.asyncRoutes;
-      // 在菜单展示全部路由 this.routers = accessedRouters;
-      this.routers = [...homepageRouterList, ...accessedRouters, ...fixedRouterList];
-      // 在菜单只展示动态路由和首页 this.routers = [...homepageRouterList, ...accessedRouters];
-      // 在菜单只展示动态路由 this.routers = [...accessedRouters];
-    },
-    async buildAsyncRoutes() {
-      try {
-        // 发起菜单权限请求 获取菜单列表
-        const asyncRoutes: Array<RouteItem> = await getMenuList();
-        this.asyncRoutes = transformObjectToRoute(asyncRoutes);
-        await this.initRoutes();
-        return this.asyncRoutes;
-      } catch (error) {
-        throw new Error("Can't build routes");
-      }
-    },
-    async restoreRoutes() {
-      // 不需要在此额外调用initRoutes更新侧边导肮内容，在登录后asyncRoutes为空会调用
-      this.asyncRoutes.forEach((item) => {
-        if (item.name) {
-          router.removeRoute(item.name);
-        }
-      });
-      this.asyncRoutes = [];
-    },
-  },
-});
+export const usePermissionStore = defineStore('permission', () => {
+  const whiteListRouters = ref(['/login']);
+  const routers = ref<Array<RouteRecordRaw>>([]);
+  const removeRoutes = ref<Array<RouteRecordRaw>>([]);
+  const asyncRoutes = ref<Array<RouteRecordRaw>>([]);
 
-export function getPermissionStore() {
-  return usePermissionStore(store);
-}
+  async function initRoutes() {
+    const accessedRouters = asyncRoutes.value;
+    routers.value = [...homepageRouterList, ...accessedRouters, ...fixedRouterList];
+  }
+
+  async function buildAsyncRoutes() {
+    try {
+      const asyncRoutesList: Array<RouteItem> = await getMenuList();
+      asyncRoutes.value = transformObjectToRoute(asyncRoutesList);
+      await initRoutes();
+      return asyncRoutes.value;
+    } catch (error) {
+      throw new Error("Can't build routes");
+    }
+  }
+
+  async function restoreRoutes() {
+    asyncRoutes.value.forEach((item) => {
+      if (item.name) {
+        router.removeRoute(item.name);
+      }
+    });
+    asyncRoutes.value = [];
+  }
+
+  return {
+    whiteListRouters,
+    routers,
+    removeRoutes,
+    asyncRoutes,
+    initRoutes,
+    buildAsyncRoutes,
+    restoreRoutes,
+  };
+});

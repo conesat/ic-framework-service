@@ -111,13 +111,12 @@ const MODE_OPTIONS = [
 ];
 
 const initStyleConfig = () => {
-  const styleConfig = STYLE_CONFIG;
+  const styleConfig = { ...STYLE_CONFIG };
   for (const key in styleConfig) {
     if (Object.prototype.hasOwnProperty.call(styleConfig, key)) {
-      (styleConfig[key as keyof typeof STYLE_CONFIG] as any) = settingStore[key as keyof typeof STYLE_CONFIG];
+      (styleConfig[key as keyof typeof STYLE_CONFIG] as any) = settingStore.state[key as keyof typeof STYLE_CONFIG];
     }
   }
-
   return styleConfig;
 };
 
@@ -130,7 +129,7 @@ const isColoPickerDisplay = ref(false);
 
 const showSettingPanel = computed({
   get() {
-    return settingStore.showSettingPanel;
+    return settingStore.state.showSettingPanel;
   },
   set(newVal: boolean) {
     settingStore.updateConfig({

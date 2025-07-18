@@ -41,7 +41,7 @@ const settingService = {
   },
   init(param: RequestParam) {
     http.post({
-      data: `/public/setting/init`,
+      url: `/public/setting/init`,
       ...param
     });
   },
