@@ -131,10 +131,10 @@ export default {
 
 <script setup lang="ts">
 import {onMounted, provide, ref} from 'vue';
-import UserSelect from "@/pages/user/user/select.vue";
-import DepSelect from "@/pages/org/dept/select.vue";
-import RoleSelect from "@/pages/role/role/select.vue";
-import PositionSelect from "@/pages/org/position/select.vue";
+import UserSelect from "@/pages/sys/user/select.vue";
+import DepSelect from "@/pages/sys/dept/select.vue";
+import RoleSelect from "@/pages/sys/role/select.vue";
+import PositionSelect from "@/pages/sys/position/select.vue";
 //引入富文本编辑器
 
 // 自定义校验 start -------------------

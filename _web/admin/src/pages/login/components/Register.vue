@@ -38,7 +38,7 @@ import type {FormRule, SubmitContext} from 'tdesign-vue-next';
 import {MessagePlugin} from 'tdesign-vue-next';
 import {ref} from 'vue';
 
-import ApiUserMine from '@/api/user/ApiUserMine';
+import ApiUserMine from '@/api/sys/ApiUserMine';
 import ApiSetting from '@/api/sys/ApiSetting';
 import {encryptPasswd} from "@/utils/passwd-utils";
 import success from "@/pages/result/success/index.vue";

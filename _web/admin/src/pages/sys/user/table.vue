@@ -3,17 +3,16 @@
     <t-card class="list-card-container" :bordered="false">
       <t-row justify="space-between">
         <div class="left-operation-container">
-          <t-button @click="showSelectUser = true">添加用户</t-button>
+          <t-button @click="handleClickEdit()">新建</t-button>
           <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length" @click="handleClickDelete()"
           >删除
-          </t-button
-          >
+          </t-button>
           <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
         </div>
         <div class="search-input">
-          <t-input v-model="queryForm.searchKey" placeholder="请输入你需要搜索的内容" clearable @enter="getData(true)">
+          <t-input v-model="queryForm.searchKey" placeholder="请输入你需要搜索的内容" clearable>
             <template #suffix-icon>
-              <search-icon size="16px" @click.stop="getData(true)"/>
+              <search-icon size="16px"/>
             </template>
           </t-input>
         </div>
@@ -21,55 +20,47 @@
       <t-table
         :data="data"
         :columns="columns"
-        row-key="userId"
+        row-key="id"
         vertical-align="top"
         :hover="true"
         :pagination="pagination"
         :selected-row-keys="selectedRowKeys"
         :loading="dataLoading"
         :header-affixed-top="headerAffixedTop"
-        :sort="sort"
-        :multipleSort="true"
-        @sort-change="sortChange"
         @change="reHandleChange"
         @select-change="reHandleSelectChange"
       >
-        <template #avatarFileUrl="{ row }">
-          <t-avatar v-if="row.avatarFileUrl" :image="row.avatarFileUrl"/>
-          <t-avatar v-else>{{ row.userName.substring(0, 1) }}</t-avatar>
+        <template #status="{ row }">
+          <t-tag v-if="row.status" :theme="row.status.code === 1 ? 'success':'warning'" variant="light">
+            {{ row.status.text }}
+          </t-tag>
         </template>
+        <template #su="{ row }">
+          <t-tag v-if="row.su" theme="success" variant="light">是</t-tag>
+          <t-tag v-if="!row.su" theme="warning" variant="light">否</t-tag>
+        </template>
+
         <template #op="{ row }">
           <t-space>
+            <t-link hover="color" theme="primary" @click="handleClickEdit(row.id)">详情</t-link>
             <t-link hover="color" theme="warning" @click="handleClickDelete(row)">删除</t-link>
           </t-space>
-        </template>
-        <template #readTime="{ row }">
-          <t-tag :theme="row.readTime ? 'success':'warning'" variant="light">{{
-              row.readTime ? row.readTime : '未读'
-            }}
-          </t-tag>
         </template>
       </t-table>
     </t-card>
 
-    <t-dialog v-model:visible="confirmDeleteVisible" header="确认" :body="confirmDeleteBody"
-              @confirm="onConfirmDelete"/>
-
-
-    <t-dialog v-model:visible="showSelectUser" header="选择用户" :footer="false" width="800">
-      <user-select v-if="showSelectUser"
-                   :mutilate="true"
-                   :not-in-notice-id="noticeId"
-                   @selected="onUserSelected"
-                   @cancel="showSelectUser = false"
-      ></user-select>
-    </t-dialog>
+    <t-dialog
+      v-model:visible="confirmDeleteVisible"
+      header="确认"
+      :body="confirmDeleteBody"
+      @confirm="onConfirmDelete"
+    />
   </div>
 </template>
 
 <script lang="ts">
 export default {
-  name: 'noticeReceiverTable',
+  name: 'ManagerIndex',
 };
 </script>
 
@@ -79,32 +70,14 @@ import {MessagePlugin, PrimaryTableCol} from 'tdesign-vue-next';
 import {computed, onMounted, ref} from 'vue';
 import {useRouter} from 'vue-router';
 
-import ApiNoticeReceiver from '@/api/sys/ApiNoticeReceiver';
+import apiUser from '@/api/sys/ApiUser';
 import {prefix} from '@/config/global';
 import {useSettingStore} from '@/store';
-import UserSelect from "@/pages/sys/user/select.vue";
 import {queryDef, paginationDef} from "@/api/common/query";
 
 // 定义变量 start -------------------
-const showSelectUser = ref(false);
-
-const props = defineProps({
-  noticeId: {
-    type: String,
-    default: '',
-    required: true,
-  }
-});
-
 // 读取设置内容
 const store = useSettingStore();
-// 排序
-const sort = ref([{
-  // 按照 sort 字段进行排序
-  sortBy: '',
-  // 是否按照降序进行排序
-  descending: false,
-}]);
 // 列表数据
 const data = ref([]);
 // 分页
@@ -112,7 +85,6 @@ const pagination = ref(paginationDef);
 // 查询表单,包括分页
 const queryForm = ref({
   ...queryDef,
-  noticeId: '',
 });
 // 数据是否加载中
 const dataLoading = ref(false);
@@ -128,17 +100,46 @@ const router = useRouter();
 const columns: PrimaryTableCol[] = [
   {colKey: 'row-select', type: 'multiple', width: 64, fixed: 'left'},
   {
-    title: '头像',
-    colKey: 'avatarFileUrl',
-    width: 64,
+    title: '姓名',
+    colKey: 'name',
     fixed: 'left',
   },
-  {title: '用户', colKey: 'userName'},
-  {title: '查阅时间', colKey: 'readTime', sorter: true},
+  {
+    title: '账号',
+    colKey: 'username',
+  },
+  {
+    title: '超管',
+    colKey: 'su',
+    width: 80,
+  },
+  {
+    title: '状态',
+    width: 80,
+    colKey: 'status',
+  },
+  {
+    title: '登录失败时间',
+    colKey: 'lastLoginFailTime',
+  },
+  {
+    title: '登录失败次数',
+    colKey: 'loginFailCount',
+  },
+  {
+    title: '创建时间',
+    colKey: 'createTime',
+    width: 200,
+  },
+  {
+    title: '更新时间',
+    colKey: 'updateTime',
+    width: 200,
+  },
   {
     align: 'left',
     fixed: 'right',
-    width: 80,
+    width: 120,
     colKey: 'op',
     title: '操作',
   },
@@ -146,30 +147,13 @@ const columns: PrimaryTableCol[] = [
 // 定义变量 end -------------------
 
 // 定义方法 start -------------------
-// 用户选择回调
-const onUserSelected = (res: any) => {
-  showSelectUser.value = false
-  // receiveUsers.value = res
-  ApiNoticeReceiver.addUserBatch({
-    data: {
-      noticeId: props.noticeId,
-      userIds: res.map((item: any) => item.id)
-    },
-    success: (res: any) => {
-      MessagePlugin.success('添加成功');
-      getData();
-    }
-  })
-}
-
 // 获取列表数据
 const getData = async (reload ?: boolean) => {
   if (reload) {
     pagination.value.current = 1;
   }
   dataLoading.value = true;
-  queryForm.value.noticeId = props.noticeId;
-  ApiNoticeReceiver.page({
+  apiUser.page({
     data: queryForm.value,
     pagination: pagination.value,
     success: (res: any) => {
@@ -189,23 +173,20 @@ const confirmDeleteBody = () => {
   if (selectedRowData.value.length > 0) {
     const names = [];
     for (let i = 0; i < selectedRowData.value.length && i < 3; i++) {
-      names.push(selectedRowData.value[i].userName);
+      names.push(selectedRowData.value[i].name);
     }
     return `确认删除 ${
-      names.join(',') + (selectedRowData.value.length > names.length ? ` ...等 ${selectedRowData.value.length} 个数据吗？` : ' 吗？')
+      names.join(',') +
+      (selectedRowData.value.length > names.length ? ` ...等 ${selectedRowData.value.length} 个数据吗？` : ' 吗？')
     }，删除后无法恢复`;
   }
   return '';
 };
 // 确认删除事件
 const onConfirmDelete = () => {
-  confirmDeleteVisible.value = false;
   // 真实业务请发起请求
-  ApiNoticeReceiver.deleteByNoticeIdAndUserIds({
-    data: {
-      noticeId: props.noticeId,
-      userIds: selectedRowKeys.value,
-    },
+  apiUser.delete({
+    ids: selectedRowKeys.value,
     success: (res: any) => {
       MessagePlugin.success('删除成功');
       resetIdx();
@@ -218,21 +199,18 @@ const reHandleSelectChange = (val: (string | number)[], e: any) => {
   selectedRowKeys.value = val;
   selectedRowData.value = e.selectedRowData;
 };
-// 排序变化
-const sortChange = (sortInfo: any) => {
-  // 对于受控属性而言，这里的赋值很重要，不可缺少
-  sort.value = sortInfo;
-  queryForm.value.orders = JSON.stringify(sort.value)
-};
 // 表单参数变化 包括过滤、分页
 const reHandleChange = (changeParams: any, triggerAndData: unknown) => {
   pagination.value = changeParams.pagination;
   getData();
 };
+// 编辑/详情按钮事件
+const handleClickEdit = (id?: any) => {
+  router.push(`/user/user-edit?id=${id || ''}`);
+};
 // 单个删除按钮事件
 const handleClickDelete = (row?: any) => {
   if (row) {
-    selectedRowKeys.value = [row.id];
     selectedRowData.value = [row];
   }
   if (selectedRowData.value.length > 0) {

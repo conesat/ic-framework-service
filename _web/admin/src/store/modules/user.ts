@@ -2,7 +2,7 @@ import { jwtDecode } from 'jwt-decode';
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 
-import ApiUserMine from '@/api/user/ApiUserMine';
+import ApiUserMine from '@/api/sys/ApiUserMine';
 import { REFRESH_TOKEN_NAME, TOKEN_NAME, TOKEN_NAME_EXP, TOKEN_SESSION_ID, USER_INFO } from '@/config/global';
 import { usePermissionStore } from '@/store';
 import type { UserInfo } from '@/types/interface';

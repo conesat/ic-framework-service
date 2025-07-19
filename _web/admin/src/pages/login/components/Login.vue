@@ -50,7 +50,7 @@ import {MessagePlugin} from 'tdesign-vue-next';
 import {ref} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
 
-import ManagerService from '@/api/user/ApiUserMine';
+import ManagerService from '@/api/sys/ApiUserMine';
 import {useUserStore} from '@/store';
 
 const userStore = useUserStore();

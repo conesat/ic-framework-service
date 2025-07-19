@@ -1,6 +1,6 @@
 import http from '@/api/common/http';
 import {RouteItem, RouteMeta} from '@/api/model/permissionModel';
-import ApiUserMine from '@/api/user/ApiUserMine';
+import ApiUserMine from '@/api/sys/ApiUserMine';
 import {MENU_TYPE} from '@/constants';
 
 const {path} = ApiUserMine;
