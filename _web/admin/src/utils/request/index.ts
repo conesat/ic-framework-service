@@ -3,7 +3,7 @@ import type { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import isString from 'lodash/isString';
 import merge from 'lodash/merge';
 
-import ApiUserMine from '@/api/user/ApiUserMine';
+import ApiUserMine from '@/api/sys/ApiUserMine';
 import { REFRESH_TOKEN_NAME, TOKEN_NAME, TOKEN_NAME_EXP } from '@/config/global';
 import { ContentTypeEnum } from '@/constants';
 import { useUserStore } from '@/store';

@@ -3,11 +3,12 @@
     <t-card class="list-card-container" :bordered="false">
       <t-row justify="space-between">
         <div class="left-operation-container">
-          <t-button @click="showSelectUser = true">添加用户</t-button>
-          <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length" @click="handleClickDelete()"
-          >删除
-          </t-button
-          >
+          <t-button @click="showSelectUser = true" :disabled="!posId" :theme="posId?'primary':'default'">添加用户岗位
+          </t-button>
+          <t-button variant="base" theme="default" :disabled="!posId || !selectedRowKeys.length"
+                    @click="handleClickDelete()"
+          >移除用户岗位
+          </t-button>
           <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
         </div>
         <div class="search-input">
@@ -21,7 +22,7 @@
       <t-table
         :data="data"
         :columns="columns"
-        row-key="userId"
+        row-key="id"
         vertical-align="top"
         :hover="true"
         :pagination="pagination"
@@ -34,77 +35,83 @@
         @change="reHandleChange"
         @select-change="reHandleSelectChange"
       >
-        <template #avatarFileUrl="{ row }">
-          <t-avatar v-if="row.avatarFileUrl" :image="row.avatarFileUrl"/>
-          <t-avatar v-else>{{ row.userName.substring(0, 1) }}</t-avatar>
-        </template>
-        <template #op="{ row }">
+        <template #username="{ row }">
           <t-space>
-            <t-link hover="color" theme="warning" @click="handleClickDelete(row)">删除</t-link>
+            <t-link hover="color" @click="handleClickEdit(row.userId)">{{ row.username }}</t-link>
           </t-space>
         </template>
-        <template #readTime="{ row }">
-          <t-tag :theme="row.readTime ? 'success':'warning'" variant="light">{{
-              row.readTime ? row.readTime : '未读'
-            }}
-          </t-tag>
+        <template #status="{ row }">
+          <t-tag :theme="row.status.code === 1 ? 'success':'warning'" variant="light">{{ row.statusText }}</t-tag>
+        </template>
+        <template #op="{ row }" v-if="posId">
+          <t-link hover="color" theme="warning" @click="handleClickDelete(row)" :disabled="!posId">移除</t-link>
+        </template>
+        <template #empty>
+          {{ posId ? '暂无数据' : '请选择岗位' }}
         </template>
       </t-table>
     </t-card>
 
-    <t-dialog v-model:visible="confirmDeleteVisible" header="确认" :body="confirmDeleteBody"
-              @confirm="onConfirmDelete"/>
+    <t-dialog
+      v-model:visible="confirmDeleteVisible"
+      header="确认"
+      :body="confirmDeleteBody"
+      @confirm="onConfirmDelete"
+    />
 
-
-    <t-dialog v-model:visible="showSelectUser" header="选择用户" :footer="false" width="800">
-      <user-select v-if="showSelectUser"
-                   :mutilate="true"
-                   :not-in-notice-id="noticeId"
-                   @selected="onUserSelected"
+    <t-dialog v-model:visible="showSelectUser" header="选择用户" :footer="false" width="800"
+              @cancel="showSelectUser = false">
+      <user-select :mutilate="true"
+                   v-if="showSelectUser"
+                   :not-in-pos-id="posId"
+                   :pos-id="posId"
+                   :pos-name="posName"
                    @cancel="showSelectUser = false"
-      ></user-select>
+                   @selected="onUserSelected"></user-select>
     </t-dialog>
   </div>
 </template>
 
 <script lang="ts">
 export default {
-  name: 'noticeReceiverTable',
+  name: 'PosUser',
 };
 </script>
 
 <script setup lang="ts">
 import {SearchIcon} from 'tdesign-icons-vue-next';
-import {MessagePlugin, PrimaryTableCol} from 'tdesign-vue-next';
-import {computed, onMounted, ref} from 'vue';
-import {useRouter} from 'vue-router';
+import {DialogPlugin, MessagePlugin, PrimaryTableCol} from 'tdesign-vue-next';
+import {computed, onMounted, ref, watch} from 'vue';
 
-import ApiNoticeReceiver from '@/api/sys/ApiNoticeReceiver';
+import ApiUserPos from '@/api/sys/ApiUserPos';
+import UserSelect from '@/pages/sys/user/select.vue';
 import {prefix} from '@/config/global';
 import {useSettingStore} from '@/store';
-import UserSelect from "@/pages/sys/user/select.vue";
+import router from "@/router";
 import {queryDef, paginationDef} from "@/api/common/query";
 
+
 // 定义变量 start -------------------
-const showSelectUser = ref(false);
-
 const props = defineProps({
-  noticeId: {
+  posId: {
+    type: Number,
+    default: null,
+  },
+  posName: {
     type: String,
-    default: '',
-    required: true,
+    default: null,
   }
-});
+})
 
-// 读取设置内容
-const store = useSettingStore();
 // 排序
 const sort = ref([{
-  // 按照 sort 字段进行排序
-  sortBy: '',
+  // 按照 name 字段进行排序
+  sortBy: 'username',
   // 是否按照降序进行排序
-  descending: false,
+  descending: true,
 }]);
+// 读取设置内容
+const store = useSettingStore();
 // 列表数据
 const data = ref([]);
 // 分页
@@ -112,7 +119,6 @@ const pagination = ref(paginationDef);
 // 查询表单,包括分页
 const queryForm = ref({
   ...queryDef,
-  noticeId: '',
 });
 // 数据是否加载中
 const dataLoading = ref(false);
@@ -122,55 +128,53 @@ const confirmDeleteVisible = ref(false);
 const selectedRowKeys = ref([]);
 // 被选中的数据
 const selectedRowData = ref([]);
-// 路由
-const router = useRouter();
+// 是否显示选择用户
+const showSelectUser = ref(false);
 // 表头
 const columns: PrimaryTableCol[] = [
   {colKey: 'row-select', type: 'multiple', width: 64, fixed: 'left'},
-  {
-    title: '头像',
-    colKey: 'avatarFileUrl',
-    width: 64,
-    fixed: 'left',
-  },
-  {title: '用户', colKey: 'userName'},
-  {title: '查阅时间', colKey: 'readTime', sorter: true},
+  {title: '姓名', colKey: 'userName'},
+  {title: '关联时间', colKey: 'createTime', sorter: true},
   {
     align: 'left',
     fixed: 'right',
-    width: 80,
+    width: 60,
     colKey: 'op',
     title: '操作',
   },
 ];
 // 定义变量 end -------------------
 
-// 定义方法 start -------------------
-// 用户选择回调
-const onUserSelected = (res: any) => {
-  showSelectUser.value = false
-  // receiveUsers.value = res
-  ApiNoticeReceiver.addUserBatch({
-    data: {
-      noticeId: props.noticeId,
-      userIds: res.map((item: any) => item.id)
-    },
-    success: (res: any) => {
-      MessagePlugin.success('添加成功');
-      getData();
-    }
-  })
-}
+// 监听props变化
+watch(() => props.posId, (newValue) => {
+  getData()
+});
 
+// 定义方法 start -------------------
+// 编辑/详情按钮事件
+const handleClickEdit = (id?: any) => {
+  router.push(`/user/custom-user-edit?id=${id || ''}`);
+};
+const sortChange = (sortInfo: any) => {
+  // 对于受控属性而言，这里的赋值很重要，不可缺少
+  sort.value = sortInfo;
+};
 // 获取列表数据
 const getData = async (reload ?: boolean) => {
   if (reload) {
     pagination.value.current = 1;
   }
+  if (!props.posId) {
+    data.value = [];
+    return
+  }
   dataLoading.value = true;
-  queryForm.value.noticeId = props.noticeId;
-  ApiNoticeReceiver.page({
-    data: queryForm.value,
+  queryForm.value.orders = JSON.stringify(sort.value)
+  ApiUserPos.page({
+    data: {
+      ...queryForm.value,
+      posId: props.posId
+    },
     pagination: pagination.value,
     success: (res: any) => {
       data.value = res.records;
@@ -189,10 +193,11 @@ const confirmDeleteBody = () => {
   if (selectedRowData.value.length > 0) {
     const names = [];
     for (let i = 0; i < selectedRowData.value.length && i < 3; i++) {
-      names.push(selectedRowData.value[i].userName);
+      names.push(selectedRowData.value[i].name);
     }
     return `确认删除 ${
-      names.join(',') + (selectedRowData.value.length > names.length ? ` ...等 ${selectedRowData.value.length} 个数据吗？` : ' 吗？')
+      names.join(',') +
+      (selectedRowData.value.length > names.length ? ` ...等 ${selectedRowData.value.length} 个数据吗？` : ' 吗？')
     }，删除后无法恢复`;
   }
   return '';
@@ -201,11 +206,8 @@ const confirmDeleteBody = () => {
 const onConfirmDelete = () => {
   confirmDeleteVisible.value = false;
   // 真实业务请发起请求
-  ApiNoticeReceiver.deleteByNoticeIdAndUserIds({
-    data: {
-      noticeId: props.noticeId,
-      userIds: selectedRowKeys.value,
-    },
+  ApiUserPos.delete({
+    ids: selectedRowKeys.value,
     success: (res: any) => {
       MessagePlugin.success('删除成功');
       resetIdx();
@@ -215,14 +217,12 @@ const onConfirmDelete = () => {
 };
 // 表单选中数据变化
 const reHandleSelectChange = (val: (string | number)[], e: any) => {
+  if (!props.posId) {
+    MessagePlugin.warning("请先选择岗位");
+    return
+  }
   selectedRowKeys.value = val;
   selectedRowData.value = e.selectedRowData;
-};
-// 排序变化
-const sortChange = (sortInfo: any) => {
-  // 对于受控属性而言，这里的赋值很重要，不可缺少
-  sort.value = sortInfo;
-  queryForm.value.orders = JSON.stringify(sort.value)
 };
 // 表单参数变化 包括过滤、分页
 const reHandleChange = (changeParams: any, triggerAndData: unknown) => {
@@ -249,6 +249,23 @@ const headerAffixedTop = computed(
       container: `.${prefix}-layout`,
     } as any),
 );
+
+const onUserSelected = (val: any) => {
+  showSelectUser.value = false;
+  let userIds = val.map((user: any) => user.id)
+  ApiUserPos.create({
+    data: {
+      posId: props.posId,
+      userIds: userIds
+    },
+    success: (res: any) => {
+      MessagePlugin.success('添加成功');
+      getData(true);
+    }
+  });
+};
+
+
 // 定义方法 end -------------------
 
 // vue生命周期

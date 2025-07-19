@@ -11,7 +11,7 @@ export default [
       {
         path: 'mine-index',
         name: 'mine-index',
-        component: () => import('@/pages/user/mine/index.vue'),
+        component: () => import('@/pages/sys/mine/index.vue'),
         meta: {
           title: '个人中心',
         },
@@ -19,7 +19,7 @@ export default [
       {
         path: 'edit',
         name: 'edit',
-        component: () => import('@/pages/user/mine/edit.vue'),
+        component: () => import('@/pages/sys/mine/edit.vue'),
         meta: {
           title: '编辑个人信息',
         },
@@ -27,7 +27,7 @@ export default [
       {
         path: 'edit-password',
         name: 'edit-password',
-        component: () => import('@/pages/user/mine/edit-password.vue'),
+        component: () => import('@/pages/sys/mine/edit-password.vue'),
         meta: {
           title: '修改密码',
         },
