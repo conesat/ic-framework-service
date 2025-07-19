@@ -1,5 +1,5 @@
-import {useSettingStore, useTabsRouterStore} from "@/store";
-import {RouteLocationNormalizedLoaded, Router, useRoute, useRouter} from "vue-router";
+import { useSettingStore, useTabsRouterStore } from "@/store";
+import { RouteLocationNormalizedLoaded, Router, useRoute, useRouter } from "vue-router";
 
 const tabsRouterStore = useTabsRouterStore();
 const settingStore = useSettingStore();
@@ -27,9 +27,9 @@ export function getParams(searchKey: String): String {
 
 export function closeOrBack(route: RouteLocationNormalizedLoaded, router: Router) {
   if (getParams("autoClose") === "true") {
-    if (settingStore.isUseTabsRouter) {
+    if (settingStore.state.isUseTabsRouter) {
       tabsRouterStore.closeTab(route, router)
-    } else if (window.history.length > 1){
+    } else if (window.history.length > 1) {
       router.go(-1);
     } else {
       window.close()

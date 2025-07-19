@@ -49,7 +49,7 @@ function calcHeight() {
     return;
   }
   let clientHeight = 0;
-  const { showFooter, isUseTabsRouter, showBreadcrumb } = settingStore;
+  const { showFooter, isUseTabsRouter, showBreadcrumb } = settingStore.state;
   const headerHeight = parseFloat(sizeXxxl);
   const navDom = document.querySelector('.t-tabs__nav');
   const navHeight = isUseTabsRouter ? getOuterHeight(navDom) : 0;
@@ -75,7 +75,7 @@ useWindowSizeFn((_: unknown): void => {
 }, { immediate: true });
 
 watch(
-  [() => settingStore.showFooter, () => settingStore.isUseTabsRouter, () => settingStore.showBreadcrumb],
+  [() => settingStore.state.showFooter, () => settingStore.state.isUseTabsRouter, () => settingStore.state.showBreadcrumb],
   debounce(calcHeight, 250),
 );
 </script>

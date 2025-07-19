@@ -1,6 +1,7 @@
 <template>
   <div :class="sideNavCls">
-    <t-menu :class="menuCls" :theme="theme" :value="active" :collapsed="collapsed" :default-expanded="defaultExpanded">
+    <t-menu :class="menuCls" :theme="theme" :value="active" :data="active" :collapsed="collapsed"
+      :default-expanded="defaultExpanded">
       <template #logo>
         <span v-if="showLogo" :class="`${prefix}-side-nav-logo-wrapper`" @click="goHome">
           <component :is="getLogo()" :class="`${prefix}-side-nav-logo-${collapsed ? 't' : 'tdesign'}-logo`" />
@@ -8,7 +9,8 @@
       </template>
       <menu-content :nav-data="menu" />
       <template #operations>
-        <div style="text-align: center" class="version-container"> {{ !collapsed ? 'IC Framework' : '' }} {{ pgk.version }} </div>
+        <div style="text-align: center" class="version-container"> {{ !collapsed ? 'IC Framework' : '' }} {{ pgk.version
+        }} </div>
       </template>
     </t-menu>
     <div :class="`${prefix}-side-nav-placeholder${collapsed ? '-hidden' : ''}`"></div>
@@ -19,7 +21,7 @@
 import union from 'lodash/union';
 import type { PropType } from 'vue';
 import { computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 
 import AssetLogoFull from '@/assets/assets-logo-full.svg?component';
 import AssetLogo from '@/assets/assets-t-logo.svg?component';
@@ -36,7 +38,7 @@ const MIN_POINT = 992 - 1;
 const props = defineProps({
   menu: {
     type: Array as PropType<MenuRoute[]>,
-    default: () => [],
+    default: (): MenuRoute[] => [],
   },
   showLogo: {
     type: Boolean as PropType<boolean>,
@@ -64,12 +66,13 @@ const props = defineProps({
   },
 });
 
-const collapsed = computed(() => useSettingStore().isSidebarCompact);
+const collapsed = computed(() => useSettingStore().state.isSidebarCompact);
 
-const active = computed(() => getActive());
+const route = useRoute();
+const active = computed(() => getActive(route));
 
 const defaultExpanded = computed(() => {
-  const path = getActive();
+  const path = getActive(route);
   const parentPath = path.substring(0, path.lastIndexOf('/'));
   const expanded = getRoutesExpanded();
   return union(expanded, parentPath === '' ? [] : [parentPath]);

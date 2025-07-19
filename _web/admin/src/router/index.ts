@@ -4,7 +4,7 @@ import { createRouter, createWebHashHistory, createWebHistory, RouteRecordRaw, u
 const env = import.meta.env.MODE || 'development';
 
 // 导入homepage相关固定路由
-const homepageModules = import.meta.glob('./modules/**/homepage.ts', {eager: true});
+const homepageModules = import.meta.glob('./modules/**/homepage.ts', { eager: true });
 
 // 导入modules非homepage相关固定路由
 const fixedModules = import.meta.glob('./modules/**/!(homepage).ts', { eager: true });
@@ -58,12 +58,11 @@ export const getRoutesExpanded = () => {
   return uniq(expandedRoutes);
 };
 
-export const getActive = (maxLevel = 3): string => {
-  const route = useRoute();
-  if (!route.path) {
+export const getActive = (route: any, maxLevel = 3): string => {
+  if (!route || !route.path) {
     return '';
   }
-  const path = <string>(route.meta.parent ? route.meta.parent : route.path);
+  const path = <string>(route.meta && route.meta.parent ? route.meta.parent : route.path);
   return path
     .split('/')
     .filter((_item: string, index: number) => index <= maxLevel && index > 0)

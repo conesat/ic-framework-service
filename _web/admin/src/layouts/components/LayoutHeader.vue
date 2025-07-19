@@ -1,7 +1,7 @@
 <template>
-  <l-header v-if="settingStore.showHeader" :show-logo="settingStore.showHeaderLogo" :theme="settingStore.displayMode"
-    :layout="settingStore.layout" :is-fixed="settingStore.isHeaderFixed" :menu="headerMenu as MenuRoute[]"
-    :is-compact="settingStore.isSidebarCompact" />
+  <l-header v-if="settingStore.state.showHeader" :show-logo="settingStore.showHeaderLogo"
+    :theme="settingStore.displayMode" :layout="settingStore.state.layout" :is-fixed="settingStore.state.isHeaderFixed"
+    :menu="headerMenu as MenuRoute[]" :is-compact="settingStore.state.isSidebarCompact" />
 </template>
 
 <script setup lang="ts">
@@ -16,8 +16,8 @@ const permissionStore = usePermissionStore();
 const settingStore = useSettingStore();
 const { routers: menuRouters } = storeToRefs(permissionStore);
 const headerMenu = computed(() => {
-  if (settingStore.layout === 'mix') {
-    if (settingStore.splitMenu) {
+  if (settingStore.state.layout === 'mix') {
+    if (settingStore.state.splitMenu) {
       return menuRouters.value.map((menu) => ({
         ...menu,
         children: [] as MenuRoute[],
