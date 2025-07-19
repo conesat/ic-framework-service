@@ -31,7 +31,7 @@ public class ApiPublicUser extends BasicApi {
      * @param username 用户名
      * @param passwd   密码
      * @param code     验证码
-     * @return
+     * @return 登录信息
      */
     @PostMapping("/login")
     public UserLoginInfo login(HttpServletRequest request,
@@ -47,7 +47,7 @@ public class ApiPublicUser extends BasicApi {
      * @param username 用户名
      * @param passwd   密码
      * @param code     验证码
-     * @return
+     * @return 登录信息
      */
     @PostMapping("/app-login")
     public UserLoginInfo appLogin(HttpServletRequest request,
@@ -61,7 +61,7 @@ public class ApiPublicUser extends BasicApi {
      * 获取加密密钥
      *
      * @param username 用户名
-     * @return
+     * @return 密钥
      */
     @GetMapping("/key")
     public Response<String> key(@RequestParam("username") String username) {

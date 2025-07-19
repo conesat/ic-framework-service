@@ -36,8 +36,6 @@ public class ApiSysRoleMenu extends BasicApi {
 
     /**
      * 查询全部
-     *
-     * @return
      */
     @PostMapping(value = "/all", name = "查询全部")
     public List<RoleMenuVO> all(HttpServletRequest request) {
@@ -49,7 +47,6 @@ public class ApiSysRoleMenu extends BasicApi {
      * 删除
      *
      * @param ids [Serializable[]] id列表
-     * @return
      */
     @DeleteMapping(name = "删除")
     public Response<Void> delete(@RequestParam("ids") List<Serializable> ids) {

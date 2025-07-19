@@ -13,12 +13,15 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="ic-framework-hotel" target="21" />
+      <module name="ic-framework-hotel (1)" target="21" />
+      <module name="ic-framework-hotel (2)" target="21" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="framework-service" options="-parameters" />
       <module name="ic-framework-hotel" options="-parameters" />
+      <module name="ic-framework-hotel (1)" options="-parameters" />
       <module name="ic-framework-project" options="-parameters" />
       <module name="ic-framework-system" options="-parameters" />
     </option>

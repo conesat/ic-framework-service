@@ -30,7 +30,7 @@ import java.util.List;
  * @since 2024/08/20
  */
 @RestController
-@RequestMapping(value = Api.API_SYS + "/menu", name ="菜单")
+@RequestMapping(value = Api.API_SYS + "/menu", name = "菜单")
 @RequireAuth(userType = UserType.SYSTEM_USER)
 @RequiredArgsConstructor
 public class ApiSysMenu extends BasicApi {
@@ -41,7 +41,6 @@ public class ApiSysMenu extends BasicApi {
      * 获取单个详情
      *
      * @param id [Serializable] *id
-     * @return
      */
     @GetMapping(value = "/item/{id}", name = "获取详情")
     public Response<MenuVO> detail(@PathVariable("id") Serializable id) {
@@ -51,7 +50,9 @@ public class ApiSysMenu extends BasicApi {
     /**
      * 查询全部
      *
-     * @return
+     * @param menuPlatformType [Integer[]] 平台类型
+     *                         1:pc端 2:app端 3:小程序端
+     * @param userType         [String] 用户类型
      */
     @PostMapping(value = "/all", name = "查询全部")
     public List<MenuWithChildrenVO> all(@RequestParam(value = "menuPlatformType", required = false) Integer[] menuPlatformType,
@@ -63,7 +64,6 @@ public class ApiSysMenu extends BasicApi {
      * 删除
      *
      * @param ids [Serializable[]] id列表
-     * @return
      */
     @DeleteMapping(name = "删除")
     public Response<Void> delete(@RequestParam("ids") List<Serializable> ids) {
@@ -75,7 +75,7 @@ public class ApiSysMenu extends BasicApi {
     /**
      * 编辑
      */
-    @PutMapping(name ="编辑")
+    @PutMapping(name = "编辑")
     public Response<Void> edit(@Validated MenuDTO dto) {
         menuService.edit(dto);
         menuService.removeAllCache();
@@ -85,7 +85,7 @@ public class ApiSysMenu extends BasicApi {
     /**
      * 新增
      */
-    @PostMapping(name ="新增")
+    @PostMapping(name = "新增")
     public Response<Void> create(@Validated MenuDTO dto) {
         menuService.edit(dto);
         menuService.removeAllCache();

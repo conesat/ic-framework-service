@@ -29,7 +29,7 @@ public class UserRoleService extends BasicService<UserRoleMapper, UserRole> {
     /**
      * 编辑或者保存
      *
-     * @param dto
+     * @param dto 用户角色输入参数
      */
     @Transactional
     public void edit(UserRoleDTO dto) {
@@ -45,8 +45,8 @@ public class UserRoleService extends BasicService<UserRoleMapper, UserRole> {
     /**
      * 获取用户是否具备超管角色
      *
-     * @param userId
-     * @return
+     * @param userId 用户id
+     * @return 是否超管
      */
     public boolean isSu(Long userId) {
         UserRoleDef userRoleDef = UserRoleDef.table();
@@ -60,9 +60,9 @@ public class UserRoleService extends BasicService<UserRoleMapper, UserRole> {
     /**
      * 编辑用户角色
      *
-     * @param userId
-     * @param roleIds
-     * @param update
+     * @param userId  用户id
+     * @param roleIds 角色id
+     * @param update  是否更新
      */
     @Transactional
     public void setUserRole(Long userId, Long[] roleIds, boolean update) {
