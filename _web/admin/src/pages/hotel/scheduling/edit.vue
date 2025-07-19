@@ -106,7 +106,7 @@ import {useRoute} from 'vue-router';
 import {closeOrBack} from "@/utils/url-utils";
 import ApiScheduling from '@/api/hotel/ApiScheduling';
 import router from '@/router';
-import UserSelect from "@/pages/user/user/select.vue";
+import UserSelect from "@/pages/sys/user/select.vue";
 import TimeScopeSelect from "@/pages/hotel/time-scope/select.vue";
 import dayjs from "dayjs";
 

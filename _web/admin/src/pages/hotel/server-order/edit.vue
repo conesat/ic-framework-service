@@ -140,7 +140,7 @@ import { useRoute } from 'vue-router';
 import { closeOrBack } from '@/utils/url-utils';
 import ApiServerOrder from '@/api/hotel/ApiServerOrder';
 import router from '@/router';
-import UserSelect from '@/pages/user/user/select.vue';
+import UserSelect from '@/pages/sys/user/select.vue';
 
 // 自定义校验 start -------------------
 // 自定义校验 end -------------------

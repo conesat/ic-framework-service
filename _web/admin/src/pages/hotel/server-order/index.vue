@@ -82,7 +82,7 @@ import {useRouter} from 'vue-router';
 import ApiServerOrder from '@/api/hotel/ApiServerOrder';
 import {prefix} from '@/config/global';
 import {useSettingStore} from '@/store';
-import UserSelect from "@/pages/user/user/select.vue";
+import UserSelect from "@/pages/sys/user/select.vue";
 import {queryDef, paginationDef} from "@/api/common/query";
 
 // 定义变量 start -------------------

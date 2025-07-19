@@ -131,7 +131,7 @@ export default {
 </script>
 
 <script setup lang="ts">
-import userSelect from '@/pages/user/user/select.vue';
+import userSelect from '@/pages/sys/user/select.vue';
 import mapSelect from '@/components/map/select.vue';
 import type {SubmitContext} from 'tdesign-vue-next';
 import {FormRule, MessagePlugin} from 'tdesign-vue-next';

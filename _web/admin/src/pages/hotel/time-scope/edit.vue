@@ -85,7 +85,7 @@ import {useRoute} from 'vue-router';
 
 import router from '@/router';
 import {closeOrBack} from "@/utils/url-utils";
-import DepSelect from "@/pages/org/dept/select.vue";
+import DepSelect from "@/pages/sys/dept/select.vue";
 import ApiTimeScope from "@/api/hotel/ApiTimeScope";
 
 // 自定义校验 start -------------------

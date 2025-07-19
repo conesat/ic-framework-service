@@ -314,7 +314,7 @@ import ApiRoomConsumeOrder from '@/api/hotel/ApiRoomConsumeOrder';
 import ApiRoom from '@/api/hotel/ApiRoom';
 import RoomConsumeOrderEdit from '@/pages/hotel/room-consume-order/edit-dialog.vue';
 import {AutoCompleteProps, CustomValidator, FormRule} from "tdesign-vue-next";
-import UserSelect from "@/pages/user/user/select.vue";
+import UserSelect from "@/pages/sys/user/select.vue";
 import ApiServerOrder from "@/api/hotel/ApiServerOrder";
 import {ImageErrorIcon} from "tdesign-icons-vue-next";
 import {queryDef, paginationDef} from "@/api/common/query";
