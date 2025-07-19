@@ -42,8 +42,6 @@ public class ApiSysMineUser extends BasicApi {
 
     /**
      * 获取个人详情
-     *
-     * @return
      */
     @GetMapping(value = "/mine", name = "获取个人详情")
     public Response<UserDetailVO> mine() {
@@ -55,8 +53,6 @@ public class ApiSysMineUser extends BasicApi {
 
     /**
      * 编辑个人详情
-     *
-     * @return
      */
     @PutMapping(value = "/mine", name = "编辑个人详情")
     public Response<Void> editMine(@Validated UserMineDTO dto) {
@@ -66,8 +62,6 @@ public class ApiSysMineUser extends BasicApi {
 
     /**
      * 编辑个人详情
-     *
-     * @return
      */
     @PutMapping(value = "/update-passwd", name = "编辑个人详情")
     public Response<Void> updatePasswd(@RequestParam("passwd") String passwd, @RequestParam("passwdOld") String passwdOld) {
@@ -96,8 +90,6 @@ public class ApiSysMineUser extends BasicApi {
     /**
      * 刷新token
      * 无需鉴权
-     *
-     * @return
      */
     @RequireAuth(onlyToken = true)
     @PostMapping("/refresh-token")
@@ -108,8 +100,6 @@ public class ApiSysMineUser extends BasicApi {
     /**
      * 获取用户菜单
      * 无需鉴权
-     *
-     * @return
      */
     @RequireAuth(onlyToken = true)
     @GetMapping("/menus")

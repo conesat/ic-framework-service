@@ -19,7 +19,7 @@ public class InitMd5Utils {
         String root = Objects.requireNonNull(InitMd5Utils.class.getClassLoader().getResource("")).getPath();
         String relativePath = root.substring(System.getProperty("user.dir").length() + 1);
         String[] pathComponents = relativePath.replace("\\", "/").split("/");
-        filePath = Paths.get(System.getProperty("user.dir"), pathComponents[0], "md5") + File.separator;
+        filePath = Paths.get(System.getProperty("user.dir"), "md5", pathComponents[0]) + File.separator;
 
         File file = new File(filePath);
         if (!file.exists()) {
@@ -72,7 +72,7 @@ public class InitMd5Utils {
     /**
      * 保存md5 string
      *
-     * @param key  md5 key
+     * @param key md5 key
      * @param md5 md5 string
      */
     public static void saveMd5String(String key, String md5) {

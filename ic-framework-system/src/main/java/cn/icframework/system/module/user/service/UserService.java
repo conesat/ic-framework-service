@@ -48,14 +48,28 @@ public class UserService extends BasicService<UserMapper, User> {
     private final UserPosService userPosService;
     private final RoleMenuService roleMenuService;
     private final SysFileService sysFileService;
+    private IUserInfoProvider userInfoProvider;
 
     @Autowired(required = false)
-    private IUserInfoProvider userInfoProvider;
+    public void setUserInfoProvider(IUserInfoProvider userInfoProvider) {
+        this.userInfoProvider = userInfoProvider;
+    }
+
+    /**
+     * 初始化超管
+     */
+    @Transactional
+    public void initSu(UserDTO dto) {
+        User entity = new User();
+        BeanUtils.copyExcludeProps(dto, entity, UserDTO::getPasswd, UserDTO::getStatus, UserDTO::getId);
+        entity.setSu(true);
+        entity.setPasswd(registerLoginHelper.decryptPassWd(UserType.SYSTEM_USER, dto.getUsername(), dto.getPasswd()));
+        insert(entity);
+        userRoleService.setUserRole(entity.getId(), dto.getRoleIds(), false);
+    }
 
     /**
      * 编辑账号
-     *
-     * @param dto
      */
     @Transactional
     public void edit(UserDTO dto) {

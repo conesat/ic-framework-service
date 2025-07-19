@@ -25,6 +25,7 @@ import cn.icframework.system.module.setting.pojo.dto.SettingDTO;
 import cn.icframework.system.module.setting.pojo.vo.ActivationInfoVO;
 import cn.icframework.system.module.setting.pojo.vo.SettingVO;
 import cn.icframework.system.module.setting.pojo.vo.SettingVOConverter;
+import cn.icframework.system.module.userrole.service.UserRoleService;
 import com.alibaba.fastjson.JSONObject;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,8 +58,7 @@ public class SettingService extends BasicService<SettingMapper, Setting> {
     /**
      * 系统激活
      *
-     * @param activationCode
-     * @return
+     * @param activationCode 激活码
      */
     public ActivationInfoVO activitySystem(String activationCode) {
         try {
@@ -81,8 +81,7 @@ public class SettingService extends BasicService<SettingMapper, Setting> {
     /**
      * 系统激活
      *
-     * @param activationCode
-     * @return
+     * @param activationCode 激活码
      */
     public ActivationInfoVO decryptCode(String activationCode) {
         try {
@@ -98,11 +97,10 @@ public class SettingService extends BasicService<SettingMapper, Setting> {
     /**
      * 系统初始化
      *
-     * @param initDTO
-     * @return
+     * @param code 激活码
      */
     @Transactional
-    public ActivationInfoVO updateActivationCode(String code) {
+    public void updateActivationCode(String code) {
         //系统激活
         ActivationInfoVO activationInfoVO = activitySystem(code);
         Setting setting = selectOne();
@@ -118,14 +116,12 @@ public class SettingService extends BasicService<SettingMapper, Setting> {
             setting.setActivationCode(code);
             updateById(setting);
         }
-        return activationInfoVO;
     }
 
     /**
      * 系统初始化
      *
-     * @param initDTO
-     * @return
+     * @param initDTO 初始化参数
      */
     @Transactional
     public ActivationInfoVO init(InitDTO initDTO) {
@@ -165,7 +161,7 @@ public class SettingService extends BasicService<SettingMapper, Setting> {
             userDTO.setPasswd(initDTO.getPasswd());
             userDTO.setStatus(Status.ENABLE);
             userDTO.setRoleIds(new Long[]{adminRole.getId()});
-            userService.edit(userDTO);
+            userService.initSu(userDTO);
         }
         return activationInfoVO;
     }

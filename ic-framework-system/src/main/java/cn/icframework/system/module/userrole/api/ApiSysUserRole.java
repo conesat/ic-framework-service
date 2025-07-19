@@ -47,7 +47,6 @@ public class ApiSysUserRole extends BasicApi {
      * 获取单个详情
      *
      * @param id [Serializable] *id
-     * @return
      */
     @GetMapping(value = "/item/{id}", name = "获取详情")
     public Response<UserRoleVO> detail(@PathVariable("id") Serializable id) {
@@ -57,9 +56,7 @@ public class ApiSysUserRole extends BasicApi {
     /**
      * 获取列表
      *
-     * @param pageIndex  [int] 当前页码
-     * @param pageSize [int] 分页大小
-     * @return
+     * @param page  [PageRequest] 分页
      */
     @PostMapping(value = "/page", name = "分页查询")
     public PageResponse<UserRoleVO> page(HttpServletRequest request, PageRequest page) {
@@ -70,7 +67,6 @@ public class ApiSysUserRole extends BasicApi {
     /**
      * 查询全部
      *
-     * @return
      */
     @PostMapping(value = "/all", name = "查询全部")
     public Response<List<UserRoleVO>> all(HttpServletRequest request) {
@@ -82,7 +78,6 @@ public class ApiSysUserRole extends BasicApi {
      * 删除
      *
      * @param ids [Serializable[]] id列表
-     * @return
      */
     @DeleteMapping(name = "删除")
     public Response<Void> delete(@RequestParam("ids") List<Serializable> ids) {
