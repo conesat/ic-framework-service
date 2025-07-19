@@ -88,12 +88,14 @@ public class RpInit {
                 for (int i1 = 0; i1 < permissions.size(); i1++) {
                     JSONObject permissionData = permissions.getJSONObject(i1);
                     String groupPath = permissionData.getString("groupPath");
+                    Boolean allGroup = permissionData.getBoolean("all");
                     JSONArray paths = permissionData.getJSONArray("paths");
-
                     SqlWrapper sqlWrapper = SELECT(permissionDef.id)
                             .FROM(permissionDef, permissionGroupDef)
-                            .WHERE(permissionDef.groupId.eq(permissionGroupDef.id).path.in(paths), permissionGroupDef.path.eq(groupPath));
-
+                            .WHERE(permissionDef.groupId.eq(permissionGroupDef.id), permissionGroupDef.path.eq(groupPath));
+                    if (allGroup == null || allGroup) {
+                        sqlWrapper.WHERE(permissionDef.path.in(paths));
+                    }
                     List<Long> permissionIds = permissionService.select(sqlWrapper, Long.class);
                     insertRP(permissionIds, role);
                 }

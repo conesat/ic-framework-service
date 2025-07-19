@@ -1,13 +1,16 @@
 [
   {
-    "sign": "manager",
+    "sign": "R1",
     "permissions": [
       {
-        "groupPath": ":manage:dept",
+        "groupPath": ":sys:dept",
         "paths": [
-          ":delete",
           ":all"
         ]
+      },
+      {
+        "groupPath": ":sys:notice",
+        "all": true
       }
     ]
   }
