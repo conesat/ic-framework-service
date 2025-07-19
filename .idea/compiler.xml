@@ -9,7 +9,6 @@
         <outputRelativeToContentRoot value="true" />
         <module name="ic-framework-hotel" />
         <module name="ic-framework-system" />
-        <module name="ic-framework-project" />
       </profile>
     </annotationProcessing>
   </component>
