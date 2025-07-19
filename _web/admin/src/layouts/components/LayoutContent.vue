@@ -1,6 +1,6 @@
 <template>
   <t-layout :class="`${prefix}-layout`">
-    <t-tabs v-if="settingStore.isUseTabsRouter" drag-sort theme="card" :class="`${prefix}-layout-tabs-nav`"
+    <t-tabs v-if="settingStore.state.isUseTabsRouter" drag-sort theme="card" :class="`${prefix}-layout-tabs-nav`"
       :value="$route.path" :style="{ position: 'sticky', top: 0, width: '100%' }" @change="handleChangeCurrentTab"
       @remove="handleRemove" @drag-sort="handleDragend">
       <t-tab-panel v-for="(routeItem, index) in tabRouters" :key="`${routeItem.path}_${index}`" :value="routeItem.path"
@@ -41,10 +41,10 @@
       </t-tab-panel>
     </t-tabs>
     <t-content :class="`${prefix}-content-layout`">
-      <l-breadcrumb v-if="settingStore.showBreadcrumb" />
+      <l-breadcrumb v-if="settingStore.state.showBreadcrumb" />
       <l-content />
     </t-content>
-    <t-footer v-if="settingStore.showFooter" :class="`${prefix}-footer-layout`">
+    <t-footer v-if="settingStore.state.showFooter" :class="`${prefix}-footer-layout`">
       <l-footer />
     </t-footer>
   </t-layout>

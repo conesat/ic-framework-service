@@ -19,17 +19,19 @@
         <template #icon>
           <component :is="menuIcon(item)" class="t-icon"></component>
         </template>
-        <menu-content v-if="item.children" :nav-data="item.children"/>
+        <menu-content v-if="item.children" :nav-data="item.children" />
       </t-submenu>
     </template>
   </div>
 </template>
 <script setup lang="tsx">
-import type {PropType} from 'vue';
-import {computed} from 'vue';
+import type { PropType } from 'vue';
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
+import { h } from 'vue';
 
-import {getActive} from '@/router';
-import type {MenuRoute} from '@/types/interface';
+import { getActive } from '@/router';
+import type { MenuRoute } from '@/types/interface';
 
 type ListItemType = MenuRoute & { icon?: string, svgIcon?: string };
 
@@ -37,14 +39,15 @@ type ListItemType = MenuRoute & { icon?: string, svgIcon?: string };
 const props = defineProps({
   navData: {
     type: Array as PropType<MenuRoute[]>,
-    default: () => [],
+    default: (): MenuRoute[] => [],
   },
 });
 
-const active = computed(() => getActive());
+const route = useRoute();
+const active = computed(() => getActive(route));
 
 const list = computed(() => {
-  const {navData} = props;
+  const { navData } = props;
   return getMenuList(navData);
 });
 const menuIcon = (item: ListItemType) => {
@@ -52,7 +55,7 @@ const menuIcon = (item: ListItemType) => {
     let svg = svgIcons.get(item.svgIcon);
     return svg.default;
   }
-  if (typeof item.icon === 'string') return <t-icon name={item.icon}/>;
+  if (typeof item.icon === 'string') return h('t-icon', { name: item.icon });
   return item.icon;
 };
 
@@ -81,7 +84,7 @@ const getMenuList = (list: MenuRoute[], basePath?: string): ListItemType[] => {
 };
 
 const getHref = (item: MenuRoute) => {
-  const {frameSrc, frameBlank} = item.meta;
+  const { frameSrc, frameBlank } = item.meta;
   if (frameSrc && frameBlank) {
     return frameSrc.match(/(http|https):\/\/([\w.]+\/?)\S*/);
   }
@@ -107,7 +110,7 @@ const openHref = (url: string) => {
 };
 const getSvg: any = () => {
   let m = new Map()
-  const modules = import.meta.glob('@/assets/svg-icons/*.svg', {eager: true});
+  const modules = import.meta.glob('@/assets/svg-icons/*.svg', { eager: true });
   Object.keys(modules).forEach(key => {
     m.set(key.replace('/src/assets/svg-icons/', ''), modules[key])
   });

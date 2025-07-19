@@ -1,6 +1,6 @@
 <template>
   <div>
-    <template v-if="setting.layout.value === 'side'">
+    <template v-if="settingStore.state.layout === 'side'">
       <t-layout key="side" :class="mainLayoutCls">
         <t-aside>
           <layout-side-nav />

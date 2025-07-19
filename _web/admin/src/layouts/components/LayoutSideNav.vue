@@ -1,13 +1,7 @@
 <template>
-  <l-side-nav
-    v-if="settingStore.showSidebar"
-    :show-logo="settingStore.showSidebarLogo"
-    :layout="settingStore.layout"
-    :is-fixed="settingStore.isSidebarFixed"
-    :menu="sideMenu"
-    :theme="settingStore.displayMode"
-    :is-compact="settingStore.isSidebarCompact"
-  />
+  <l-side-nav v-if="settingStore.showSidebar" :show-logo="settingStore.showSidebarLogo"
+    :layout="settingStore.state.layout" :is-fixed="settingStore.state.isSidebarFixed" :menu="sideMenu"
+    :theme="settingStore.displayMode" :is-compact="settingStore.state.isSidebarCompact" />
 </template>
 
 <script setup lang="ts">
@@ -26,7 +20,7 @@ const settingStore = useSettingStore();
 const { routers: menuRouters } = storeToRefs(permissionStore);
 
 const sideMenu = computed(() => {
-  const { layout, splitMenu } = settingStore;
+  const { layout, splitMenu } = settingStore.state;
   let newMenuRouters = menuRouters.value as Array<MenuRoute>;
   if (layout === 'mix' && splitMenu) {
     newMenuRouters.forEach((menu) => {

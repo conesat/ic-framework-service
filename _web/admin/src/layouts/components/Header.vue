@@ -59,7 +59,7 @@
 <script setup lang="ts">
 import type { PropType } from 'vue';
 import { computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 
 import LogoFull from '@/assets/assets-logo-full.svg?component';
 import { prefix } from '@/config/global';
@@ -103,6 +103,7 @@ const props = defineProps({
 });
 
 const router = useRouter();
+const route = useRoute();
 const settingStore = useSettingStore();
 const user = useUserStore();
 
@@ -112,7 +113,7 @@ const toggleSettingPanel = () => {
   });
 };
 
-const active = computed(() => getActive());
+const active = computed(() => getActive(route));
 
 const layoutCls = computed(() => [`${prefix}-header-layout`]);
 
@@ -130,7 +131,7 @@ const menuCls = computed(() => {
 const menuTheme = computed(() => props.theme as 'light' | 'dark');
 const changeCollapsed = () => {
   settingStore.updateConfig({
-    isSidebarCompact: !settingStore.isSidebarCompact,
+    isSidebarCompact: !settingStore.state.isSidebarCompact,
   });
 };
 

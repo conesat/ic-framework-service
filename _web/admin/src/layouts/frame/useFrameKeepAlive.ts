@@ -8,7 +8,7 @@ import type { MenuRoute } from '@/types/interface';
 export function useFrameKeepAlive() {
   const router = useRouter();
   const { currentRoute } = router;
-  const { isUseTabsRouter } = useSettingStore();
+  const { isUseTabsRouter } = useSettingStore().state;
   const tabStore = useTabsRouterStore();
   const getFramePages = computed(() => {
     const ret = getAllFramePages(toRaw(router.getRoutes()) as unknown as MenuRoute[]) || [];
