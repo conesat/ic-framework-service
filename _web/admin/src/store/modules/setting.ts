@@ -96,7 +96,5 @@ export const useSettingStore = defineStore('setting', () => {
     updateConfig,
   };
 }, {
-  persist: {
-    pick: [...keys(STYLE_CONFIG), 'colorList', 'chartColors'],
-  },
+  persist: true,
 });

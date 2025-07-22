@@ -17,7 +17,7 @@
             <t-input v-model="queryForm.searchKey" placeholder="请输入你需要搜索的内容" clearable
                      @enter="getData(true)">
               <template #suffix-icon>
-                <search-icon size="16px" @click.stop="getData(true)"/>
+                <search-icon size="16px" @click="getData(true)"/>
               </template>
             </t-input>
             <t-checkbox v-if="data.length > 0" :checked="checkAll" :indeterminate="indeterminate"
