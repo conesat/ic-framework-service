@@ -30,6 +30,25 @@
       </t-input>
     </t-form-item>
 
+    <t-form-item name="verifyCode" label="验证码" v-if="captcha">
+      <t-input
+        v-model="formData.verifyCode"
+        clearable
+        maxlength="4"
+        placeholder="请输入验证码"
+      >
+        <template #prefix-icon>
+          <t-icon name="calculation-1"/>
+        </template>
+      </t-input>
+      <t-image
+        style="height: 30px;width: 100px;margin-left: 10px;border-radius: 4px;opacity: 0.8"
+        v-if="captcha"
+        :src="'data:image/png;base64,' + captcha"
+        @click="getCaptcha"
+      />
+    </t-form-item>
+
     <div class="check-container remember-pwd">
       <t-checkbox v-model="saveAccount">记住账号</t-checkbox>
       <span class="tip">忘记账号？</span>
@@ -47,11 +66,12 @@ import CryptoJS from 'crypto-js';
 import md5 from 'js-md5';
 import type {FormInstanceFunctions, FormRule, SubmitContext} from 'tdesign-vue-next';
 import {MessagePlugin} from 'tdesign-vue-next';
-import {ref} from 'vue';
+import {onMounted, ref} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
 
 import ManagerService from '@/api/sys/ApiUserMine';
 import {useUserStore} from '@/store';
+import ApiUser from "@/api/sys/ApiUser";
 
 const userStore = useUserStore();
 
@@ -60,6 +80,7 @@ const INITIAL_DATA = {
   username: '',
   passwd: '',
   verifyCode: '',
+  captchaCode: '',
   checked: false,
 };
 
@@ -73,6 +94,7 @@ const FORM_RULES: Record<string, FormRule[]> = {
 const form = ref<FormInstanceFunctions>();
 const formData = ref({...INITIAL_DATA});
 const onLogin = ref(false);
+const captcha = ref("");
 const router = useRouter();
 const route = useRoute();
 
@@ -84,7 +106,6 @@ const changePassword = (value: any, e: any) => {
 const onSubmit = async (ctx: SubmitContext) => {
   if (ctx.validateResult === true) {
     onLogin.value = true;
-
     ManagerService.key(formData.value.username, {
       success: async (res: any) => {
         try {
@@ -122,6 +143,7 @@ const onSubmit = async (ctx: SubmitContext) => {
           }
         } catch (e) {
           await MessagePlugin.error(e.msg);
+          getCaptcha();
         } finally {
           onLogin.value = false;
         }
@@ -182,6 +204,16 @@ function decrypt(account: string, passwd: string) {
   return decrypted.toString(CryptoJS.enc.Utf8); // 转换为UTF-8字符串
 }
 
+const getCaptcha = () => {
+  ApiUser.captcha().then((res: any) => {
+    captcha.value = res.captcha;
+    formData.value.captchaCode = res.code;
+  });
+};
+
+onMounted(() => {
+  getCaptcha();
+})
 </script>
 
 <style lang="less" scoped>

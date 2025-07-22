@@ -39,12 +39,6 @@ public class UserDTO {
     private Status status;
 
     /**
-     * 最后一次登陆失败时间
-     */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime lastLoginFailTime;
-
-    /**
      * 登录密码
      */
     private String passwd;

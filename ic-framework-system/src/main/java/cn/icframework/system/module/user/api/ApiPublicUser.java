@@ -5,6 +5,7 @@ import cn.icframework.core.basic.api.BasicApi;
 import cn.icframework.core.common.bean.Response;
 import cn.icframework.system.common.RegisterLoginHelper;
 import cn.icframework.system.consts.UserType;
+import cn.icframework.system.module.iplock.service.IpLockService;
 import cn.icframework.system.module.onlineuser.service.OnlineUserService;
 import cn.icframework.system.module.user.pojo.vo.UserLoginInfo;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,23 +23,26 @@ import java.time.Duration;
 @RequestMapping(value = Api.API_PUBLIC + "/user", name = "用户")
 @RequiredArgsConstructor
 public class ApiPublicUser extends BasicApi {
+    private final IpLockService ipLockService;
     private final RegisterLoginHelper registerLoginHelper;
     private final OnlineUserService onlineUserService;
 
     /**
      * 管理员登录
      *
-     * @param username 用户名
-     * @param passwd   密码
-     * @param code     验证码
+     * @param username    用户名
+     * @param passwd      密码
+     * @param verifyCode  验证码
+     * @param captchaCode 验证码code
      * @return 登录信息
      */
     @PostMapping("/login")
     public UserLoginInfo login(HttpServletRequest request,
                                @RequestParam("username") String username,
                                @RequestParam("passwd") String passwd,
-                               String code) {
-        return onlineUserService.login(request, username, passwd, code, null);
+                               String verifyCode,
+                               String captchaCode) {
+        return onlineUserService.login(request, username, passwd, verifyCode, captchaCode, null);
     }
 
     /**
@@ -46,15 +50,13 @@ public class ApiPublicUser extends BasicApi {
      *
      * @param username 用户名
      * @param passwd   密码
-     * @param code     验证码
      * @return 登录信息
      */
     @PostMapping("/app-login")
     public UserLoginInfo appLogin(HttpServletRequest request,
                                   @RequestParam("username") String username,
-                                  @RequestParam("passwd") String passwd,
-                                  String code) {
-        return onlineUserService.login(request, username, passwd, code, (int) Duration.ofDays(7).toSeconds());
+                                  @RequestParam("passwd") String passwd) {
+        return onlineUserService.login(request, username, passwd, null, null, (int) Duration.ofDays(7).toSeconds(), true);
     }
 
     /**
@@ -71,11 +73,13 @@ public class ApiPublicUser extends BasicApi {
     /**
      * 获取图片验证码
      *
-     * @param username 用户名
      * @return 图片base 64
      */
     @GetMapping("/captcha")
-    public Response<String> captcha(@RequestParam("username") String username) {
-        return Response.success(registerLoginHelper.buildCaptcha(UserType.SYSTEM_USER, username));
+    public Response<RegisterLoginHelper.CaptchaInfo> captcha(HttpServletRequest request) {
+        if (ipLockService.checkNeedCaptcha(request)) {
+            return Response.success(registerLoginHelper.buildCaptcha(UserType.SYSTEM_USER));
+        }
+        return Response.success();
     }
 }

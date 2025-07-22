@@ -3,22 +3,33 @@
     <t-card class="list-card-container" :bordered="false">
       <t-row justify="space-between">
         <div class="left-operation-container">
-          <t-button @click="handleClickEdit()">新建</t-button>
           <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length" @click="handleClickDelete()"
           >删除
-          </t-button>
+          </t-button
+          >
           <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
         </div>
         <div class="search-input">
-          <t-input v-model="queryForm.searchKey" placeholder="请输入你需要搜索的内容" clearable>
+          <t-input v-model="queryForm.searchKey" placeholder="请输入你需要搜索的内容" clearable @enter="getData(true)">
             <template #suffix-icon>
-              <search-icon size="16px"/>
+              <search-icon size="16px" @click.stop="getData(true)"/>
             </template>
           </t-input>
+          <div class="right-buttons">
+            <t-button @click="getData(true)" variant="text" shape="square">
+              <RefreshIcon/>
+            </t-button>
+            <t-button @click="columnControllerVisible = true" variant="text" shape="square">
+              <TableIcon/>
+            </t-button>
+          </div>
         </div>
       </t-row>
       <t-table
         :data="data"
+        v-model:displayColumns="displayColumns"
+        v-model:columnControllerVisible="columnControllerVisible"
+        :column-controller="columnControllerConfig"
         :columns="columns"
         row-key="id"
         vertical-align="top"
@@ -27,57 +38,53 @@
         :selected-row-keys="selectedRowKeys"
         :loading="dataLoading"
         :header-affixed-top="headerAffixedTop"
+        :sort="sort"
+        :multipleSort="true"
+        @sort-change="sortChange"
         @change="reHandleChange"
         @select-change="reHandleSelectChange"
       >
-        <template #status="{ row }">
-          <t-tag v-if="row.status" :theme="row.status.code === 1 ? 'success':'warning'" variant="light">
-            {{ row.status.text }}
-          </t-tag>
-        </template>
-        <template #su="{ row }">
-          <t-tag v-if="row.su" theme="success" variant="light">是</t-tag>
-          <t-tag v-if="!row.su" theme="warning" variant="light">否</t-tag>
-        </template>
-
         <template #op="{ row }">
           <t-space>
-            <t-link hover="color" theme="primary" @click="handleClickEdit(row.id)">详情</t-link>
             <t-link hover="color" theme="warning" @click="handleClickDelete(row)">删除</t-link>
           </t-space>
         </template>
       </t-table>
     </t-card>
 
-    <t-dialog
-      v-model:visible="confirmDeleteVisible"
-      header="确认"
-      :body="confirmDeleteBody"
-      @confirm="onConfirmDelete"
-    />
+    <t-dialog v-model:visible="confirmDeleteVisible" header="确认" :body="confirmDeleteBody"
+              @confirm="onConfirmDelete"/>
   </div>
 </template>
 
 <script lang="ts">
 export default {
-  name: 'ManagerIndex',
+  name: 'ipLockIndex',
 };
 </script>
 
 <script setup lang="ts">
-import {SearchIcon} from 'tdesign-icons-vue-next';
-import {MessagePlugin, PrimaryTableCol} from 'tdesign-vue-next';
+import {SearchIcon, TableIcon, RefreshIcon} from 'tdesign-icons-vue-next';
+import {MessagePlugin, PrimaryTableCol, TableProps} from 'tdesign-vue-next';
 import {computed, onMounted, ref} from 'vue';
 import {useRouter} from 'vue-router';
 
-import apiUser from '@/api/sys/ApiUser';
+import ApiIpLock from '@/api/sys/ApiIpLock';
 import {prefix} from '@/config/global';
 import {useSettingStore} from '@/store';
 import {queryDef, paginationDef} from "@/api/common/query";
 
 // 定义变量 start -------------------
+// 排序
+const sort = ref([{
+  // 按照 name 字段进行排序
+  sortBy: '',
+  // 是否按照降序进行排序
+  descending: false,
+}]);
 // 读取设置内容
 const store = useSettingStore();
+const columnControllerVisible = ref(false);
 // 列表数据
 const data = ref([]);
 // 分页
@@ -96,46 +103,35 @@ const selectedRowKeys = ref([]);
 const selectedRowData = ref([]);
 // 路由
 const router = useRouter();
+// 列配置
+const displayColumns = ref<TableProps['displayColumns']>(
+  ['ip', 'loginFailCount', 'firstFailTime', 'lockEndTime']
+);
 // 表头
 const columns: PrimaryTableCol[] = [
-  {colKey: 'row-select', type: 'multiple', width: 64, fixed: 'left'},
-  {
-    title: '姓名',
-    colKey: 'name',
-    fixed: 'left',
-  },
-  {
-    title: '账号',
-    colKey: 'username',
-  },
-  {
-    title: '超管',
-    colKey: 'su',
-    width: 80,
-  },
-  {
-    title: '状态',
-    width: 80,
-    colKey: 'status',
-  },
-  {
-    title: '创建时间',
-    colKey: 'createTime',
-    width: 200,
-  },
-  {
-    title: '更新时间',
-    colKey: 'updateTime',
-    width: 200,
-  },
+  {colKey: 'row-select', type: 'multiple', width: 64, fixed: 'left', title: "选择"},
+  {title: 'ip', colKey: 'ip'},
+  {title: '登陆失败次数', colKey: 'loginFailCount'},
+  {title: '首次失败时间', colKey: 'firstFailTime'},
+  {title: '锁定结束时间', colKey: 'lockEndTime'},
   {
     align: 'left',
     fixed: 'right',
-    width: 120,
+    width: 60,
     colKey: 'op',
     title: '操作',
   },
 ];
+const columnControllerConfig = computed<TableProps['columnController']>(() => ({
+  // 隐藏组件内部的 列配置按钮
+  hideTriggerButton: true,
+  // 允许哪些列参与显示-隐藏控制
+  fields: ['loginFailCount', 'firstFailTime', 'lockEndTime'],
+  // 透传弹框组件全部属性
+  dialogProps: {
+    preventScrollThrough: true,
+  },
+}));
 // 定义变量 end -------------------
 
 // 定义方法 start -------------------
@@ -145,7 +141,7 @@ const getData = async (reload ?: boolean) => {
     pagination.value.current = 1;
   }
   dataLoading.value = true;
-  apiUser.page({
+  ApiIpLock.page({
     data: queryForm.value,
     pagination: pagination.value,
     success: (res: any) => {
@@ -168,16 +164,16 @@ const confirmDeleteBody = () => {
       names.push(selectedRowData.value[i].name);
     }
     return `确认删除 ${
-      names.join(',') +
-      (selectedRowData.value.length > names.length ? ` ...等 ${selectedRowData.value.length} 个数据吗？` : ' 吗？')
+      names.join(',') + (selectedRowData.value.length > names.length ? ` ...等 ${selectedRowData.value.length} 个数据吗？` : ' 吗？')
     }，删除后无法恢复`;
   }
   return '';
 };
 // 确认删除事件
 const onConfirmDelete = () => {
+  confirmDeleteVisible.value = false;
   // 真实业务请发起请求
-  apiUser.delete({
+  ApiIpLock.delete({
     ids: selectedRowKeys.value,
     success: (res: any) => {
       MessagePlugin.success('删除成功');
@@ -191,18 +187,21 @@ const reHandleSelectChange = (val: (string | number)[], e: any) => {
   selectedRowKeys.value = val;
   selectedRowData.value = e.selectedRowData;
 };
+// 排序变化
+const sortChange = (sortInfo: any) => {
+  // 对于受控属性而言，这里的赋值很重要，不可缺少
+  sort.value = sortInfo;
+  queryForm.value.orders = JSON.stringify(sort.value)
+};
 // 表单参数变化 包括过滤、分页
 const reHandleChange = (changeParams: any, triggerAndData: unknown) => {
   pagination.value = changeParams.pagination;
   getData();
 };
-// 编辑/详情按钮事件
-const handleClickEdit = (id?: any) => {
-  router.push(`/user/user-edit?id=${id || ''}`);
-};
 // 单个删除按钮事件
 const handleClickDelete = (row?: any) => {
   if (row) {
+    selectedRowKeys.value = [row.id];
     selectedRowData.value = [row];
   }
   if (selectedRowData.value.length > 0) {

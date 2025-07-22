@@ -6,7 +6,9 @@ import cn.icframework.core.utils.RsaUtils;
 import cn.icframework.system.consts.CacheKeys;
 import cn.icframework.system.utils.CaptchaUtils;
 import com.google.code.kaptcha.Producer;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.FastByteArrayOutputStream;
@@ -16,9 +18,9 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.Map;
+import java.util.UUID;
 
 /**
- *
  * @author hzl
  * @since 2024/8/21
  */
@@ -85,22 +87,24 @@ public class RegisterLoginHelper {
     /**
      * 获取图片验证码
      *
-     * @param userType
-     * @param username
-     * @return
+     * @param userType 用户类型
+     * @return CaptchaInfo
      */
-    public String buildCaptcha(String userType, String username) {
+    public CaptchaInfo buildCaptcha(String userType) {
         Assert.isNotEmpty(userType, "userType不能为空");
-        Assert.isNotEmpty(username, "username不能为空");
         // 生成验证码
         CaptchaUtils.Info captchaInfo = CaptchaUtils.gen();
         //截取结果
+        String uuid = UUID.randomUUID().toString();
         BufferedImage image = captchaProducer.createImage(captchaInfo.text());
-        CacheUtils.set(CacheKeys.appendKey(CacheKeys.LOGIN_CODE_PREFIX, userType, username), captchaInfo.result(), 5L);
+        CacheUtils.set(CacheKeys.appendKey(CacheKeys.LOGIN_CODE_PREFIX, userType, uuid), captchaInfo.result(), 5L);
         // 转换流信息写出
         try (FastByteArrayOutputStream outputStream = new FastByteArrayOutputStream();) {
             ImageIO.write(image, "jpg", outputStream);
-            return Base64.getEncoder().encodeToString(outputStream.toByteArray());
+            CaptchaInfo info = new CaptchaInfo();
+            info.setCaptcha(Base64.getEncoder().encodeToString(outputStream.toByteArray()));
+            info.setCode(uuid);
+            return info;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -110,16 +114,23 @@ public class RegisterLoginHelper {
      * 获取验证码
      *
      * @param userType
-     * @param username
+     * @param code
      * @return
      */
-    public String getCaptcha(String userType, String username) {
+    public String getCaptcha(String userType, String code) {
         Assert.isNotEmpty(userType, "userType不能为空");
-        Assert.isNotEmpty(username, "username不能为空");
-        Object codeCache = CacheUtils.get(CacheKeys.appendKey(CacheKeys.LOGIN_CODE_PREFIX, userType, username));
+        Assert.isNotEmpty(code, "code不能为空");
+        Object codeCache = CacheUtils.get(CacheKeys.appendKey(CacheKeys.LOGIN_CODE_PREFIX, userType, code));
         if (codeCache == null) {
             return "";
         }
         return codeCache.toString();
+    }
+
+    @Getter
+    @Setter
+    public static class CaptchaInfo {
+        private String captcha;
+        private String code;
     }
 }

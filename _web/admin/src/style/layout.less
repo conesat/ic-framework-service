@@ -223,6 +223,7 @@
 .form-basic-container.form-basic-container-radius {
   border-radius: var(--td-radius-medium);
 }
+
 .form-basic-container {
   display: flex;
   align-items: center;
@@ -324,4 +325,29 @@
 
 .search-input {
   width: 360px;
+  display: flex;
+  text-align: center;
+  align-items: center;
+
+  input {
+    max-width: 300px;
+  }
+
+  .right-buttons {
+    display: flex;
+    margin-left: 10px;
+    border: 1px solid var(--td-component-border);
+    border-radius: var(--td-radius-default);
+
+    button:last-child {
+      border: none;
+    }
+
+    button {
+      margin: 0;
+      border-radius: 0;
+      border: none;
+      border-right: 1px solid var(--td-component-border);
+    }
+  }
 }

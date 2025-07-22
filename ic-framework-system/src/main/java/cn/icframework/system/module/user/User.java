@@ -44,12 +44,6 @@ public class User {
     private String passwd;
 
     /**
-     * 登录失败次数
-     */
-    @TableField(defaultValue = "0", length = 4, comment = "登录失败次数")
-    private int loginFailCount;
-
-    /**
      * 超级管理员，应该是判断该管理员是否具备超级管理员角色的，但是经常嵌套查询影响性能。这里多冗余多一个字段，在角色变更的时候进行调整
      */
     @TableField(defaultValue = "0", comment = "超级管理员")
@@ -66,12 +60,6 @@ public class User {
 
     @TableField(length = 100, comment = "邮箱")
     private String email;
-
-    /**
-     * 最后一次登陆失败时间
-     */
-    @TableField(comment = "最后一次登陆失败时间")
-    private LocalDateTime lastLoginFailTime;
 
     /**
      * 创建时间

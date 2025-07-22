@@ -23,6 +23,19 @@ class ApiUser extends BaseService {
     });
   }
 
+  /**
+   * 获取验证码
+   */
+  captcha(): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      http.get({
+        url: `/public/user/captcha`,
+        success: resolve,
+        fail: reject
+      });
+    });
+  }
+
   refreshToken(): Promise<any> {
     return new Promise((resolve, reject) => {
       http.post({
