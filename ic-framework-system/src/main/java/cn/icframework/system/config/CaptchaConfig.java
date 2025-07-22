@@ -27,9 +27,9 @@ public class CaptchaConfig {
         // 文本颜色
         properties.setProperty(KAPTCHA_TEXTPRODUCER_FONT_COLOR, "blue");
         // 图片宽度
-        properties.setProperty(KAPTCHA_IMAGE_WIDTH, "130");
+        properties.setProperty(KAPTCHA_IMAGE_WIDTH, "100");
         // 图片高度
-        properties.setProperty(KAPTCHA_IMAGE_HEIGHT, "32");
+        properties.setProperty(KAPTCHA_IMAGE_HEIGHT, "30");
         // 文本字符大小
         properties.setProperty(KAPTCHA_TEXTPRODUCER_FONT_SIZE, "28");
         // 文本字符间距

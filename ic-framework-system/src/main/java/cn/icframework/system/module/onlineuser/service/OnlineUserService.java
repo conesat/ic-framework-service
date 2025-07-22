@@ -9,9 +9,12 @@ import cn.icframework.core.basic.service.BasicService;
 import cn.icframework.core.common.exception.TokenOutTimeException;
 import cn.icframework.core.utils.Assert;
 import cn.icframework.core.utils.BeanUtils;
+import cn.icframework.core.utils.IpUtils;
 import cn.icframework.core.utils.LocalDateTimeUtils;
 import cn.icframework.system.common.RegisterLoginHelper;
 import cn.icframework.system.consts.UserType;
+import cn.icframework.system.module.iplock.IpLock;
+import cn.icframework.system.module.iplock.service.IpLockService;
 import cn.icframework.system.module.onlineuser.OnlineUser;
 import cn.icframework.system.module.onlineuser.dao.OnlineUserMapper;
 import cn.icframework.system.module.onlineuser.def.OnlineUserDef;
@@ -28,7 +31,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -41,12 +46,12 @@ import java.util.Objects;
 @Slf4j
 @RequiredArgsConstructor
 public class OnlineUserService extends BasicService<OnlineUserMapper, OnlineUser> implements IOnlineUserService {
-
     private final SysFileService sysFileService;
     private final RegisterLoginHelper registerLoginHelper;
     private final UserRoleService userRoleService;
     private final UserService userService;
     private final IcJwtConfig icJwtConfig;
+    private final IpLockService ipLockService;
 
     /**
      * 编辑或者保存
@@ -68,26 +73,52 @@ public class OnlineUserService extends BasicService<OnlineUserMapper, OnlineUser
     /**
      * 构建登录信息
      *
-     * @param username 账号
-     * @param passwd   密码
-     * @param code     验证码
+     * @param username    账号
+     * @param passwd      密码
+     * @param verifyCode  验证码
+     * @param captchaCode 验证码code
      * @return
      */
-    @Transactional
-    public UserLoginInfo login(HttpServletRequest request, String username, String passwd, String code, Integer refreshTokenTimOut) {
-        UserDef def = UserDef.table();
-        User user = userService.selectOne(def.username.eq(username));
-        Assert.isNotNull(user, "账号或密码有误");
+    public UserLoginInfo login(HttpServletRequest request,
+                               String username,
+                               String passwd,
+                               String verifyCode,
+                               String captchaCode,
+                               Integer refreshTokenTimOut) {
+        return login(request, username, passwd, verifyCode, captchaCode, refreshTokenTimOut, false);
+    }
 
-        // 登录失败超过三次 且最后一次错误时间在十分钟内，必须填写验证码
-        if (user.getLoginFailCount() > 3
-                && LocalDateTime.now().minusMinutes(10).isAfter(user.getLastLoginFailTime())) {
-            Assert.isNotEmpty(code, "验证码不能为空");
+    public UserLoginInfo login(HttpServletRequest request,
+                               String username,
+                               String passwd,
+                               String verifyCode,
+                               String captchaCode,
+                               Integer refreshTokenTimOut,
+                               Boolean app) {
+        String ipAddress = IpUtils.getIpAddress(request);
+        IpLock ipLock = ipLockService.selectById(ipAddress);
+
+        if (ipLock != null && ipLock.getLockEndTime().isAfter(LocalDateTime.now())) {
+            Assert.isTrue(ipLock.getLoginFailCount() < IpLock.MAX_LOGIN_FAIL_COUNT, String.format("账号锁定，请稍%s后再试", LocalDateTimeUtils.getFormatSeconds(
+                    Duration.between(LocalDateTime.now(), ipLock.getLockEndTime()).getSeconds())));
+            if (ipLock.getLoginFailCount() >= 3 && !app) {
+                Assert.isNotEmpty(verifyCode, "验证码不能为空");
+                // 校验验证码
+                String codeCache = registerLoginHelper.getCaptcha(UserType.SYSTEM_USER, captchaCode);
+                Assert.isFalse(!Objects.equals(codeCache, verifyCode), "验证码错误");
+            }
+        } else if (StringUtils.hasLength(verifyCode)) {
             // 校验验证码
-            String codeCache = registerLoginHelper.getCaptcha(UserType.SYSTEM_USER, username);
-            Assert.isFalse(!Objects.equals(codeCache, code), "验证码错误");
+            String codeCache = registerLoginHelper.getCaptcha(UserType.SYSTEM_USER, captchaCode);
+            Assert.isFalse(!Objects.equals(codeCache, verifyCode), "验证码错误");
         }
 
+        UserDef def = UserDef.table();
+        User user = userService.selectOne(def.username.eq(username));
+        if (user == null) {
+            handleLock(ipLock, ipAddress);
+            throw new RuntimeException("账号或密码有误");
+        }
         // 校验输入密码与数据库密码是否一致
         String inputPassword;
         try {
@@ -97,8 +128,7 @@ public class OnlineUserService extends BasicService<OnlineUserMapper, OnlineUser
             throw new RuntimeException("登录失败");
         }
         if (!Objects.equals(inputPassword, user.getPasswd())) {
-            user.setLoginFailCount(user.getLoginFailCount() + 1);
-            userService.updateById(user);
+            handleLock(ipLock, ipAddress);
             throw new RuntimeException("账号或密码有误");
         }
 
@@ -122,7 +152,30 @@ public class OnlineUserService extends BasicService<OnlineUserMapper, OnlineUser
             SysFile sysFile = sysFileService.selectById(user.getAvatarFileId());
             loginInfo.setAvatarFileUrl(sysFile.getBucketUrl() + "/" + sysFile.getOssObjectName());
         }
+        if (ipLock != null) {
+            ipLockService.deleteById(ipLock.getIp());
+        }
         return loginInfo;
+    }
+
+    private void handleLock(IpLock ipLock, String ipAddress) {
+        if (ipLock != null) {
+            ipLock.setLoginFailCount(ipLock.getLoginFailCount() + 1);
+            if (ipLock.getLoginFailCount() >= IpLock.MAX_LOGIN_FAIL_COUNT) {
+                ipLock.setLockEndTime(LocalDateTime.now().plusMinutes(IpLock.LOCK_MINUTES));
+                ipLockService.updateById(ipLock);
+                throw new RuntimeException("账号或密码有误，账号锁定请10分钟后重试");
+            } else {
+                ipLockService.updateById(ipLock);
+            }
+        } else {
+            ipLock = new IpLock();
+            ipLock.setIp(ipAddress);
+            ipLock.setLoginFailCount(1);
+            ipLock.setLockEndTime(LocalDateTime.now().plusMinutes(IpLock.LOCK_MINUTES));
+            ipLock.setFirstFailTime(LocalDateTime.now());
+            ipLockService.insert(ipLock);
+        }
     }
 
 
@@ -130,6 +183,12 @@ public class OnlineUserService extends BasicService<OnlineUserMapper, OnlineUser
         return JWTUtils.refreshToken();
     }
 
+    /**
+     * 调用 JWTUtils.createToken 会触发这个方法
+     * 记录登录信息
+     *
+     * @param onlineInfo 登录信息
+     */
     @Override
     public void login(OnlineInfo onlineInfo) {
         OnlineUser onlineUser = new OnlineUser();
@@ -157,6 +216,12 @@ public class OnlineUserService extends BasicService<OnlineUserMapper, OnlineUser
         }
     }
 
+    /**
+     * 检查token是否有效 如果不允许使用，请抛出对应异常
+     *
+     * @param userId    用户ID
+     * @param sessionId sessionId
+     */
     @Override
     public void verify(String userId, Long sessionId) {
 
@@ -165,7 +230,7 @@ public class OnlineUserService extends BasicService<OnlineUserMapper, OnlineUser
     /**
      * 强制退出
      *
-     * @param ids
+     * @param ids 用户id
      */
     public void logout(List<Long> ids) {
         if (ids.isEmpty()) {

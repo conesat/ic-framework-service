@@ -120,6 +120,17 @@
         "url": "/sys/user/edit.vue",
         "belong": "/user/user-index",
         "hidden": true
+      },
+      {
+        "orderNo": 0,
+        "path": "online-user-index",
+        "url": "/sys/online-user/index.vue",
+        "name": "在线用户"
+      },
+      {
+        "path":"ip-lock-index",
+        "url":"/sys/ip-lock/index.vue",
+        "name":"ip登录锁"
       }
     ]
   },
@@ -157,12 +168,6 @@
     "orderNo": 99,
     "icon": "setting.svg",
     "children": [
-      {
-        "orderNo": 0,
-        "path": "online-user-index",
-        "url": "/sys/online-user/index.vue",
-        "name": "在线用户"
-      },
       {
         "orderNo": 1,
         "path": "basic-dic-index",

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Settings">
-    <option name="vueRouterParent" value="project" />
+    <option name="vueRouterParent" value="sys" />
   </component>
 </project>

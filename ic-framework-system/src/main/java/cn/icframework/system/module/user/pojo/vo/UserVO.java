@@ -17,11 +17,6 @@ import java.time.LocalDateTime;
 public class UserVO extends UserSimpleVO {
 
     /**
-     * 登录失败次数
-     */
-    private int loginFailCount;
-
-    /**
      * 超级管理员
      */
     private Boolean su;
@@ -50,13 +45,6 @@ public class UserVO extends UserSimpleVO {
      * 邮箱
      */
     private String email;
-
-
-    /**
-     * 最后一次登陆失败时间
-     */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime lastLoginFailTime;
 
     /**
      * 创建时间
