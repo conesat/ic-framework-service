@@ -14,7 +14,7 @@
         <div class="search-input">
           <t-input v-model="queryForm.searchKey" placeholder="查找标题或者发布者" clearable @enter="getData(true)">
             <template #suffix-icon>
-              <search-icon size="16px" @click.stop="getData(true)"/>
+              <search-icon size="16px" @click="getData(true)"/>
             </template>
           </t-input>
         </div>

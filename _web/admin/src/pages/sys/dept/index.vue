@@ -21,7 +21,7 @@
                   @enter="getData(true)"
                 >
                   <template #suffix-icon>
-                    <search-icon size="16px" @click.stop="getData(true)"/>
+                    <search-icon size="16px" @click="getData(true)"/>
                   </template>
                 </t-input>
                 <t-tree :data="data"

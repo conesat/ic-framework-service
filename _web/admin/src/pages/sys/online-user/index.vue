@@ -12,7 +12,7 @@
         <div class="search-input">
           <t-input v-model="queryForm.searchKey" placeholder="请输入用户名/姓名" clearable @enter="getData(true)">
             <template #suffix-icon>
-              <search-icon size="16px" @click.stop="getData(true)"/>
+              <search-icon size="16px" @click="getData(true)"/>
             </template>
           </t-input>
         </div>
