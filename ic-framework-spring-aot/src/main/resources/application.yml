@@ -1,0 +1,45 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: ic-framework-spring-aot
+  
+  # AOT 配置
+  aot:
+    enabled: true
+
+# 应用程序配置
+app:
+  name: IC Framework Spring AOT
+  version: 1.0.0
+  environment: development
+
+# 管理端点配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+    info:
+      enabled: true
+  info:
+    env:
+      enabled: true
+    java:
+      enabled: true
+    os:
+      enabled: true
+
+# 日志配置
+logging:
+  level:
+    com.ic.framework.aot: DEBUG
+    org.springframework.boot.autoconfigure: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n" 
