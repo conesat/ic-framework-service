@@ -9,7 +9,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author IC Framework
  * @version 1.0.0
  */
-@SpringBootApplication
+@SpringBootApplication(exclude = {
+    org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration.class,
+    org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration.class
+})
 public class IcFrameworkAotApplication {
 
     public static void main(String[] args) {
