@@ -5,12 +5,11 @@
     <parent>
         <groupId>cn.icframework</groupId>
         <artifactId>framework-service</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.2</version>
     </parent>
 
     <groupId>cn.icframework.spring</groupId>
     <artifactId>ic-framework-project</artifactId>
-    <version>1.0.0</version>
     <name>ic-framework-project</name>
     <description>ic-framework-project</description>
     <properties>
