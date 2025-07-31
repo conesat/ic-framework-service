@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Import;
 public class FastDfsConfiguration {
 
     static {
+        // 设置FastDFS连接超时时间
         System.setProperty("fdfs.so-timeout", "10000");
         System.setProperty("fdfs.connect-timeout", "5000");
     }

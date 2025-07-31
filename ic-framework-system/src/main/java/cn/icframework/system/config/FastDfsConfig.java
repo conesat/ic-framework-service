@@ -5,6 +5,9 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * FastDFS配置类
  * @author ic
@@ -19,6 +22,11 @@ public class FastDfsConfig {
      * FastDFS服务器地址
      */
     private String serverUrl;
+    
+    /**
+     * tracker服务器列表
+     */
+    private List<String> trackerList = new ArrayList<>();
     
     /**
      * 连接超时时间（毫秒）
@@ -39,4 +47,4 @@ public class FastDfsConfig {
      * 连接池最大空闲连接数
      */
     private int maxIdleConnections = 10;
-} 
+}

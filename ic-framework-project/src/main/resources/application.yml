@@ -44,7 +44,9 @@ app:
     endpoint:
   # FastDFS 客户端配置
   fastdfs:
-    # FastDFS 服务地址（如 Tracker 地址）
+    # FastDFS 服务地址（如 Storage HTTP服务地址）
+    server-url: http://127.0.0.1:8080
+    # tracker服务器列表
     tracker-list:
       - 127.0.0.1:22122
     # 连接超时时间（单位：毫秒）

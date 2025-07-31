@@ -1370,18 +1370,6 @@ ul.t-select-option-group__header, .t-select-option-group__header {
   font-family: 'TCloud Number';
 }
 
-/*.t-default-menu .t-menu__item.t-is-active:not(.t-is-opened)::before{*/
-/*  content: '';*/
-/*  width: 6px;*/
-/*  height: 100%;*/
-/*  background-color: var(--td-brand-color-7);*/
-/*  position: absolute;*/
-/*  left: 0;*/
-/*  border-radius: 2px;*/
-/*}*/
-/*.t-default-menu .t-menu__item.t-is-active:not(.t-is-opened){*/
-/*  background-color: var(--td-brand-color-active);*/
-/*}*/
 .t-default-menu .t-menu__item:hover {
   border-radius: 0;
 }
