@@ -1,4 +1,5 @@
-FROM eclipse-temurin:21-jre
+# 使用 Amazon Corretto JDK 镜像
+FROM amazoncorretto:21-alpine-jdk
 
 # 设置工作目录
 WORKDIR /app

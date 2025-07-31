@@ -5,7 +5,7 @@
     <parent>
         <groupId>cn.icframework</groupId>
         <artifactId>framework-service</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.2</version>
     </parent>
 
     <groupId>cn.icframework.spring</groupId>
@@ -104,4 +104,28 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>aot</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <configuration>
+                            <mainClass>cn.icframework.hotel.HotelApplication</mainClass>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>process-aot</id>
+                                <goals>
+                                    <goal>process-aot</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
