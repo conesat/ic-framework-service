@@ -14,7 +14,6 @@
     <modules>
         <module>ic-framework-system</module>
         <module>ic-framework-project</module>
-        <module>ic-framework-spring-aot</module>
     </modules>
 
     <properties>

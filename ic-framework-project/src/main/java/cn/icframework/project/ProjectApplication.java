@@ -14,7 +14,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @Import({
         SystemConfiguration.class,
 })
-@MapperScan({"cn.icframework.project.module.*.dao"})
 public class ProjectApplication {
     public static void main(String[] args) {
         SpringApplication.run(ProjectApplication.class, args);

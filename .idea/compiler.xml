@@ -9,7 +9,6 @@
         <outputRelativeToContentRoot value="true" />
         <module name="ic-framework-spring-aot (1)" />
         <module name="ic-framework-system" />
-        <module name="ic-framework-spring-aot" />
         <module name="ic-framework-project" />
       </profile>
     </annotationProcessing>
@@ -17,6 +16,7 @@
       <module name="ic-framework-hotel" target="21" />
       <module name="ic-framework-hotel (1)" target="21" />
       <module name="ic-framework-hotel (2)" target="21" />
+      <module name="ic-framework-spring-aot" target="21" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
