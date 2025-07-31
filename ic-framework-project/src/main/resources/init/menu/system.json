@@ -195,6 +195,19 @@
         "path": "system-setting",
         "name": "系统设置",
         "url": "/sys/setting/edit.vue"
+      },
+      {
+        "path":"update-history-index",
+        "url":"/sys/update-history/index.vue",
+        "orderNo": 5,
+        "name":"更新历史"
+      },
+      {
+        "path":"update-history-edit",
+        "url":"/sys/update-history/edit.vue",
+        "belong":"/sys/update-history-index",
+        "hidden":true,
+        "name":"编辑更新历史"
       }
     ]
   },

@@ -14,7 +14,7 @@ import cn.icframework.system.module.sysfile.SysFile;
 import cn.icframework.system.module.sysfile.pojo.dto.SysFileDTO;
 import cn.icframework.system.module.sysfile.pojo.vo.SysFileVO;
 import cn.icframework.system.module.sysfile.pojo.vo.SysFileVOConverter;
-import cn.icframework.system.module.sysfile.service.OssFileHelper;
+import cn.icframework.system.module.sysfile.service.FileStorageStrategy;
 import cn.icframework.system.module.sysfile.service.SysFileService;
 import cn.icframework.system.module.sysfile.wrapperbuilder.SysFileWrapperBuilder;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,7 +45,7 @@ public class ApiSysFile extends BasicApi {
     private final SysFileService sysFileService;
     private final SysFileVOConverter sysFileVOConverter;
     private final SysFileWrapperBuilder wrapperBuilder;
-    private final OssFileHelper ossFileHelper;
+    private final FileStorageStrategy fileStorageStrategy;
 
 
     /**
@@ -104,7 +104,7 @@ public class ApiSysFile extends BasicApi {
     @RequireAuth(onlyToken = true)
     @PostMapping(value = "/upload-single", name = "单文件上传")
     public Response<SysFileVO> uploadSingle(MultipartFile file, @RequestParam("useType") FileUseType useType) throws Exception {
-        return Response.success(sysFileVOConverter.convert(ossFileHelper.uploadSingle(file, useType, JWTUtils.getUserId())));
+        return Response.success(sysFileVOConverter.convert(fileStorageStrategy.getFileHelper().uploadSingle(file, useType, JWTUtils.getUserId())));
     }
 
     /**
@@ -117,7 +117,7 @@ public class ApiSysFile extends BasicApi {
     @RequireAuth(onlyToken = true)
     @PostMapping(value = "/upload-slice", name = "切片上传")
     public Response<SysFileVO> uploadSlice(MultipartFile file, @RequestParam("uploadId") String uploadId, @RequestParam("partNumber") Integer partNumber) throws Exception {
-        return Response.success(sysFileVOConverter.convert(ossFileHelper.upload(file, uploadId, partNumber)));
+        return Response.success(sysFileVOConverter.convert(fileStorageStrategy.getFileHelper().uploadSlice(file, uploadId, partNumber)));
     }
 
     /**
@@ -130,7 +130,7 @@ public class ApiSysFile extends BasicApi {
     @RequireAuth(onlyToken = true)
     @GetMapping(value = "/register-upload-slice", name = "切片上传")
     public Response<String> registerUploadSlice(@RequestParam("useType") FileUseType useType, @RequestParam("fileName") String fileName, @RequestParam("totalParts") Integer totalParts) {
-        return Response.success(ossFileHelper.registerUploadSlice(useType, fileName, totalParts, JWTUtils.getUserId()));
+        return Response.success(fileStorageStrategy.getFileHelper().registerUploadSlice(useType, fileName, totalParts, JWTUtils.getUserId()));
     }
 
     /**
@@ -142,7 +142,7 @@ public class ApiSysFile extends BasicApi {
     @RequireAuth(onlyToken = true)
     @PutMapping(value = "/abort-upload-slice", name = "切片上传")
     public Response<Void> abortUploadSlice(@RequestParam("uploadId") String uploadId) {
-        ossFileHelper.abortUploadSlice(uploadId);
+        fileStorageStrategy.getFileHelper().abortUploadSlice(uploadId);
         return Response.success();
     }
 }

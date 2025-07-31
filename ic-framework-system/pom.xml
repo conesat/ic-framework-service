@@ -71,6 +71,12 @@
             <groupId>io.lettuce</groupId>
             <artifactId>lettuce-core</artifactId>
         </dependency>
+        <!-- FastDFS Java客户端 -->
+        <dependency>
+            <groupId>com.github.tobato</groupId>
+            <artifactId>fastdfs-client</artifactId>
+            <version>1.27.2</version>
+        </dependency>
     </dependencies>
 
 </project>

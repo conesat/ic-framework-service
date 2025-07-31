@@ -1,0 +1,32 @@
+# FastDFS配置文件示例
+# 将此文件复制为 application-dev.yml 或 application-prod.yml 来使用FastDFS
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ic_dev
+    username: root
+    password: Ol082312
+mybatis:
+  config-location: classpath:mybatis-config-dev.xml
+
+app:
+  # OSS配置（可选，如果不使用OSS可以留空）
+  oss:
+    access-key-id:
+    access-key-secret:
+    bucket-name:
+    endpoint:
+  
+  # FastDFS配置
+  fastdfs:
+    server-url: http://your-fastdfs-server:8080  # 替换为你的FastDFS服务器地址
+    connect-timeout: 5000
+    read-timeout: 10000
+    max-connections: 50
+    max-idle-connections: 10
+  
+  # 文件存储配置 - 使用FastDFS
+  file-storage:
+    type: fastdfs  # 设置为fastdfs使用FastDFS存储
+    enable-slice-upload: true
+    slice-size: 5242880  # 5MB
