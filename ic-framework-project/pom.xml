@@ -100,6 +100,20 @@
                     <target>21</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>cn.icframework</groupId>
+                <artifactId>ic-framework-version-plugin</artifactId>
+                <version>1.0.2</version>
+                <executions>
+                    <execution>
+                        <id>generate-version</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
