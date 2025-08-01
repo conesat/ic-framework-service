@@ -9,7 +9,7 @@ import cn.icframework.common.interfaces.IEnum;
 public enum FileType implements IEnum {
     UNKNOWN(-1, "未知"),
     ALIYUN(1, "阿里云"),
-    FASTDFS(2, "FastDFS");
+    MINIO(2, "MinIO");
 
     private final int code;
     private final String text;

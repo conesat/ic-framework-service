@@ -18,15 +18,15 @@ import java.util.Optional;
 public class FileStorageStrategy {
     private final FileStorageConfig fileStorageConfig;
     private final OssFileHelper ossFileHelper;
-    private final Optional<FastDfsFileHelper> fastDfsFileHelper;
+    private final Optional<MinioFileHelper> minioFileHelper;
 
     @Autowired
     public FileStorageStrategy(FileStorageConfig fileStorageConfig,
                                @Autowired(required = false) OssFileHelper ossFileHelper,
-                               @Autowired(required = false) FastDfsFileHelper fastDfsFileHelper) {
+                               @Autowired(required = false) MinioFileHelper minioFileHelper) {
         this.fileStorageConfig = fileStorageConfig;
         this.ossFileHelper = ossFileHelper;
-        this.fastDfsFileHelper = Optional.ofNullable(fastDfsFileHelper);
+        this.minioFileHelper = Optional.ofNullable(minioFileHelper);
     }
 
     /**
@@ -46,11 +46,11 @@ public class FileStorageStrategy {
         switch (storageType.toLowerCase()) {
             case "oss":
                 return ossFileHelper;
-            case "fastdfs":
-                if (fastDfsFileHelper.isPresent()) {
-                    return fastDfsFileHelper.get();
+            case "minio":
+                if (minioFileHelper.isPresent()) {
+                    return minioFileHelper.get();
                 } else {
-                    log.warn("FastDFS配置不可用，使用默认OSS存储");
+                    log.warn("MinIO配置不可用，使用默认OSS存储");
                     return ossFileHelper;
                 }
             default:

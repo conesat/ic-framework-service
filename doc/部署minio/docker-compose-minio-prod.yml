@@ -1,0 +1,184 @@
+version: '3.8'
+
+services:
+  minio:
+    image: minio/minio:latest
+    container_name: minio-server-prod
+    restart: unless-stopped
+    ports:
+      - "9000:9000"  # API 端口
+      - "9001:9001"  # Web 控制台端口
+    environment:
+      # MinIO 根用户凭据 - 生产环境请修改
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+      # 时区设置
+      TZ: ${TZ:-Asia/Shanghai}
+      # 日志级别
+      MINIO_LOG_LEVEL: ${MINIO_LOG_LEVEL:-info}
+      # 启用浏览器重定向
+      MINIO_BROWSER_REDIRECT_URL: ${MINIO_BROWSER_REDIRECT_URL:-https://your-domain.com:9001}
+      # 生产环境配置
+      MINIO_CACHE_DRIVES: "/cache"
+      MINIO_CACHE_EXCLUDE: "*.pdf;*.doc;*.docx"
+      MINIO_CACHE_EXPIRY: "72h"
+      MINIO_CACHE_MAXUSE: "80"
+    volumes:
+      # 数据持久化
+      - /Volumes/data/minio/data:/data
+      # 配置文件
+      - /Volumes/data/minio/config:/root/.minio
+      # 缓存目录
+      - /Volumes/data/minio/cache:/cache
+      # SSL 证书（如果启用 HTTPS）
+      - /Volumes/data/minio/certs:/root/.minio/certs:ro
+    command: server /data --console-address ":9001"
+    # 健康检查
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+      start_period: 40s
+    # 资源限制 - 生产环境调整
+    deploy:
+      resources:
+        limits:
+          memory: ${MINIO_MEMORY_LIMIT:-2G}
+          cpus: ${MINIO_CPU_LIMIT:-1.0}
+        reservations:
+          memory: ${MINIO_MEMORY_RESERVATION:-1G}
+          cpus: ${MINIO_CPU_RESERVATION:-0.5}
+      # 更新策略
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      # 重启策略
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    # 网络配置
+    networks:
+      - minio-network
+    # 标签
+    labels:
+      - "com.docker.compose.project=ic-framework-prod"
+      - "com.docker.compose.service=minio"
+      - "traefik.enable=false"
+      - "prometheus.io/scrape=true"
+      - "prometheus.io/port=9000"
+      - "prometheus.io/path=/minio/v2/metrics/cluster"
+
+  # Nginx 反向代理（可选，用于 HTTPS）
+  nginx:
+    image: nginx:alpine
+    container_name: minio-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - /Volumes/data/minio/certs:/etc/nginx/ssl:ro
+    depends_on:
+      - minio
+    networks:
+      - minio-network
+    profiles:
+      - proxy
+
+  # MinIO 客户端工具（可选，用于管理）
+  mc:
+    image: minio/mc:latest
+    container_name: minio-client-prod
+    restart: "no"
+    depends_on:
+      - minio
+    environment:
+      MC_HOST_local: http://${MINIO_ROOT_USER:-minioadmin}:${MINIO_ROOT_PASSWORD:-minioadmin}@minio:9000
+    volumes:
+      - /Volumes/data/minio/mc:/root/.mc
+    networks:
+      - minio-network
+    profiles:
+      - tools
+
+  # 监控服务（可选）
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: minio-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - /Volumes/data/prometheus:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - minio-network
+    profiles:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: minio-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+    volumes:
+      - /Volumes/data/grafana:/var/lib/grafana
+    networks:
+      - minio-network
+    profiles:
+      - monitoring
+
+networks:
+  minio-network:
+    driver: bridge
+    name: minio-network-prod
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  minio-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /Volumes/data/minio/data
+  minio-config:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /Volumes/data/minio/config
+  minio-cache:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /Volumes/data/minio/cache
+  prometheus-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /Volumes/data/prometheus
+  grafana-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /Volumes/data/grafana 

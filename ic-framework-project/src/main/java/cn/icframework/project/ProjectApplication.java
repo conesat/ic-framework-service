@@ -13,7 +13,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @Import({
         SystemConfiguration.class,
-        cn.icframework.system.config.FastDfsConfiguration.class,
 })
 public class ProjectApplication {
     public static void main(String[] args) {
