@@ -2,6 +2,11 @@ package cn.icframework.system.module.updatehistory.pojo.vo;
 
 import java.lang.Integer;
 import java.time.LocalDateTime;
+
+import cn.icframework.mybatis.annotation.ForeignKey;
+import cn.icframework.mybatis.annotation.TableField;
+import cn.icframework.system.module.sysfile.SysFile;
+import cn.icframework.system.module.user.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
@@ -41,7 +46,12 @@ public class UpdateHistoryVO {
     /**
      * 更新人id
      */
-    private String userId;
+    private Long userId;
+
+    /**
+     * 更新包文件id
+     */
+    private Long fileId;
     /**
      * 创建时间
      */

@@ -2,7 +2,13 @@ package cn.icframework.system.module.updatehistory.pojo.dto;
 
 import java.lang.Integer;
 import java.time.LocalDateTime;
+
+import cn.icframework.mybatis.annotation.ForeignKey;
+import cn.icframework.mybatis.annotation.TableField;
+import cn.icframework.system.module.sysfile.SysFile;
+import cn.icframework.system.module.user.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,23 +19,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UpdateHistoryDTO {
-    private Long id;
-    /**
-     * 名称
-     */
-    private String name;
-    /**
-     * 更新版本
-     */
-    private Integer versionNumber;
-    /**
-     * 更新版本号
-     */
-    private String version;
-    /**
-     * 更新前版本号
-     */
-    private String beforeVersion;
     /**
      * 更新备注
      */
@@ -39,13 +28,8 @@ public class UpdateHistoryDTO {
      */
     private String personName;
     /**
-     * 更新人id
+     * 更新包文件id
      */
-    private String userId;
-    /**
-     * 创建时间
-     */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createTime;
-
+    @NotNull
+    private Long fileId;
 }

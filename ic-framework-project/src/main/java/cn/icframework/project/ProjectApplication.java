@@ -1,7 +1,6 @@
 package cn.icframework.project;
 
 import cn.icframework.system.config.SystemConfiguration;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;

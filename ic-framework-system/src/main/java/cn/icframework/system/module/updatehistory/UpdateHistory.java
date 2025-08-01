@@ -5,6 +5,7 @@ import cn.icframework.mybatis.annotation.Id;
 import cn.icframework.mybatis.annotation.Table;
 import cn.icframework.mybatis.annotation.TableField;
 import cn.icframework.mybatis.consts.IdType;
+import cn.icframework.system.module.sysfile.SysFile;
 import cn.icframework.system.module.user.User;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,12 +19,6 @@ public class UpdateHistory {
 
     @Id(idType = IdType.SNOWFLAKE)
     private Long id;
-
-    /**
-     * 名称
-     */
-    @TableField(comment = "名称")
-    private String name;
 
     /**
      * 更新版本
@@ -60,7 +55,14 @@ public class UpdateHistory {
      */
     @ForeignKey(references = User.class)
     @TableField(comment = "更新人id")
-    private String userId;
+    private Long userId;
+
+    /**
+     * 更新包文件id
+     */
+    @ForeignKey(references = SysFile.class)
+    @TableField(comment = "更新包文件id")
+    private Long fileId;
 
     /**
      * 创建时间
