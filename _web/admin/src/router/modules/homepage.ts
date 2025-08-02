@@ -39,6 +39,14 @@ export default [
           title: '统计报表',
         },
       },
+      {
+        path: 'ops',
+        name: 'DashboardOps',
+        component: () => import('@/pages/dashboard/ops/index.vue'),
+        meta: {
+          title: '运维监控',
+        },
+      },
     ],
   },
 ];
