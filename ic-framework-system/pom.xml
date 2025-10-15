@@ -33,7 +33,7 @@
         <dependency>
             <groupId>cn.icframework</groupId>
             <artifactId>ic-framework-mybatis-processor</artifactId>
-            <scope>provided</scope>
+            <!-- <scope>provided</scope> -->
         </dependency>
         <!-- Kaptcha 依赖（验证码） -->
         <dependency>
@@ -79,4 +79,29 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>25</source>
+                    <target>25</target>
+                    <encoding>UTF-8</encoding>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>cn.icframework</groupId>
+                            <artifactId>ic-framework-mybatis-processor</artifactId>
+                            <version>1.0.3</version>
+                        </path>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.40</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
