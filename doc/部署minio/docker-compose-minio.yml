@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  minio:
+    image: minio/minio:latest
+    container_name: minio-server
+    restart: unless-stopped
+    ports:
+      - "9000:9000"  # API 端口
+      - "9001:9001"  # Web 控制台端口
+    environment:
+      # MinIO 根用户凭据
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+      # 时区设置
+      TZ: Asia/Shanghai
+      # 日志级别
+      MINIO_LOG_LEVEL: info
+      # 启用浏览器重定向
+      MINIO_BROWSER_REDIRECT_URL: http://localhost:9001
+    volumes:
+      # 数据持久化
+      - /Volumes/data/minio/data:/data
+      # 配置文件（可选）
+      - /Volumes/data/minio/config:/root/.minio
+    command: server /data --console-address ":9001"
+    # 健康检查
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+      start_period: 40s
+    # 资源限制
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+        reservations:
+          memory: 512M
+          cpus: '0.25'
+    # 网络配置
+    networks:
+      - minio-network
+    # 标签
+    labels:
+      - "com.docker.compose.project=ic-framework"
+      - "com.docker.compose.service=minio"
+      - "traefik.enable=false"
+
+  # MinIO 客户端工具（可选，用于管理）
+  mc:
+    image: minio/mc:latest
+    container_name: minio-client
+    restart: "no"
+    depends_on:
+      - minio
+    environment:
+      MC_HOST_local: http://minioadmin:minioadmin@minio:9000
+    volumes:
+      - /Volumes/data/minio/mc:/root/.mc
+    networks:
+      - minio-network
+    profiles:
+      - tools  # 只在需要时启动
+
+networks:
+  minio-network:
+    driver: bridge
+    name: minio-network
+
+volumes:
+  minio-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /Volumes/data/minio/data
+  minio-config:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /Volumes/data/minio/config 

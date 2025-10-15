@@ -304,11 +304,19 @@ export function getLineChartDataSet({
  * @returns {*}
  */
 export function getPieChartDataSet({
-  radius = 42,
+  radius,
   textColor,
   placeholderColor,
   containerColor,
-}: { radius?: number } & Record<string, string>): EChartsOption {
+}: { radius?: number; textColor?: string; placeholderColor?: string; containerColor?: string; }): EChartsOption {
+  // 确保 radius 使用默认值 42 如果未提供或为 undefined 或为 null
+  const actualRadius = (radius !== undefined && radius !== null) ? radius : 42;
+  
+  // 确保所有颜色相关参数都有默认值
+  const actualTextColor = textColor || '#000';
+  const actualPlaceholderColor = placeholderColor || 'rgba(0, 0, 0, 0.35)';
+  const actualContainerColor = containerColor || '#fff';
+  
   return {
     color: getChartListColor(),
     tooltip: {
@@ -326,7 +334,7 @@ export function getPieChartDataSet({
       itemHeight: 4,
       textStyle: {
         fontSize: 12,
-        color: placeholderColor,
+        color: actualPlaceholderColor,
       },
       left: 'center',
       bottom: '0',
@@ -341,7 +349,7 @@ export function getPieChartDataSet({
         selectedMode: true,
         silent: true,
         itemStyle: {
-          borderColor: containerColor,
+          borderColor: actualContainerColor,
           borderWidth: 1,
         },
         label: {
@@ -350,7 +358,7 @@ export function getPieChartDataSet({
           formatter: ['{value|{d}%}', '{name|{b}渠道占比}'].join('\n'),
           rich: {
             value: {
-              color: textColor,
+              color: actualTextColor,
               fontSize: 28,
               fontWeight: 'normal',
               lineHeight: 46,
@@ -369,7 +377,7 @@ export function getPieChartDataSet({
             formatter: ['{value|{d}%}', '{name|{b}渠道占比}'].join('\n'),
             rich: {
               value: {
-                color: textColor,
+                color: actualTextColor,
                 fontSize: 28,
                 fontWeight: 'normal',
                 lineHeight: 46,
@@ -390,7 +398,7 @@ export function getPieChartDataSet({
             value: 1048,
             name: '线上',
           },
-          { value: radius * 7, name: '门店' },
+          { value: actualRadius * 7, name: '门店' },
         ],
       },
     ],

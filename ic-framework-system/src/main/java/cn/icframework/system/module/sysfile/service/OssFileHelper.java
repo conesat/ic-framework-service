@@ -17,6 +17,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,7 +35,8 @@ import java.util.UUID;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class OssFileHelper {
+@ConditionalOnProperty(name = "app.file-storage.type", havingValue = "oss", matchIfMissing = false)
+public class OssFileHelper implements IFileHelper {
     private final SysFileService sysFileService;
     private final OssConfig ossConfig;
 
@@ -62,51 +64,56 @@ public class OssFileHelper {
      *
      * @param uploadId
      */
-    public SysFile upload(MultipartFile file, String uploadId, int partNumber) throws IOException {
-        UploadCache uploadCache = (UploadCache) CacheUtils.get(uploadId);
-        UploadPartRequest uploadPartRequest = new UploadPartRequest();
-        uploadPartRequest.setBucketName(uploadCache.getBucketName());
-        uploadPartRequest.setKey(uploadCache.getObjectName());
-        uploadPartRequest.setUploadId(uploadId);
-        uploadPartRequest.setInputStream(file.getInputStream());
-        // 设置分片大小。除了最后一个分片没有大小限制，其他的分片最小为100 KB。
-        uploadPartRequest.setPartSize(file.getSize());
-        // 设置分片号。每一个上传的分片都有一个分片号，取值范围是1~10000，如果超出此范围，OSS将返回InvalidArgument错误码。
-        uploadPartRequest.setPartNumber(partNumber);
-        // 每个分片不需要按顺序上传，甚至可以在不同客户端上传，OSS会按照分片号排序组成完整的文件。
-        UploadPartResult uploadPartResult = ossConfig.getOss().uploadPart(uploadPartRequest);
-        // 每次上传分片之后，OSS的返回结果包含PartETag。PartETag将被保存在partETags中。
-        uploadCache.getPartETags().add(uploadPartResult.getPartETag());
-        // TODO 分布式需要加锁
-        if (uploadCache.getTotalParts() == uploadCache.getPartETags().size()) {
-            // 都上传完了，做合并
-            CompleteMultipartUploadRequest completeMultipartUploadRequest =
-                    new CompleteMultipartUploadRequest(uploadCache.getBucketName(), uploadCache.getObjectName(), uploadId, uploadCache.getPartETags());
-            // 完成分片上传。
-            ossConfig.getOss().completeMultipartUpload(completeMultipartUploadRequest);
+    public SysFile uploadSlice(MultipartFile file, String uploadId, int partNumber) {
+        try {
+            UploadCache uploadCache = (UploadCache) CacheUtils.get(uploadId);
+            UploadPartRequest uploadPartRequest = new UploadPartRequest();
+            uploadPartRequest.setBucketName(uploadCache.getBucketName());
+            uploadPartRequest.setKey(uploadCache.getObjectName());
+            uploadPartRequest.setUploadId(uploadId);
+            uploadPartRequest.setInputStream(file.getInputStream());
+            // 设置分片大小。除了最后一个分片没有大小限制，其他的分片最小为100 KB。
+            uploadPartRequest.setPartSize(file.getSize());
+            // 设置分片号。每一个上传的分片都有一个分片号，取值范围是1~10000，如果超出此范围，OSS将返回InvalidArgument错误码。
+            uploadPartRequest.setPartNumber(partNumber);
+            // 每个分片不需要按顺序上传，甚至可以在不同客户端上传，OSS会按照分片号排序组成完整的文件。
+            UploadPartResult uploadPartResult = ossConfig.getOss().uploadPart(uploadPartRequest);
+            // 每次上传分片之后，OSS的返回结果包含PartETag。PartETag将被保存在partETags中。
+            uploadCache.getPartETags().add(uploadPartResult.getPartETag());
+            // TODO 分布式需要加锁
+            if (uploadCache.getTotalParts() == uploadCache.getPartETags().size()) {
+                // 都上传完了，做合并
+                CompleteMultipartUploadRequest completeMultipartUploadRequest =
+                        new CompleteMultipartUploadRequest(uploadCache.getBucketName(), uploadCache.getObjectName(), uploadId, uploadCache.getPartETags());
+                // 完成分片上传。
+                ossConfig.getOss().completeMultipartUpload(completeMultipartUploadRequest);
 
-            if (!PrivateFileUseType.PRIVATE_FILE_USE_TYPE.contains(uploadCache.useType)) {
-                try {
-                    // 头像放到公开链接
-                    ossConfig.getOss().setObjectAcl(uploadCache.getBucketName(), uploadCache.getObjectName(), CannedAccessControlList.PublicRead);
-                } catch (Exception e) {
-                    log.error("设置公共读取失败", e);
+                if (!PrivateFileUseType.PRIVATE_FILE_USE_TYPE.contains(uploadCache.useType)) {
+                    try {
+                        // 头像放到公开链接
+                        ossConfig.getOss().setObjectAcl(uploadCache.getBucketName(), uploadCache.getObjectName(), CannedAccessControlList.PublicRead);
+                    } catch (Exception e) {
+                        log.error("设置公共读取失败", e);
+                    }
                 }
-            }
 
-            String url = "https://" + uploadCache.getBucketName() + "." + ossConfig.getEndpoint();
-            SysFile sysFile = new SysFile();
-            sysFile.setOssObjectName(uploadCache.getObjectName());
-            sysFile.setName(uploadCache.getFileName());
-            sysFile.setRefCount(0);
-            sysFile.setBucketUrl(url);
-            sysFile.setSize(file.getSize());
-            sysFile.setType(FileType.ALIYUN);
-            sysFile.setUserId(uploadCache.getUserId());
-            sysFileService.insert(sysFile);
-            return sysFile;
+                String url = "https://" + uploadCache.getBucketName() + "." + ossConfig.getEndpoint();
+                SysFile sysFile = new SysFile();
+                sysFile.setOssObjectName(uploadCache.getObjectName());
+                sysFile.setName(uploadCache.getFileName());
+                sysFile.setRefCount(0);
+                sysFile.setBucketUrl(url);
+                sysFile.setSize(file.getSize());
+                sysFile.setType(FileType.ALIYUN);
+                sysFile.setUserId(uploadCache.getUserId());
+                sysFileService.insert(sysFile);
+                return sysFile;
+            }
+            return null;
+        } catch (Exception e) {
+            log.error("上传分片失败", e);
+            throw new RuntimeException("上传分片失败: " + e.getMessage(), e);
         }
-        return null;
     }
 
 
@@ -124,41 +131,46 @@ public class OssFileHelper {
     }
 
     @Transactional
-    public SysFile uploadSingle(MultipartFile file, FileUseType useType, Long userId) throws IOException {
-        //获取上传文件输入流
-        InputStream inputStream = file.getInputStream();
-        String name = file.getOriginalFilename();
-        String type = "";
-        if (name != null && name.contains(".")) {
-            type = name.substring(name.indexOf("."));
-        }
-        String bucketName = ossConfig.getBucketName();
-
-        String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-        String objectName = useType.text() + "/" + uuid + type;
-        ossConfig.getOss().putObject(bucketName, objectName, inputStream);
-
-        if (!PrivateFileUseType.PRIVATE_FILE_USE_TYPE.contains(useType)) {
-            try {
-                // 头像放到公开链接
-                ossConfig.getOss().setObjectAcl(bucketName, objectName, CannedAccessControlList.PublicRead);
-            } catch (Exception e) {
-                log.error("设置公共读取失败", e);
+    public SysFile uploadSingle(MultipartFile file, FileUseType useType, Long userId) {
+        try {
+            //获取上传文件输入流
+            InputStream inputStream = file.getInputStream();
+            String name = file.getOriginalFilename();
+            String type = "";
+            if (name != null && name.contains(".")) {
+                type = name.substring(name.indexOf("."));
             }
-        }
+            String bucketName = ossConfig.getBucketName();
 
-        String url = "https://" + bucketName + "." + ossConfig.getEndpoint();
-        SysFile sysFile = new SysFile();
-        sysFile.setBucketName(bucketName);
-        sysFile.setOssObjectName(objectName);
-        sysFile.setName(file.getOriginalFilename());
-        sysFile.setRefCount(0);
-        sysFile.setBucketUrl(url);
-        sysFile.setSize(file.getSize());
-        sysFile.setType(FileType.ALIYUN);
-        sysFile.setUserId(userId);
-        sysFileService.insert(sysFile);
-        return sysFile;
+            String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+            String objectName = useType.text() + "/" + uuid + type;
+            ossConfig.getOss().putObject(bucketName, objectName, inputStream);
+
+            if (!PrivateFileUseType.PRIVATE_FILE_USE_TYPE.contains(useType)) {
+                try {
+                    // 头像放到公开链接
+                    ossConfig.getOss().setObjectAcl(bucketName, objectName, CannedAccessControlList.PublicRead);
+                } catch (Exception e) {
+                    log.error("设置公共读取失败", e);
+                }
+            }
+
+            String url = "https://" + bucketName + "." + ossConfig.getEndpoint();
+            SysFile sysFile = new SysFile();
+            sysFile.setBucketName(bucketName);
+            sysFile.setOssObjectName(objectName);
+            sysFile.setName(file.getOriginalFilename());
+            sysFile.setRefCount(0);
+            sysFile.setBucketUrl(url);
+            sysFile.setSize(file.getSize());
+            sysFile.setType(FileType.ALIYUN);
+            sysFile.setUserId(userId);
+            sysFileService.insert(sysFile);
+            return sysFile;
+        } catch (Exception e) {
+            log.error("上传失败", e);
+            throw new RuntimeException("上传失败: " + e.getMessage(), e);
+        }
     }
 
 

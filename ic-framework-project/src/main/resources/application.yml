@@ -34,7 +34,7 @@ spring:
       max-lifetime: 30000   #不能小于30秒，否则默认回到1800秒
       connection-test-query: SELECT 1
 app:
-  #系统激活需要使用
+  # 系统激活需要使用 RSA 公钥
   rsa-public: MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCMqoHkG61EKtpD3BM1tjOGdD40NLTZkHgZHHKqbSNpbeKR41URyLqbEqH88jS1e+g2yNdNv2CZgQZ1czI9UY5hHxI2xkNrUVb5bl/AoGDSZpaT6rmyHYvkkBy2Zsyw2sclGZhlttVdl+oJJl5P4bsHwx8utTu9oFXUzRQsIHlNHQIDAQAB
   grant: IceFire
   oss:
@@ -42,6 +42,31 @@ app:
     access-key-secret:
     bucket-name: ic-framework
     endpoint:
+  # FastDFS 客户端配置
+  fastdfs:
+    # FastDFS 服务地址（如 Storage HTTP服务地址）
+    server-url: http://127.0.0.1:8080
+    # tracker服务器列表
+    tracker-list:
+      - 127.0.0.1:22122
+    # 连接超时时间（单位：毫秒）
+    connect-timeout: 5000
+    # 读取超时时间（单位：毫秒）
+    read-timeout: 10000
+    # 最大连接数
+    max-connections: 50
+    # 最大空闲连接数
+    max-idle-connections: 10
+    # 缩略图配置（可选）
+    thumb-image:
+      width: 150
+      height: 150
+  # 文件存储配置
+  file-storage:
+    type: fastdfs  # 可选值: oss, fastdfs
+    enable-slice-upload: true
+    slice-size: 5242880  # 5MB
+
 ic:
   jwt:
     secret: iceFire_123

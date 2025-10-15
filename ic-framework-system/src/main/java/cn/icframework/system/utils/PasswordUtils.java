@@ -45,7 +45,4 @@ public class PasswordUtils {
         return new String(chars);
     }
 
-    public static void main(String[] args) {
-        System.out.println(generateRandomPassword(8));
-    }
 }

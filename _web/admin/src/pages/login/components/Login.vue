@@ -206,6 +206,9 @@ function decrypt(account: string, passwd: string) {
 
 const getCaptcha = () => {
   ApiUser.captcha().then((res: any) => {
+    if(res == null) {
+      return
+    }
     captcha.value = res.captcha;
     formData.value.captchaCode = res.code;
   });

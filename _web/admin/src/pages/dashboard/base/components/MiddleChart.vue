@@ -54,7 +54,7 @@ const getThisMonth = (checkedValues?: string[]) => {
 const store = useSettingStore();
 const resizeTime = ref(1);
 
-const chartColors = computed(() => store.chartColors);
+const chartColors = computed(() => store.state.chartColors);
 
 // monitorChart
 let monitorContainer: HTMLElement;
@@ -75,7 +75,11 @@ const renderCountChart = () => {
     countContainer = document.getElementById('countContainer');
   }
   countChart = echarts.init(countContainer);
-  countChart.setOption(getPieChartDataSet(chartColors.value));
+  // 添加默认参数以确保 getPieChartDataSet 不会出现 undefined 错误
+  const chartOptions = {
+    ...chartColors.value
+  };
+  countChart.setOption(getPieChartDataSet(chartOptions));
 };
 
 const renderCharts = () => {
@@ -124,16 +128,16 @@ onDeactivated(() => {
 const currentMonth = ref(getThisMonth());
 
 const storeBrandThemeWatch = watch(
-  () => store.brandTheme,
+  () => store.state.brandTheme,
   () => {
     changeChartsTheme([monitorChart, countChart]);
   },
 );
 
 const storeSidebarCompactWatch = watch(
-  () => store.isSidebarCompact,
+  () => store.state.isSidebarCompact,
   () => {
-    if (store.isSidebarCompact) {
+    if (store.state.isSidebarCompact) {
       nextTick(() => {
         updateContainer();
       });
@@ -146,7 +150,7 @@ const storeSidebarCompactWatch = watch(
 );
 
 const storeModeWatch = watch(
-  () => store.mode,
+  () => store.state.mode,
   () => {
     [monitorChart, countChart].forEach((item) => {
       item.dispose();

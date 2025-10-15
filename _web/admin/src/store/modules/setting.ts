@@ -50,7 +50,7 @@ export const useSettingStore = defineStore('setting', () => {
       }
     }
     const isDarkMode = theme === 'dark';
-    document.documentElement.setAttribute('theme-mode', isDarkMode ? 'dark' : '');
+    document.documentElement.setAttribute('theme-mode', isDarkMode ? 'dark' : 'light');
     state.value.chartColors = isDarkMode ? DARK_CHART_COLORS : LIGHT_CHART_COLORS;
   }
 
