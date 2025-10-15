@@ -79,7 +79,7 @@ public class RpInit {
 
                 Boolean all = object.getBoolean("all");
                 if (all != null && all) {
-                    List<Long> allPermissionIds = permissionService.select(SELECT(permissionDef.id).FROM(permissionDef.userType.eq(UserType.SYSTEM_USER)), Long.class);
+                    List<Long> allPermissionIds = permissionService.select(SELECT(permissionDef.id).FROM(permissionDef), Long.class);
                     insertRP(allPermissionIds, role);
                     continue;
                 }

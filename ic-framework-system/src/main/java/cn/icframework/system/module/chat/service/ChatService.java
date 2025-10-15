@@ -78,13 +78,11 @@ public class ChatService extends BasicService<ChatMapper, Chat> {
         ChatUser chatMy = new ChatUser();
         chatMy.setChatId(chat.getId());
         chatMy.setUserId(subject);
-        chatMy.setUserType(UserType.SYSTEM_USER);
         chatUserService.insert(chatMy);
 
         ChatUser chatUser = new ChatUser();
         chatUser.setChatId(chat.getId());
         chatUser.setUserId(userId);
-        chatUser.setUserType(UserType.SYSTEM_USER);
         chatUserService.insert(chatUser);
         return chat;
     }

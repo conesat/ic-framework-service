@@ -13,11 +13,7 @@ public enum UserType {
     /**
      * 系统用户
      */
-    SYSTEM_USER(cn.icframework.system.consts.UserType.SYSTEM_USER, "系统用户"),
-    /**
-     * 外部用户
-     */
-    CUSTOM_USER(cn.icframework.system.consts.UserType.CUSTOM_USER, "外部用户");
+    SYSTEM_USER(cn.icframework.system.consts.UserType.SYSTEM_USER, "系统用户");
 
     private final String code;
     private final String text;

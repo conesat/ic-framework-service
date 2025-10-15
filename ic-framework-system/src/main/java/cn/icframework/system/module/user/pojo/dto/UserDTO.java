@@ -2,6 +2,7 @@ package cn.icframework.system.module.user.pojo.dto;
 
 import cn.icframework.common.enums.Sex;
 import cn.icframework.common.enums.Status;
+import cn.icframework.system.consts.UserType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -52,6 +53,11 @@ public class UserDTO {
      * 邮箱
      */
     private String email;
+
+    /**
+     * 用户类型
+     */
+    private String userType = UserType.SYSTEM_USER;
 
     /**
      * 性别

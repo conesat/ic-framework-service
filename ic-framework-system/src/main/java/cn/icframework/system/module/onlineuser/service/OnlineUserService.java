@@ -82,15 +82,17 @@ public class OnlineUserService extends BasicService<OnlineUserMapper, OnlineUser
     public UserLoginInfo login(HttpServletRequest request,
                                String username,
                                String passwd,
+                               String userType,
                                String verifyCode,
                                String captchaCode,
                                Integer refreshTokenTimOut) {
-        return login(request, username, passwd, verifyCode, captchaCode, refreshTokenTimOut, false);
+        return login(request, username, passwd, userType, verifyCode, captchaCode, refreshTokenTimOut, false);
     }
 
     public UserLoginInfo login(HttpServletRequest request,
                                String username,
                                String passwd,
+                               String userType,
                                String verifyCode,
                                String captchaCode,
                                Integer refreshTokenTimOut,
@@ -104,17 +106,17 @@ public class OnlineUserService extends BasicService<OnlineUserMapper, OnlineUser
             if (ipLock.getLoginFailCount() >= 3 && !app) {
                 Assert.isNotEmpty(verifyCode, "验证码不能为空");
                 // 校验验证码
-                String codeCache = registerLoginHelper.getCaptcha(UserType.SYSTEM_USER, captchaCode);
+                String codeCache = registerLoginHelper.getCaptcha(userType, captchaCode);
                 Assert.isFalse(!Objects.equals(codeCache, verifyCode), "验证码错误");
             }
         } else if (StringUtils.hasLength(verifyCode)) {
             // 校验验证码
-            String codeCache = registerLoginHelper.getCaptcha(UserType.SYSTEM_USER, captchaCode);
+            String codeCache = registerLoginHelper.getCaptcha(userType, captchaCode);
             Assert.isFalse(!Objects.equals(codeCache, verifyCode), "验证码错误");
         }
 
         UserDef def = UserDef.table();
-        User user = userService.selectOne(def.username.eq(username));
+        User user = userService.selectOne(def.username.eq(username).userType.eq(userType));
         if (user == null) {
             handleLock(ipLock, ipAddress);
             throw new RuntimeException("账号或密码有误");
@@ -122,7 +124,7 @@ public class OnlineUserService extends BasicService<OnlineUserMapper, OnlineUser
         // 校验输入密码与数据库密码是否一致
         String inputPassword;
         try {
-            inputPassword = registerLoginHelper.decryptPassWd(UserType.SYSTEM_USER, username, passwd);
+            inputPassword = registerLoginHelper.decryptPassWd(userType, username, passwd);
         } catch (Exception e) {
             log.error("解密失败", e);
             throw new RuntimeException("登录失败");
@@ -134,7 +136,7 @@ public class OnlineUserService extends BasicService<OnlineUserMapper, OnlineUser
 
         UserProps userProps = new UserProps();
         userProps.setRequest(request);
-        userProps.setUserType(UserType.SYSTEM_USER);
+        userProps.setUserType(user.getUserType());
         userProps.setUsername(user.getUsername());
         userProps.setUserId(user.getId());
         userProps.setSu(userRoleService.isSu(user.getId()));

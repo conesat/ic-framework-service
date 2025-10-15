@@ -7,6 +7,7 @@ import cn.icframework.mybatis.annotation.TableField;
 import cn.icframework.mybatis.consts.IdType;
 import cn.icframework.common.enums.Sex;
 import cn.icframework.common.enums.Status;
+import cn.icframework.system.consts.UserType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -54,6 +55,11 @@ public class User {
 
     @TableField(comment = "性别")
     private Sex sex;
+    /**
+     * 用户类型
+     */
+    @TableField(comment = "用户类型", notNull = true, defaultValue = UserType.SYSTEM_USER)
+    private String userType;
 
     @TableField(length = 20, comment = "手机号")
     private String phone;

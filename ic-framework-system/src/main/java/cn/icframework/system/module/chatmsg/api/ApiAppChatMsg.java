@@ -41,7 +41,10 @@ public class ApiAppChatMsg extends BasicApi {
      */
     @PostMapping(name = "发送消息")
     public Response<Void> create(@Validated ChatMsgDTO dto) {
-        dto.setUserType(UserType.SYSTEM_USER);
+        if (dto.getUserType() == null) {
+            // 默认发给系统用户
+            dto.setUserType(UserType.SYSTEM_USER);
+        }
         dto.setUserId(JWTUtils.getSubject());
         msgService.edit(dto);
         return Response.success();

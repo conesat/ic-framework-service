@@ -33,14 +33,6 @@ public class ChatUser {
     private String userId;
 
     /**
-     * 用户类型
-     *
-     * @see cn.icframework.system.consts.UserType
-     */
-    @TableField(notNull = true, comment = "用户类型")
-    private String userType;
-
-    /**
      * 加入聊天时间
      */
     @TableField(notNull = true, comment = "加入聊天时间", onInsertValue = "now()")

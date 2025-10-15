@@ -23,7 +23,6 @@ import cn.icframework.system.module.userrole.service.UserRoleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.mapping.SqlCommandType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,12 +47,6 @@ public class UserService extends BasicService<UserMapper, User> {
     private final UserPosService userPosService;
     private final RoleMenuService roleMenuService;
     private final SysFileService sysFileService;
-    private IUserInfoProvider userInfoProvider;
-
-    @Autowired(required = false)
-    public void setUserInfoProvider(IUserInfoProvider userInfoProvider) {
-        this.userInfoProvider = userInfoProvider;
-    }
 
     /**
      * 初始化超管
@@ -202,31 +195,4 @@ public class UserService extends BasicService<UserMapper, User> {
             Assert.isFalse(entity.getSu(), "超管不允许删除");
         }
     }
-
-    /**
-     * 获取外部用户信息
-     *
-     * @param userType
-     * @param userId
-     * @return
-     */
-    public IUserInfoProvider.BaseUserInfo getUserInfo(String userType, String userId) {
-        if (Objects.equals(userType, cn.icframework.system.enums.UserType.SYSTEM_USER.code())) {
-            // 系统用户使用userService查询
-            User user = selectById(userId);
-            if (user == null) {
-                return null;
-            }
-            IUserInfoProvider.BaseUserInfo baseUserInfo = new IUserInfoProvider.BaseUserInfo();
-            baseUserInfo.setUserId(userId);
-            baseUserInfo.setUserType(userType);
-            baseUserInfo.setUserName(user.getName());
-            baseUserInfo.setUserPic(user.getAvatarFileUrl());
-            return baseUserInfo;
-        } else if (userInfoProvider != null) {
-            return userInfoProvider.getInfo(userType, userId);
-        }
-        throw new RuntimeException("非系统用户，请实现IUserInfoProvider来获取用户信息");
-    }
-
 }

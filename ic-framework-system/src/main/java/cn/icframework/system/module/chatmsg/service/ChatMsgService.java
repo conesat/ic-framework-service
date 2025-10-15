@@ -10,7 +10,7 @@ import cn.icframework.system.module.chatmsg.pojo.dto.ChatMsgDTO;
 import cn.icframework.system.module.chatmsg.pojo.dto.ChatMsgSendDTO;
 import cn.icframework.system.module.chatuser.def.ChatUserDef;
 import cn.icframework.system.module.chatuser.service.ChatUserService;
-import cn.icframework.system.module.user.service.IUserInfoProvider;
+import cn.icframework.system.module.user.User;
 import cn.icframework.system.module.user.service.UserService;
 import cn.icframework.system.module.ws.api.ApiWebSocket;
 import lombok.RequiredArgsConstructor;
@@ -74,15 +74,13 @@ public class ChatMsgService extends BasicService<ChatMsgMapper, ChatMsg> {
             // 找出所有聊天对象
             ChatUserDef chatUserDef = ChatUserDef.table();
             List<String> userIdList = chatUserService.select(SELECT(chatUserDef.userId).FROM(chatUserDef.chatId.eq(entity.getChatId())), String.class);
-            IUserInfoProvider.BaseUserInfo info = userService.getUserInfo(entity.getUserType(), entity.getUserId());
-            String userName = info.getUserName();
-            String userPic = info.getUserPic();
+            User user = userService.selectById(entity.getUserId());
             ChatMsgSendDTO msgDTO = new ChatMsgSendDTO();
             BeanUtils.copyProperties(entity, msgDTO);
             for (String userId : userIdList) {
                 msgDTO.setToUserId(userId);
-                msgDTO.setUserName(userName);
-                msgDTO.setUserPic(userPic);
+                msgDTO.setUserName(user.getName());
+                msgDTO.setUserPic(user.getAvatarFileUrl());
                 ApiWebSocket.send(msgDTO);
             }
         }

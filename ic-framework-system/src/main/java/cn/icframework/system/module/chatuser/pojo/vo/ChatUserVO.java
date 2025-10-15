@@ -31,10 +31,6 @@ public class ChatUserVO {
      */
     private String userPic;
     /**
-     * 用户类型
-     */
-    private String userType;
-    /**
      * 加入聊天时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

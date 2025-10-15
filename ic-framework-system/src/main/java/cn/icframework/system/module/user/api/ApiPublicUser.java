@@ -34,15 +34,17 @@ public class ApiPublicUser extends BasicApi {
      * @param passwd      密码
      * @param verifyCode  验证码
      * @param captchaCode 验证码code
+     * @param userType 用户类型(只内置了系统用户，如果有其他用户类型请自行扩展)
      * @return 登录信息
      */
     @PostMapping("/login")
     public UserLoginInfo login(HttpServletRequest request,
                                @RequestParam("username") String username,
                                @RequestParam("passwd") String passwd,
+                               @RequestParam(value = "userType", defaultValue = UserType.SYSTEM_USER) String userType,
                                String verifyCode,
                                String captchaCode) {
-        return onlineUserService.login(request, username, passwd, verifyCode, captchaCode, null);
+        return onlineUserService.login(request, username, passwd, userType, verifyCode, captchaCode, null);
     }
 
     /**
@@ -50,35 +52,39 @@ public class ApiPublicUser extends BasicApi {
      *
      * @param username 用户名
      * @param passwd   密码
+     * @param userType 用户类型(只内置了系统用户，如果有其他用户类型请自行扩展)
      * @return 登录信息
      */
     @PostMapping("/app-login")
     public UserLoginInfo appLogin(HttpServletRequest request,
                                   @RequestParam("username") String username,
-                                  @RequestParam("passwd") String passwd) {
-        return onlineUserService.login(request, username, passwd, null, null, (int) Duration.ofDays(7).toSeconds(), true);
+                                  @RequestParam("passwd") String passwd,
+                                  @RequestParam(value = "userType", defaultValue = UserType.SYSTEM_USER) String userType) {
+        return onlineUserService.login(request, username, passwd, userType, null, null, (int) Duration.ofDays(7).toSeconds(), true);
     }
 
     /**
      * 获取加密密钥
      *
      * @param username 用户名
+     * @param userType 用户类型(只内置了系统用户，如果有其他用户类型请自行扩展)
      * @return 密钥
      */
     @GetMapping("/key")
-    public Response<String> key(@RequestParam("username") String username) {
-        return Response.success(registerLoginHelper.buildKey(UserType.SYSTEM_USER, username));
+    public Response<String> key(@RequestParam("username") String username, @RequestParam(value = "userType", defaultValue = UserType.SYSTEM_USER) String userType) {
+        return Response.success(registerLoginHelper.buildKey(userType, username));
     }
 
     /**
      * 获取图片验证码
      *
+     * @param userType 用户类型(只内置了系统用户，如果有其他用户类型请自行扩展)
      * @return 图片base 64
      */
     @GetMapping("/captcha")
-    public Response<RegisterLoginHelper.CaptchaInfo> captcha(HttpServletRequest request) {
+    public Response<RegisterLoginHelper.CaptchaInfo> captcha(HttpServletRequest request, @RequestParam(value = "userType", defaultValue = UserType.SYSTEM_USER) String userType) {
         if (ipLockService.checkNeedCaptcha(request)) {
-            return Response.success(registerLoginHelper.buildCaptcha(UserType.SYSTEM_USER));
+            return Response.success(registerLoginHelper.buildCaptcha(userType));
         }
         return Response.success();
     }
