@@ -5,7 +5,7 @@
     <parent>
         <groupId>cn.icframework</groupId>
         <artifactId>framework-service</artifactId>
-        <version>1.0.2</version>
+        <version>1.0.3</version>
     </parent>
 
     <groupId>cn.icframework.spring</groupId>
@@ -103,7 +103,7 @@
             <plugin>
                 <groupId>cn.icframework</groupId>
                 <artifactId>ic-framework-version-plugin</artifactId>
-                <version>1.0.2</version>
+                <version>1.0.3</version>
                 <executions>
                     <execution>
                         <id>generate-version</id>
