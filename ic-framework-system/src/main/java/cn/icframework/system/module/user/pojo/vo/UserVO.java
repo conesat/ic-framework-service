@@ -47,6 +47,11 @@ public class UserVO extends UserSimpleVO {
     private String email;
 
     /**
+     * 用户类型
+     */
+    private String userType;
+
+    /**
      * 创建时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

@@ -84,7 +84,14 @@
                                placeholder="请输入邮箱号"></t-auto-complete>
             </t-form-item>
           </t-col>
-
+          <t-col :span="6">
+            <t-form-item label="用户类型" name="userType">
+              <t-select v-model="formData.userType" placeholder="用户类型" :maxlength="255"
+                        :disabled="formData.su">
+                <t-option v-for="item in userTypes" :key="item.code" :label="item.name" :value="item.code"/>
+              </t-select>
+            </t-form-item>
+          </t-col>
           <t-col :span="6">
             <t-form-item label="部门" name="depId">
               <t-tag-input v-model="deps" clearable
@@ -206,6 +213,7 @@ import {encryptPasswd} from "@/utils/passwd-utils";
 import {FileUseTypes} from "@/constants/file-user-types";
 import DepSelect from "@/pages/sys/dept/select.vue";
 import {closeOrBack} from "@/utils/url-utils";
+import ApiSetting from '@/api/sys/ApiSetting';
 
 
 // 自定义校验 start -------------------
@@ -238,12 +246,16 @@ const showSelectRole = ref(false);
 const showSelectDep = ref(false);
 const showSelectPos = ref(false);
 
+// 用户类型列表
+const userTypes = ref([]);
+
 // 路由
 const route = useRoute();
 // 表单
 const formData = ref({
   id: '',
   username: '',
+  userType: '',
   name: '',
   sex: 1,
   status: 1,
@@ -362,6 +374,11 @@ onMounted(() => {
     pos.value = [{id: posId, name: posName}]
   }
 
+  ApiSetting.userTypes({
+    success: (res: any) => {
+      userTypes.value = res;
+    }
+  });
   if (id) {
     ApiUser.detail({
       id: id,
