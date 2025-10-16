@@ -195,7 +195,7 @@ public class OnlineUserService extends BasicService<OnlineUserMapper, OnlineUser
     public void login(OnlineInfo onlineInfo) {
         OnlineUser onlineUser = new OnlineUser();
         onlineUser.setSessionId(onlineInfo.getSessionId());
-        onlineUser.setUserId((Long) onlineInfo.getUserId());
+        onlineUser.setUserId(onlineInfo.getUserId().toString());
         onlineUser.setLoginTime(LocalDateTimeUtils.parse(onlineInfo.getLoginTime()));
         onlineUser.setExpireTime(LocalDateTimeUtils.parse(onlineInfo.getExpireTime()));
         onlineUser.setIp(onlineInfo.getIp());

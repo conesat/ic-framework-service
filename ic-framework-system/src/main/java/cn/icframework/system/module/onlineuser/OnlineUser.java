@@ -21,7 +21,7 @@ public class OnlineUser {
      * 用户id
      */
     @TableField(comment = "用户id")
-    private Long userId;
+    private String userId;
 
     /**
      * 登录ip
