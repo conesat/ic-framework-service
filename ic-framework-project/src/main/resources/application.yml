@@ -22,7 +22,10 @@ spring:
       spec: maximumSize=500,expireAfterWrite=10m
   profiles:
     active:
-    - dev
+      - prod
+      - test
+      - dev
+      - local
   messages:
     basename: i18n/messages
     encoding: UTF-8
