@@ -30,11 +30,6 @@
             <groupId>cn.icframework</groupId>
             <artifactId>ic-framework-mybatis</artifactId>
         </dependency>
-        <dependency>
-            <groupId>cn.icframework</groupId>
-            <artifactId>ic-framework-mybatis-processor</artifactId>
-            <!-- <scope>provided</scope> -->
-        </dependency>
         <!-- Kaptcha 依赖（验证码） -->
         <dependency>
             <groupId>pro.fessional</groupId>

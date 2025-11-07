@@ -100,45 +100,6 @@
                     <target>25</target>
                 </configuration>
             </plugin>
-<!--            <plugin>-->
-<!--                <groupId>cn.icframework</groupId>-->
-<!--                <artifactId>ic-framework-version-plugin</artifactId>-->
-<!--                <version>1.0.3</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>generate-version</id>-->
-<!--                        <phase>generate-resources</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>resources</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>aot</id>
-            <build>
-                <plugins>
-                                <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <mainClass>cn.icframework.project.ProjectApplication</mainClass>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>process-aot</id>
-                        <goals>
-                            <goal>process-aot</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>

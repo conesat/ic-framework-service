@@ -1,3 +1,4 @@
 /*/target/*
 /*/src/main/resources/application-dev.yml
-/.idea/modules.xml
+/target/*
+/.idea/*
