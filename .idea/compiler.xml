@@ -20,8 +20,8 @@
           <entry name="$MAVEN_REPOSITORY$/io/micrometer/micrometer-observation/1.14.11/micrometer-observation-1.14.11.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/springframework/spring-jcl/6.2.0/spring-jcl-6.2.0.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/slf4j/jul-to-slf4j/2.0.16/jul-to-slf4j-2.0.16.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/springframework/spring-expression/6.2.11/spring-expression-6.2.11.jar" />
           <entry name="$MAVEN_REPOSITORY$/com/zaxxer/HikariCP/5.1.0/HikariCP-5.1.0.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/springframework/spring-expression/6.2.11/spring-expression-6.2.11.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/springframework/boot/spring-boot-starter-jdbc/3.4.0/spring-boot-starter-jdbc-3.4.0.jar" />
           <entry name="$MAVEN_REPOSITORY$/cn/icframework/ic-framework-gen-template/1.0.3/ic-framework-gen-template-1.0.3.jar" />
           <entry name="$MAVEN_REPOSITORY$/jakarta/annotation/jakarta.annotation-api/2.1.1/jakarta.annotation-api-2.1.1.jar" />
@@ -42,8 +42,8 @@
           <entry name="$MAVEN_REPOSITORY$/org/springframework/spring-aop/6.2.11/spring-aop-6.2.11.jar" />
           <entry name="$MAVEN_REPOSITORY$/cn/icframework/ic-framework-mybatis-processor/1.0.3/ic-framework-mybatis-processor-1.0.3.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/mybatis/spring/boot/mybatis-spring-boot-starter/3.0.4/mybatis-spring-boot-starter-3.0.4.jar" />
-          <entry name="$MAVEN_REPOSITORY$/jakarta/validation/jakarta.validation-api/3.1.1/jakarta.validation-api-3.1.1.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/apache/logging/log4j/log4j-to-slf4j/2.24.1/log4j-to-slf4j-2.24.1.jar" />
+          <entry name="$MAVEN_REPOSITORY$/jakarta/validation/jakarta.validation-api/3.1.1/jakarta.validation-api-3.1.1.jar" />
           <entry name="$MAVEN_REPOSITORY$/cn/icframework/ic-framework-mybatis/1.0.3/ic-framework-mybatis-1.0.3.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/apache/logging/log4j/log4j-api/2.24.1/log4j-api-2.24.1.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/yaml/snakeyaml/2.0/snakeyaml-2.0.jar" />
