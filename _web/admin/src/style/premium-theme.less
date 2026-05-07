@@ -1,0 +1,290 @@
+/**
+ * Dashcube Premium Theme Overrides for TDesign
+ * Refactored: Overriding standard TDesign theme parameters directly.
+ * No custom variable names used for colors.
+ */
+
+:root {
+}
+
+/* --- Dashcube Dark Mode Theme --- */
+:root[theme-mode='dark'] {
+}
+
+/* --- Global Background Reset --- */
+body,
+#app {
+  background-color: var(--td-bg-color-page) !important;
+}
+
+/* --- Layout Optimization --- */
+.t-layout__sider {
+  .t-menu__logo {
+    box-sizing: border-box;
+    padding: 6px;
+  }
+}
+.tdesign-starter-side-nav-logo-t-logo {
+  width: 24px;
+  height: 24px;
+  margin-top: 4px;
+}
+.t-menu__sub {
+  .t-menu__item {
+    .t-menu__content {
+      padding-left: 24px;
+    }
+  }
+}
+.t-default-menu.t-is-collapsed {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+
+  .t-menu__item {
+    margin: 4px 0 !important;
+    border-radius: 0 !important;
+  }
+}
+.t-default-menu {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+
+  .t-menu__item {
+    margin: 4px 10px !important;
+    border-radius: 10px !important;
+    height: 48px !important;
+    padding: 0 16px !important;
+    transition: all 0.2s ease;
+    border: none !important;
+    background-color: transparent !important;
+    color: var(--td-text-color-secondary) !important;
+
+    .t-icon {
+      font-size: 20px !important;
+      margin-right: 0 !important; /* 对齐用户最近的修改 */
+      transition: color 0.2s ease;
+      color: var(--td-text-color-secondary);
+    }
+
+    /* 活跃项样式：使用 color-mix 动态混合透明度 */
+    &.t-is-active {
+      background-color: color-mix(in srgb, var(--td-brand-color) 4%, transparent) !important;
+      box-shadow: none !important;
+
+      .t-icon {
+        color: var(--td-brand-color) !important;
+      }
+    }
+
+    /* 针对子项的特殊处理 */
+    &.t-submenu__item.t-is-active {
+      color: var(--td-font-white-1) !important;
+      // background-color: color-mix(in srgb, var(--td-brand-color) 80%, transparent) !important;
+      background-color: var(--td-brand-color-6) !important;
+    }
+
+    &:hover:not(.t-is-active) {
+      color: var(--td-text-color-primary) !important;
+    }
+  }
+
+  /* 展开状态下的容器透明化 */
+  &:not(.t-is-collapsed) {
+    .t-submenu.t-is-opened,
+    .t-submenu__title.t-is-active,
+    .t-menu__sub {
+      background-color: transparent !important;
+      color: var(--td-text-color-secondary) !important;
+      border: none !important;
+
+      .t-icon {
+        color: var(--td-text-color-secondary) !important;
+      }
+    }
+  }
+
+  /* 分组标题排版 */
+  .t-menu-group__title {
+    padding-left: 28px !important;
+    text-transform: uppercase !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    letter-spacing: 1.5px !important;
+    color: var(--td-text-color-placeholder) !important;
+    margin-top: 24px;
+    margin-bottom: 8px;
+  }
+}
+
+/* --- Header --- */
+.t-layout__header {
+  background-color: var(--td-bg-color-page) !important;
+  box-shadow: none !important;
+}
+
+/* --- Card & Stats --- */
+.t-card {
+  background-color: var(--td-bg-color-container) !important;
+  border-radius: 16px !important;
+}
+
+/* --- Buttons & Inputs --- */
+.t-button {
+  border-radius: var(--td-radius-default) !important;
+  font-weight: 600 !important;
+  transition: all 0.2s cubic-bezier(0.38, 0, 0.24, 1);
+
+  &.t-button--theme-primary.t-button--variant-base {
+    background-color: var(--td-brand-color) !important;
+    border: none !important;
+
+    &:hover {
+      filter: brightness(1.1);
+    }
+  }
+}
+
+.t-table th,
+.t-table td {
+  border: none;
+  padding: 14px 6px !important;
+}
+.t-table th,
+.t-table td:first-child {
+  border-top-left-radius: 10px !important;
+  border-bottom-left-radius: 10px !important;
+}
+.t-table td:last-child {
+  border-top-right-radius: 10px !important;
+  border-bottom-right-radius: 10px !important;
+}
+
+.t-layout__sider {
+  margin: 20px;
+  border-radius: 20px;
+  .tdesign-starter-side-nav {
+    position: relative;
+  }
+}
+
+.tdesign-starter-header-menu-fixed-side {
+  left: 272px !important;
+  top: 20px !important;
+  border-radius: 20px;
+  margin-right: 20px;
+}
+
+.tdesign-starter-header-menu-fixed-side-compact {
+  left: 103px !important;
+}
+
+.tdesign-starter-header-side-shell {
+  border-radius: 20px;
+  overflow: hidden;
+  border-bottom: none !important;
+}
+
+.tdesign-starter-header-side-shell-fixed {
+  top: 20px !important;
+  left: 272px !important;
+  right: 20px !important;
+}
+
+.tdesign-starter-header-side-shell-fixed-compact {
+  left: 103px !important;
+}
+.t-default-menu__inner .t-menu {
+  box-shadow: none !important;
+}
+.t-default-menu__inner .t-menu__logo:not(:empty) {
+  height: var(--td-comp-size-xxxxl);
+}
+.t-default-menu.t-is-collapsed .t-menu__logo > * {
+  margin: 0 auto !important;
+}
+.tdesign-starter-side-nav-logo-wrapper {
+  max-width: 60%;
+  .t-icon {
+    margin-left: 10px;
+  }
+}
+.tdesign-starter-side-nav-logo-tdesign-logo {
+  padding: 0 !important;
+}
+.t-layout__header {
+  height: auto;
+}
+.tdesign-starter-header-layout-fixed {
+  padding-top: 68px;
+}
+.tdesign-starter-layout {
+  height: 100%;
+  overflow-y: auto;
+}
+.t-head-menu__inner {
+  height: 48px !important;
+  border: none !important;
+}
+
+.tdesign-starter-layout-tabs-nav {
+  margin-top: 0;
+  margin-right: 0;
+  margin-bottom: 0;
+  padding-right: 0;
+  background: transparent;
+
+  .t-tabs__header {
+    margin: 0;
+  }
+
+  .t-tabs__nav-wrap {
+    overflow: visible;
+    background: transparent;
+  }
+
+  .t-tabs__nav {
+    min-height: 42px;
+    padding: 0;
+    background: transparent;
+  }
+
+  .t-tabs__nav-item {
+    margin-top: 0 !important;
+    border-top-left-radius: 10px !important;
+    border-top-right-radius: 10px !important;
+  }
+}
+
+.tdesign-starter-content-layout {
+  padding: 0;
+}
+
+html {
+  height: 100%;
+  body {
+    height: 100%;
+    #app {
+      height: 100%;
+      > div {
+        height: 100%;
+        > section {
+          height: 100%;
+        }
+      }
+    }
+  }
+}
+
+.t-default-menu .t-menu__operations:not(:empty) {
+  box-shadow: none !important;
+}
+
+.tdesign-starter-iframe-page__main {
+  background: none !important;
+}
+
+.tdesign-starter-main-layout {
+  padding-right: 10px;
+}

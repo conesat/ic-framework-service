@@ -1,7 +1,14 @@
 <template>
-  <l-header v-if="settingStore.state.showHeader" :show-logo="settingStore.showHeaderLogo"
-    :theme="settingStore.displayMode" :layout="settingStore.state.layout" :is-fixed="settingStore.state.isHeaderFixed"
-    :menu="headerMenu as MenuRoute[]" :is-compact="settingStore.state.isSidebarCompact" />
+  <l-header
+    v-if="settingStore.state.showHeader || settingStore.state.isUseTabsRouter"
+    :show-logo="settingStore.showHeaderLogo"
+    :show-menu="settingStore.state.showHeader"
+    :theme="settingStore.displayMode"
+    :layout="settingStore.state.layout"
+    :is-fixed="settingStore.state.isHeaderFixed"
+    :menu="headerMenu as MenuRoute[]"
+    :is-compact="settingStore.state.isSidebarCompact"
+  />
 </template>
 
 <script setup lang="ts">

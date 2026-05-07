@@ -35,6 +35,7 @@ import java.util.UUID;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@ConditionalOnProperty(prefix = "ic.system", name = "file-storage.enabled", havingValue = "true", matchIfMissing = true)
 @ConditionalOnProperty(name = "app.file-storage.type", havingValue = "oss", matchIfMissing = false)
 public class OssFileHelper implements IFileHelper {
     private final SysFileService sysFileService;

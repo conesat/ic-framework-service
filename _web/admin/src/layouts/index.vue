@@ -1,15 +1,15 @@
 <template>
-  <div>
+  <div class="tdesign-starter-wrapper">
     <template v-if="settingStore.state.layout === 'side'">
       <t-layout key="side" :class="mainLayoutCls">
         <t-aside>
           <layout-side-nav />
         </t-aside>
-        <t-layout>
-          <t-header>
+        <t-layout class="tdesign-starter-main-layout">
+          <t-header class="tdesign-starter-main-header">
             <layout-header />
           </t-header>
-          <t-content>
+          <t-content class="tdesign-starter-main-content">
             <layout-content />
           </t-content>
         </t-layout>
@@ -82,7 +82,9 @@ watch(
   () => route.path,
   () => {
     appendNewRoute();
-    document.querySelector(`.${prefix}-layout`).scrollTo({ top: 0, behavior: 'smooth' });
+    const layout = (document.querySelector('.tdesign-starter-main-layout') ||
+      document.querySelector(`.${prefix}-layout`)) as HTMLElement | null;
+    layout?.scrollTo({ top: 0, behavior: 'smooth' });
   },
 );
 </script>

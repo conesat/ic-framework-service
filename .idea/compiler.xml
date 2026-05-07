@@ -18,8 +18,8 @@
           <entry name="$MAVEN_REPOSITORY$/cn/icframework/ic-framework-common/1.0.3/ic-framework-common-1.0.3.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/springframework/spring-beans/6.2.11/spring-beans-6.2.11.jar" />
           <entry name="$MAVEN_REPOSITORY$/io/micrometer/micrometer-observation/1.14.11/micrometer-observation-1.14.11.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/springframework/spring-jcl/6.2.0/spring-jcl-6.2.0.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/slf4j/jul-to-slf4j/2.0.16/jul-to-slf4j-2.0.16.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/springframework/spring-jcl/6.2.0/spring-jcl-6.2.0.jar" />
           <entry name="$MAVEN_REPOSITORY$/com/zaxxer/HikariCP/5.1.0/HikariCP-5.1.0.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/springframework/spring-expression/6.2.11/spring-expression-6.2.11.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/springframework/boot/spring-boot-starter-jdbc/3.4.0/spring-boot-starter-jdbc-3.4.0.jar" />
@@ -29,8 +29,8 @@
           <entry name="$MAVEN_REPOSITORY$/org/mybatis/mybatis/3.5.17/mybatis-3.5.17.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/mybatis/mybatis-spring/3.0.4/mybatis-spring-3.0.4.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/apache/commons/commons-lang3/3.18.0/commons-lang3-3.18.0.jar" />
-          <entry name="$MAVEN_REPOSITORY$/ch/qos/logback/logback-core/1.5.19/logback-core-1.5.19.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/springframework/spring-core/6.2.11/spring-core-6.2.11.jar" />
+          <entry name="$MAVEN_REPOSITORY$/ch/qos/logback/logback-core/1.5.19/logback-core-1.5.19.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.40/lombok-1.18.40.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/springframework/spring-jdbc/6.2.11/spring-jdbc-6.2.11.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/springframework/spring-tx/6.2.10/spring-tx-6.2.10.jar" />

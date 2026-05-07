@@ -2,9 +2,8 @@ package cn.icframework.system.config;
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.google.code.kaptcha.util.Config;
-import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
 
 import java.util.Properties;
 
@@ -14,7 +13,7 @@ import static com.google.code.kaptcha.Constants.*;
  * @author iceFire
  * @since 2023/6/3
  */
-@Component
+@Configuration(proxyBeanMethods = false)
 public class CaptchaConfig {
     @Bean(name = "captchaProducer")
     public DefaultKaptcha captchaProducer() {

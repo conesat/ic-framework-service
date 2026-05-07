@@ -1,11 +1,7 @@
-<script setup lang="ts">
-
-</script>
-
 <template>
-<iframe src="http://icframework.chinahg.top/" style="border: none;padding: 0;margin: -20px -20px 0;width: calc(100% + 40px);height: calc(100% + 20px)"></iframe>
+  <frame-content frame-src="http://icframework.chinahg.top/" />
 </template>
 
-<style scoped lang="less">
-
-</style>
+<script setup lang="ts">
+import FrameContent from '@/layouts/components/FrameContent.vue';
+</script>

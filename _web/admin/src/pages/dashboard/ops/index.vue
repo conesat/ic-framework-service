@@ -1,956 +1,1514 @@
 <template>
-  <div class="ops-dashboard">
-    <!-- 头部导航 -->
-    <t-card class="dashboard-header" :bordered="false">
-      <div class="header-content">
-        <div class="header-left">
-          <div class="title">
-            <t-icon name="server" size="24px" />
-            <t-text variant="title" size="large">运维监控看板</t-text>
+  <div class="ops-monitor-page" :style="pageStyleVars">
+    <t-card class="hero-panel" :bordered="false">
+      <div class="hero-toolbar">
+        <div class="hero-title-group">
+          <div class="hero-title">
+            <t-icon name="server" size="22px" />
+            <span>资源监控</span>
           </div>
-          <t-tabs v-model="activeTab" class="nav-tabs">
-            <t-tab-panel value="overview" label="系统概况" />
-            <t-tab-panel value="service" label="服务监控" />
-            <t-tab-panel value="alarm" label="告警信息" />
-          </t-tabs>
+          <div class="hero-subtitle">
+            <template v-if="monitorMeta.enabled">
+              最近 {{ timeline.minutes }} 分钟 · {{ timeline.sampleIntervalSeconds || monitorMeta.sampleIntervalSeconds || 5
+              }} 秒采样 ·
+              {{ latest ? formatDateTime(latest.timestamp) : '等待首批数据' }}
+            </template>
+            <template v-else>
+              当前环境已关闭资源监控采集
+            </template>
+          </div>
         </div>
-        <div class="header-right">
-          <t-text variant="body" size="small">{{ currentTime }}</t-text>
-          <div class="user-info">
-            <t-icon name="user" size="16px" />
-            <t-text variant="body" size="small">管理员</t-text>
+        <div v-if="monitorMeta.enabled" class="hero-inline-stats">
+          <div class="hero-stat">
+            <span class="hero-stat-label">CPU</span>
+            <span class="hero-stat-value">{{ latest ? toPercent(latest.cpu.systemUsage) : '--' }}</span>
           </div>
+          <div class="hero-stat">
+            <span class="hero-stat-label">内存</span>
+            <span class="hero-stat-value">{{ latest ? toPercent(latest.systemMemory.usage) : '--' }}</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-label">磁盘</span>
+            <span class="hero-stat-value">{{ latest ? toPercent(latest.disk.usage) : '--' }}</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-label">采样</span>
+            <span class="hero-stat-value">{{ timeline.samples.length }}</span>
+          </div>
+        </div>
+        <div class="hero-actions">
+          <div v-if="monitorMeta.enabled" class="range-switch">
+            <t-button v-for="item in ranges" :key="item.value"
+              :theme="selectedMinutes === item.value ? 'primary' : 'default'" variant="outline" size="small"
+              @click="changeRange(item.value)">
+              {{ item.label }}
+            </t-button>
+          </div>
+          <t-button class="refresh-button" theme="default" variant="outline" size="small" :loading="loading"
+            @click="refreshPageData">
+            刷新
+          </t-button>
         </div>
       </div>
     </t-card>
 
-    <!-- 主要内容区域 -->
-    <div class="dashboard-content">
-      <!-- 第一行 -->
-      <div class="content-row">
-        <!-- 平台信息 -->
-        <t-card class="dashboard-card" :bordered="false">
-          <template #header>
-            <t-text variant="title" size="medium">平台信息</t-text>
-          </template>
-          <div class="platform-grid">
-            <t-card v-for="item in platformInfo" :key="item.key" class="platform-item" :bordered="false"
-              :class="item.colorClass">
-              <div class="item-content">
-                <t-icon :name="item.icon" size="24px" />
-                <t-text variant="body" size="small">{{ item.label }}</t-text>
-                <t-text variant="title" size="large" class="value">{{ item.value }}</t-text>
-              </div>
-            </t-card>
-          </div>
-        </t-card>
+    <div v-if="monitorMeta.enabled" class="summary-grid">
+      <t-card v-for="item in summaryCards" :key="item.key" class="summary-card" :class="`summary-card--${item.theme}`"
+        :bordered="false">
+        <div class="summary-top">
+          <span class="summary-label">{{ item.label }}</span>
+          <t-tag size="small" variant="light" :theme="item.theme">{{ item.tag }}</t-tag>
+        </div>
+        <div class="summary-value">{{ item.value }}</div>
+        <div class="summary-meta">{{ item.meta }}</div>
+        <div class="summary-progress">
+          <span :style="{ width: `${item.progress}%` }"></span>
+        </div>
+      </t-card>
+    </div>
 
-        <!-- 服务器运行状态 -->
-        <t-card class="dashboard-card" :bordered="false">
-          <template #header>
-            <t-text variant="title" size="medium">服务器运行状态</t-text>
-          </template>
-          <div class="status-content">
-            <div class="chart-container">
-              <v-chart class="status-chart" :option="serverStatusOption" />
-            </div>
-            <div class="status-legend">
-              <div v-for="item in serverStatusLegend" :key="item.name" class="legend-item">
-                <t-tag :theme="item.theme" :variant="item.variant" size="small">
-                  {{ item.name }} ({{ item.count }})
-                </t-tag>
-              </div>
-            </div>
-          </div>
-        </t-card>
-
-        <!-- 系统资源 -->
-        <t-card class="dashboard-card" :bordered="false">
-          <template #header>
-            <t-text variant="title" size="medium">系统资源</t-text>
-          </template>
-          <div class="resources-grid">
-            <t-card v-for="item in systemResources" :key="item.key" class="resource-item" :bordered="false"
-              :class="item.colorClass">
-              <div class="item-content">
-                <t-icon :name="item.icon" size="24px" />
-                <t-text variant="body" size="small">{{ item.label }}</t-text>
-                <t-text variant="title" size="large" class="value">{{ item.value }}</t-text>
-              </div>
-            </t-card>
-          </div>
-        </t-card>
+    <div v-else class="disabled-panel">
+      <t-icon name="chart" size="48px" />
+      <div class="disabled-title">资源监控未启用</div>
+      <div class="disabled-text">
+        可在配置中设置 <code>ic.system.monitor.enabled: true</code> 后启用采集和看板展示。
       </div>
+    </div>
 
-      <!-- 第二行 -->
-      <div class="content-row">
-        <!-- CPU使用率曲线 -->
-        <t-card class="dashboard-card" :bordered="false">
-          <template #header>
-            <t-text variant="title" size="medium">CPU使用率趋势</t-text>
-          </template>
-          <div class="chart-container">
-            <v-chart class="chart" :option="cpuChartOption" />
+    <div v-if="monitorMeta.enabled" class="chart-grid">
+      <t-card class="monitor-card" :bordered="false">
+        <template #header>
+          <div class="panel-header">
+            <div class="panel-title">CPU 使用率</div>
+            <div class="panel-subtitle">{{ cpuPanelMeta }}</div>
           </div>
-        </t-card>
-
-        <!-- 内存使用率曲线 -->
-        <t-card class="dashboard-card" :bordered="false">
-          <template #header>
-            <t-text variant="title" size="medium">内存使用率趋势</t-text>
-          </template>
-          <div class="chart-container">
-            <v-chart class="chart" :option="memoryChartOption" />
+        </template>
+        <v-chart :key="`${chartRenderKey}-cpu`" class="chart" :option="cpuChartOption"
+          :update-options="chartUpdateOptions" autoresize />
+      </t-card>
+      <t-card class="monitor-card" :bordered="false">
+        <template #header>
+          <div class="panel-header">
+            <div class="panel-title">内存使用率</div>
+            <div class="panel-subtitle">{{ memoryPanelMeta }}</div>
           </div>
-        </t-card>
-      </div>
+        </template>
+        <v-chart :key="`${chartRenderKey}-memory`" class="chart" :option="memoryChartOption"
+          :update-options="chartUpdateOptions" autoresize />
+      </t-card>
+      <t-card class="monitor-card" :bordered="false">
+        <template #header>
+          <div class="panel-header">
+            <div class="panel-title">磁盘使用趋势</div>
+            <div class="panel-subtitle">{{ diskChartMeta }}</div>
+          </div>
+        </template>
+        <v-chart :key="`${chartRenderKey}-disk`" class="chart" :option="diskChartOption"
+          :update-options="chartUpdateOptions" autoresize />
+      </t-card>
+      <t-card class="monitor-card" :bordered="false">
+        <template #header>
+          <div class="panel-header">
+            <div class="panel-title">网络吞吐</div>
+            <div class="panel-subtitle">{{ networkPanelMeta }}</div>
+          </div>
+        </template>
+        <v-chart :key="`${chartRenderKey}-network`" class="chart" :option="networkChartOption"
+          :update-options="chartUpdateOptions" autoresize />
+      </t-card>
+    </div>
 
-      <!-- 第三行 -->
-      <div class="content-row">
-        <!-- JVM监控 -->
-        <t-card class="dashboard-card" :bordered="false">
-          <template #header>
-            <t-text variant="title" size="medium">JVM监控</t-text>
-          </template>
-          <div class="jvm-content">
-            <div v-for="item in jvmMetrics" :key="item.key" class="metric-item">
-              <t-text variant="body" size="small">{{ item.label }}</t-text>
-              <t-progress class="progress-bar" :percentage="item.value" :color="item.color" />
-              <t-text variant="body" size="small" class="value">{{ item.displayValue }}</t-text>
+    <div v-if="monitorMeta.enabled" class="detail-grid">
+      <t-card class="monitor-card" :bordered="false">
+        <template #header>
+          <div class="panel-header">
+            <div class="panel-title">JVM 运行状态</div>
+            <div class="panel-subtitle">{{ jvmPanelMeta }}</div>
+          </div>
+        </template>
+        <div class="jvm-panel">
+          <div class="metric-row">
+            <span>堆内存</span>
+            <div class="metric-main">
+              <t-progress :percentage="formatPercentageValue(latest?.jvmMemory?.heapUsage)" color="#0052d9" />
+            </div>
+            <span class="metric-value">
+              {{ bytes(latest?.jvmMemory?.heapUsedBytes) }} / {{ bytes(heapLimitBytes) }}
+            </span>
+          </div>
+          <div class="metric-row">
+            <span>非堆内存</span>
+            <div class="metric-main">
+              <t-progress :percentage="formatPercentageValue(nonHeapUsage)" color="#00a870" />
+            </div>
+            <span class="metric-value">
+              {{ bytes(latest?.jvmMemory?.nonHeapUsedBytes) }} / {{ bytes(latest?.jvmMemory?.nonHeapCommittedBytes) }}
+            </span>
+          </div>
+          <div class="metric-stats">
+            <div class="metric-stat">
+              <div class="metric-stat-label">线程数</div>
+              <div class="metric-stat-value">{{ formatCount(latest?.jvm?.threadCount) }}</div>
+            </div>
+            <div class="metric-stat">
+              <div class="metric-stat-label">守护线程</div>
+              <div class="metric-stat-value">{{ formatCount(latest?.jvm?.daemonThreadCount) }}</div>
+            </div>
+            <div class="metric-stat">
+              <div class="metric-stat-label">GC 次数</div>
+              <div class="metric-stat-value">{{ formatCount(latest?.jvm?.gcCount) }}</div>
+            </div>
+            <div class="metric-stat">
+              <div class="metric-stat-label">GC 耗时</div>
+              <div class="metric-stat-value">{{ formatDuration(latest?.jvm?.gcTimeMillis) }}</div>
+            </div>
+            <div class="metric-stat">
+              <div class="metric-stat-label">已加载类</div>
+              <div class="metric-stat-value">{{ formatCount(latest?.jvm?.loadedClassCount) }}</div>
+            </div>
+            <div class="metric-stat">
+              <div class="metric-stat-label">运行时长</div>
+              <div class="metric-stat-value">{{ formatDuration(latest?.jvm?.uptimeMillis) }}</div>
             </div>
           </div>
-        </t-card>
+        </div>
+      </t-card>
 
-        <!-- 数据库监控 -->
-        <t-card class="dashboard-card" :bordered="false">
-          <template #header>
-            <t-text variant="title" size="medium">数据库监控</t-text>
-          </template>
-          <div class="db-content">
-            <div v-for="item in dbMetrics" :key="item.key" class="metric-item">
-              <t-text variant="body" size="small">{{ item.label }}</t-text>
-              <t-text variant="body" size="small" class="value">{{ item.value }}</t-text>
+      <t-card class="monitor-card" :bordered="false">
+        <template #header>
+          <div class="panel-header">
+            <div class="panel-title">磁盘明细</div>
+            <div class="panel-subtitle">{{ diskPanelMeta }}</div>
+          </div>
+        </template>
+        <div class="disk-table">
+          <div class="disk-row disk-head">
+            <span>路径</span>
+            <span>已用</span>
+            <span>可用</span>
+            <span>总量</span>
+            <span>使用率</span>
+          </div>
+          <div v-if="diskRows.length === 0" class="disk-empty">{{ diskEmptyText }}</div>
+          <div v-for="item in diskRows" :key="item.path" class="disk-row">
+            <span class="disk-path">{{ item.path }}</span>
+            <div class="disk-cell">
+              <span class="disk-cell-label">已用</span>
+              <span>{{ bytes(item.usedBytes) }}</span>
+            </div>
+            <div class="disk-cell">
+              <span class="disk-cell-label">可用</span>
+              <span>{{ bytes(item.usableBytes) }}</span>
+            </div>
+            <div class="disk-cell">
+              <span class="disk-cell-label">总量</span>
+              <span>{{ bytes(item.totalBytes) }}</span>
+            </div>
+            <div class="disk-cell">
+              <span class="disk-cell-label">使用率</span>
+              <span>{{ toPercent(item.usage) }}</span>
             </div>
           </div>
-        </t-card>
-
-        <!-- 缓存监控 -->
-        <t-card class="dashboard-card" :bordered="false">
-          <template #header>
-            <t-text variant="title" size="medium">缓存监控</t-text>
-          </template>
-          <div class="cache-content">
-            <div v-for="item in cacheMetrics" :key="item.key" class="metric-item">
-              <t-text variant="body" size="small">{{ item.label }}</t-text>
-              <t-progress v-if="item.showProgress" class="progress-bar" :percentage="item.value" :color="item.color" />
-              <t-text v-else variant="body" size="small" class="value">{{ item.value }}</t-text>
-              <t-text variant="body" size="small" class="value">{{ item.displayValue }}</t-text>
-            </div>
-          </div>
-        </t-card>
-      </div>
-
-      <!-- 第四行 -->
-      <div class="content-row">
-        <!-- 告警信息 -->
-        <t-card class="dashboard-card" :bordered="false">
-          <template #header>
-            <t-text variant="title" size="medium">告警信息</t-text>
-          </template>
-          <div class="alarm-content">
-            <div class="alarm-stats">
-              <div v-for="item in alarmStats" :key="item.key" class="stat-item">
-                <div class="stat-content">
-                  <t-icon :name="item.icon" size="24px" />
-                  <t-text variant="body" size="small">{{ item.label }}</t-text>
-                  <t-text variant="title" size="large" class="value">{{ item.value }}</t-text>
-                </div>
-              </div>
-            </div>
-            <t-table class="alarm-table" :data="alarmList" :columns="alarmColumns" :pagination="alarmPagination" />
-          </div>
-        </t-card>
-
-        <!-- 服务健康度 -->
-        <t-card class="dashboard-card" :bordered="false">
-          <template #header>
-            <t-text variant="title" size="medium">服务健康度</t-text>
-          </template>
-          <div class="health-content">
-            <div class="health-chart">
-              <v-chart class="health-chart-component" :option="healthChartOption" />
-            </div>
-            <div class="service-list">
-              <t-tag v-for="service in serviceHealth" :key="service.name" :theme="service.theme"
-                :variant="service.variant" class="service-item">
-                {{ service.name }}: {{ service.status }}
-              </t-tag>
-            </div>
-          </div>
-        </t-card>
-      </div>
+        </div>
+      </t-card>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue'
-import VChart from 'vue-echarts'
-import { use } from 'echarts/core'
-import { CanvasRenderer } from 'echarts/renderers'
-import { LineChart, PieChart } from 'echarts/charts'
-import {
-  TitleComponent,
-  TooltipComponent,
-  LegendComponent,
-  GridComponent,
-} from 'echarts/components'
-import { themeManager } from '@/utils/echarts-themes'
-
-use([
-  CanvasRenderer,
-  LineChart,
-  PieChart,
-  TitleComponent,
-  TooltipComponent,
-  LegendComponent,
-  GridComponent,
-])
-
-const currentTime = ref('')
-const activeTab = ref('overview')
-
-// 主题状态
-const isDarkTheme = ref(false)
-
-// 响应式主题配置
-const currentThemeConfig = ref(themeManager.getCurrentThemeConfig())
-
-// 监听主题变化
-const watchThemeChange = () => {
-  const observer = new MutationObserver(() => {
-    const html = document.documentElement
-    const newTheme = html.getAttribute('theme-mode') === 'dark'
-    console.log('页面检测到主题变化:', newTheme ? 'dark' : 'light')
-    if (newTheme !== isDarkTheme.value) {
-      isDarkTheme.value = newTheme
-      // 更新主题配置
-      currentThemeConfig.value = themeManager.getCurrentThemeConfig()
-      console.log('更新主题配置:', currentThemeConfig.value)
-      // 强制触发图表重新渲染
-      nextTick(() => {
-        // 触发图表重新渲染
-        window.dispatchEvent(new Event('resize'))
-      })
-    }
-  })
-
-  observer.observe(document.documentElement, {
-    attributes: true,
-    attributeFilter: ['theme-mode']
-  })
-
-  return observer
-}
-
-const updateTime = () => {
-  const now = new Date()
-  currentTime.value = now.toLocaleString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit'
-  })
-}
-
-// 生成模拟数据
-const generateTimeData = () => {
-  const hours = []
-  const cpuData = []
-  const memoryData = []
-
-  for (let i = 0; i < 24; i++) {
-    hours.push(`${i.toString().padStart(2, '0')}:00`)
-    cpuData.push(Math.floor(Math.random() * 30) + 40) // 40-70%
-    memoryData.push(Math.floor(Math.random() * 20) + 65) // 65-85%
-  }
-
-  return { hours, cpuData, memoryData }
-}
-
-const { hours, cpuData, memoryData } = generateTimeData()
-
-// 平台信息数据
-const platformInfo = ref([
-  { key: 'servers', label: '服务器总数', value: '24 台', icon: 'server' as any, colorClass: 'platform-primary' },
-  { key: 'databases', label: '数据库实例', value: '8 个', icon: 'database' as any, colorClass: 'platform-secondary' },
-  { key: 'caches', label: '缓存节点', value: '12 个', icon: 'storage' as any, colorClass: 'platform-success' },
-  { key: 'services', label: '应用服务', value: '36 个', icon: 'application' as any, colorClass: 'platform-warning' },
-])
-
-// 服务器状态图例
-const serverStatusLegend = ref([
-  { name: '运行中', count: 18, theme: 'success' as const, variant: 'light' as const },
-  { name: '待机', count: 4, theme: 'warning' as const, variant: 'light' as const },
-  { name: '告警', count: 2, theme: 'danger' as const, variant: 'light' as const },
-  { name: '离线', count: 0, theme: 'default' as const, variant: 'light' as const },
-])
-
-// 系统资源数据
-const systemResources = ref([
-  { key: 'cpu', label: 'CPU使用率', value: '67%', icon: 'cpu' as any, colorClass: 'resource-primary' },
-  { key: 'memory', label: '内存使用率', value: '78%', icon: 'memory' as any, colorClass: 'resource-secondary' },
-  { key: 'disk', label: '磁盘使用率', value: '45%', icon: 'storage' as any, colorClass: 'resource-success' },
-  { key: 'network', label: '网络流量', value: '2.3G', icon: 'wifi' as any, colorClass: 'resource-warning' },
-])
-
-// JVM监控数据
-const jvmMetrics = ref([
-  { key: 'heap', label: '堆内存使用', value: 65, showProgress: true, color: '#0052d9', displayValue: '65%' },
-  { key: 'nonHeap', label: '非堆内存', value: 42, showProgress: true, color: '#00a870', displayValue: '42%' },
-])
-
-// 数据库监控数据
-const dbMetrics = ref([
-  { key: 'connections', label: '连接数', value: '45/100' },
-  { key: 'responseTime', label: '查询响应时间', value: '23ms' },
-])
-
-// 缓存监控数据
-const cacheMetrics = ref([
-  { key: 'hitRate', label: '命中率', value: 89, showProgress: true, color: '#0052d9', displayValue: '89%' },
-  { key: 'memoryUsage', label: '内存使用', value: 73, showProgress: true, color: '#00a870', displayValue: '73%' },
-])
-
-// 告警统计数据
-const alarmStats = ref([
-  { key: 'total', label: '总告警数', value: '156', icon: 'error-circle' as any },
-  { key: 'critical', label: '严重告警', value: '12', icon: 'error-circle' as any },
-  { key: 'warning', label: '警告告警', value: '89', icon: 'help-circle' as any },
-])
-
-// 告警列表数据
-const alarmList = ref([
-  { id: 1, level: '严重', message: 'CPU使用率超过90%', time: '2024-01-15 10:30:00', status: '未处理' },
-  { id: 2, level: '警告', message: '内存使用率超过85%', time: '2024-01-15 10:25:00', status: '已处理' },
-  { id: 3, level: '严重', message: '数据库连接数超限', time: '2024-01-15 10:20:00', status: '未处理' },
-])
-
-// 告警表格列配置
-const alarmColumns = ref([
-  { colKey: 'level', title: '级别', width: 80 },
-  { colKey: 'message', title: '告警信息', width: 200 },
-  { colKey: 'time', title: '时间', width: 150 },
-  { colKey: 'status', title: '状态', width: 100 },
-])
-
-// 告警分页配置
-const alarmPagination = ref({
-  current: 1,
-  pageSize: 10,
-  total: 156,
-})
-
-// 服务健康度数据
-const serviceHealth = ref([
-  { name: '用户服务', status: '正常', theme: 'success' as const, variant: 'light' as const },
-  { name: '订单服务', status: '警告', theme: 'warning' as const, variant: 'light' as const },
-  { name: '支付服务', status: '正常', theme: 'success' as const, variant: 'light' as const },
-  { name: '库存服务', status: '异常', theme: 'danger' as const, variant: 'light' as const },
-])
-
-// 服务器运行状态图表配置
-const serverStatusOption = computed(() => ({
-  ...currentThemeConfig.value,
-  tooltip: {
-    trigger: 'item',
-    formatter: '{b}: {c} ({d}%)'
-  },
-  series: [
-    {
-      name: '服务器状态',
-      type: 'pie',
-      radius: ['40%', '70%'],
-      center: ['50%', '50%'],
-      data: [
-        { value: 18, name: '运行中' },
-        { value: 4, name: '待机' },
-        { value: 2, name: '告警' },
-        { value: 0, name: '离线' }
-      ],
-      emphasis: {
-        itemStyle: {
-          shadowBlur: 10,
-          shadowOffsetX: 0,
-          shadowColor: 'rgba(0, 0, 0, 0.5)'
-        }
-      }
-    }
-  ]
-}))
-
-// CPU使用率图表配置
-const cpuChartOption = computed(() => ({
-  ...currentThemeConfig.value,
-  tooltip: {
-    trigger: 'axis',
-    formatter: '{b}<br/>CPU使用率: {c}%'
-  },
-  grid: {
-    left: '3%',
-    right: '4%',
-    bottom: '3%',
-    containLabel: true
-  },
-  xAxis: {
-    type: 'category',
-    boundaryGap: false,
-    data: hours
-  },
-  yAxis: {
-    type: 'value',
-    min: 0,
-    max: 100,
-    axisLabel: {
-      formatter: '{value}%'
-    }
-  },
-  series: [
-    {
-      name: 'CPU使用率',
-      type: 'line',
-      smooth: true,
-      data: cpuData,
-      areaStyle: {
-        color: {
-          type: 'linear',
-          x: 0,
-          y: 0,
-          x2: 0,
-          y2: 1,
-          colorStops: [
-            { offset: 0, color: 'rgba(0, 82, 217, 0.3)' },
-            { offset: 1, color: 'rgba(0, 82, 217, 0.1)' }
-          ]
-        }
-      }
-    }
-  ]
-}))
-
-// 内存使用率图表配置
-const memoryChartOption = computed(() => ({
-  ...currentThemeConfig.value,
-  tooltip: {
-    trigger: 'axis',
-    formatter: '{b}<br/>内存使用率: {c}%'
-  },
-  grid: {
-    left: '3%',
-    right: '4%',
-    bottom: '3%',
-    containLabel: true
-  },
-  xAxis: {
-    type: 'category',
-    boundaryGap: false,
-    data: hours
-  },
-  yAxis: {
-    type: 'value',
-    min: 0,
-    max: 100,
-    axisLabel: {
-      formatter: '{value}%'
-    }
-  },
-  series: [
-    {
-      name: '内存使用率',
-      type: 'line',
-      smooth: true,
-      data: memoryData,
-      areaStyle: {
-        color: {
-          type: 'linear',
-          x: 0,
-          y: 0,
-          x2: 0,
-          y2: 1,
-          colorStops: [
-            { offset: 0, color: 'rgba(0, 168, 112, 0.3)' },
-            { offset: 1, color: 'rgba(0, 168, 112, 0.1)' }
-          ]
-        }
-      }
-    }
-  ]
-}))
-
-// 服务健康度图表配置
-const healthChartOption = computed(() => ({
-  ...currentThemeConfig.value,
-  tooltip: {
-    trigger: 'item',
-    formatter: '{b}: {c}%'
-  },
-  legend: {
-    orient: 'vertical',
-    left: 'left'
-  },
-  series: [
-    {
-      name: '服务健康度',
-      type: 'pie',
-      radius: ['40%', '70%'],
-      center: ['50%', '50%'],
-      data: [
-        { value: 85, name: '健康' },
-        { value: 12, name: '警告' },
-        { value: 3, name: '异常' }
-      ],
-      emphasis: {
-        itemStyle: {
-          shadowBlur: 10,
-          shadowOffsetX: 0,
-          shadowColor: 'rgba(0, 0, 0, 0.5)'
-        }
-      }
-    }
-  ]
-}))
-
-let timer: NodeJS.Timeout
-let themeObserver: MutationObserver
-
-onMounted(() => {
-  updateTime()
-  timer = setInterval(updateTime, 1000)
-
-  // 初始化主题状态
-  const html = document.documentElement
-  isDarkTheme.value = html.getAttribute('theme-mode') === 'dark'
-  currentThemeConfig.value = themeManager.getCurrentThemeConfig()
-
-  // 监听主题变化
-  themeObserver = watchThemeChange()
-
-  // 监听ECharts主题变化事件
-  window.addEventListener('echarts-theme-change', (event) => {
-    const customEvent = event as CustomEvent
-    console.log('ECharts主题变化事件触发:', customEvent.detail)
-    // 更新主题配置
-    currentThemeConfig.value = themeManager.getCurrentThemeConfig()
-    // 强制触发图表重新渲染
-    nextTick(() => {
-      window.dispatchEvent(new Event('resize'))
-    })
-  })
-
-  // 调试信息
-  console.log('当前主题:', themeManager.getCurrentTheme())
-  console.log('主题配置:', themeManager.getCurrentThemeConfig())
-})
-
-onUnmounted(() => {
-  if (timer) {
-    clearInterval(timer)
-  }
-  if (themeObserver) {
-    themeObserver.disconnect()
-  }
-})
+<script lang="ts">
+export default {
+  name: 'DashboardOps',
+};
 </script>
 
-<style scoped lang="less">
-.ops-dashboard {
-  padding: var(--td-comp-margin-xs);
-  background: var(--td-bg-color-page);
-  min-height: 100vh;
+<script setup lang="ts">
+import { computed, onMounted, onUnmounted, ref } from 'vue';
+import VChart from 'vue-echarts';
+import { use } from 'echarts/core';
+import { LineChart } from 'echarts/charts';
+import { DataZoomComponent, GridComponent, LegendComponent, TimelineComponent, TitleComponent, TooltipComponent } from 'echarts/components';
+import { CanvasRenderer } from 'echarts/renderers';
+import { MessagePlugin } from 'tdesign-vue-next';
 
-  .dashboard-header {
-    margin-bottom: var(--td-comp-margin-xl);
-    border-radius: var(--td-radius-large);
-    transition: all 0.3s ease;
+import { request } from '@/utils/request';
+import { themeManager } from '@/utils/echarts-themes';
 
-    &:hover {
-      // 保持悬停效果但不添加阴影
-    }
+use([CanvasRenderer, LineChart, GridComponent, LegendComponent, TooltipComponent, TitleComponent, DataZoomComponent, TimelineComponent]);
 
-    .header-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: var(--td-comp-margin-lg);
+interface CpuMetrics {
+  systemUsage: number;
+  processUsage: number;
+  systemLoadAverage: number;
+  availableProcessors: number;
+}
 
-      .header-left {
-        display: flex;
-        align-items: center;
-        gap: var(--td-comp-margin-xl);
+interface SystemMemoryMetrics {
+  totalBytes: number;
+  freeBytes: number;
+  usedBytes: number;
+  usage: number;
+}
 
-        .title {
-          display: flex;
-          align-items: center;
-          gap: var(--td-comp-margin-sm);
-        }
+interface JvmMemoryMetrics {
+  heapUsedBytes: number;
+  heapCommittedBytes: number;
+  heapMaxBytes: number;
+  heapUsage: number;
+  nonHeapUsedBytes: number;
+  nonHeapCommittedBytes: number;
+  nonHeapMaxBytes: number;
+}
 
-        .nav-tabs {
-          :deep(.t-tabs__nav) {
-            background: transparent;
-          }
-        }
-      }
+interface DiskPathMetrics {
+  path: string;
+  totalBytes: number;
+  freeBytes: number;
+  usableBytes: number;
+  usedBytes: number;
+  usage: number;
+}
 
-      .header-right {
-        display: flex;
-        align-items: center;
-        gap: var(--td-comp-margin-xl);
+interface DiskMetrics {
+  totalBytes: number;
+  freeBytes: number;
+  usableBytes: number;
+  usedBytes: number;
+  usage: number;
+  ioAvailable: boolean;
+  readBytes: number;
+  writeBytes: number;
+  readBytesPerSecond: number;
+  writeBytesPerSecond: number;
+  source: string;
+  items: DiskPathMetrics[];
+}
 
-        .user-info {
-          display: flex;
-          align-items: center;
-          gap: var(--td-comp-margin-sm);
-        }
-      }
-    }
+interface NetworkMetrics {
+  available: boolean;
+  rxBytes: number;
+  txBytes: number;
+  rxBytesPerSecond: number;
+  txBytesPerSecond: number;
+  source: string;
+}
+
+interface JvmMetrics {
+  threadCount: number;
+  daemonThreadCount: number;
+  peakThreadCount: number;
+  loadedClassCount: number;
+  totalLoadedClassCount: number;
+  unloadedClassCount: number;
+  gcCount: number;
+  gcTimeMillis: number;
+  uptimeMillis: number;
+}
+
+interface MonitorSnapshot {
+  timestamp: number;
+  cpu: CpuMetrics;
+  systemMemory: SystemMemoryMetrics;
+  jvmMemory: JvmMemoryMetrics;
+  disk: DiskMetrics;
+  network: NetworkMetrics;
+  jvm: JvmMetrics;
+}
+
+interface MonitorTimelineResponse {
+  generatedAt: number;
+  minutes: number;
+  retentionMinutes: number;
+  sampleIntervalSeconds: number;
+  latest: MonitorSnapshot | null;
+  samples: MonitorSnapshot[];
+}
+
+interface ApiResponse<T> {
+  code: number;
+  msg?: string;
+  data: T;
+}
+
+interface MonitorMetaResponse {
+  enabled: boolean;
+  sampleIntervalSeconds: number;
+  retentionMinutes: number;
+  diskDetailEnabled: boolean;
+}
+
+const ranges = [
+  { label: '5 分钟', value: 5 },
+  { label: '15 分钟', value: 15 },
+  { label: '30 分钟', value: 30 },
+  { label: '60 分钟', value: 60 },
+];
+
+const selectedMinutes = ref(15);
+const loading = ref(false);
+const monitorMeta = ref<MonitorMetaResponse>({
+  enabled: true,
+  sampleIntervalSeconds: 5,
+  retentionMinutes: 60,
+  diskDetailEnabled: true,
+});
+const timeline = ref<MonitorTimelineResponse>({
+  generatedAt: 0,
+  minutes: 15,
+  retentionMinutes: 60,
+  sampleIntervalSeconds: 5,
+  latest: null,
+  samples: [],
+});
+const themeConfig = ref(themeManager.getCurrentThemeConfig());
+const currentTheme = ref(themeManager.getCurrentTheme());
+const chartThemeVersion = ref(0);
+const chartUpdateOptions = { notMerge: false, lazyUpdate: true };
+
+let refreshTimer: number | undefined;
+let themeObserver: MutationObserver | undefined;
+
+const latest = computed(() => timeline.value.latest);
+const chartRenderKey = computed(() => `${currentTheme.value}-${chartThemeVersion.value}`);
+const chartLabels = computed(() => timeline.value.samples.map((item) => formatTime(item.timestamp)));
+const chartPalette = computed(() => {
+  const isDark = currentTheme.value === 'dark';
+  return {
+    isDark,
+    title: isDark ? '#f3f6fb' : '#1f2329',
+    text: isDark ? '#c7cfdb' : '#4f5661',
+    muted: isDark ? '#8f99ab' : '#8a919f',
+    axisLine: isDark ? 'rgb(255 255 255 / 10%)' : '#e5e7eb',
+    splitLine: isDark ? 'rgb(255 255 255 / 8%)' : '#eef1f6',
+    tooltipBackground: isDark ? '#202632' : '#fff',
+    tooltipBorder: isDark ? 'rgb(255 255 255 / 10%)' : '#e5e7eb',
+  };
+});
+const pageStyleVars = computed(() => ({
+  '--ops-panel-title-color': chartPalette.value.title,
+  '--ops-panel-subtitle-color': chartPalette.value.muted,
+}));
+const chartThemeConfig = computed(() => {
+  const { dataZoom, timeline, ...rest } = themeConfig.value as Record<string, any>;
+  return rest;
+});
+const heapLimitBytes = computed(() => {
+  const jvmMemory = latest.value?.jvmMemory;
+  if (!jvmMemory) return 0;
+  return jvmMemory.heapMaxBytes > 0 ? jvmMemory.heapMaxBytes : jvmMemory.heapCommittedBytes;
+});
+const nonHeapUsage = computed(() => {
+  const jvmMemory = latest.value?.jvmMemory;
+  if (!jvmMemory || !jvmMemory.nonHeapCommittedBytes) return 0;
+  return (jvmMemory.nonHeapUsedBytes * 100) / jvmMemory.nonHeapCommittedBytes;
+});
+const diskRows = computed(() => latest.value?.disk?.items || []);
+const diskEmptyText = computed(() =>
+  monitorMeta.value.diskDetailEnabled ? '暂无磁盘明细' : '当前环境未开启磁盘路径明细',
+);
+
+const summaryCards = computed(() => {
+  const snapshot = latest.value;
+  if (!snapshot) {
+    return [
+      buildCard('cpu', '系统 CPU', '-', '等待采样', 'default', '无数据', 0),
+      buildCard('processCpu', '进程 CPU', '-', '等待采样', 'default', '无数据', 0),
+      buildCard('memory', '系统内存', '-', '等待采样', 'default', '无数据', 0),
+      buildCard('heap', 'JVM 堆', '-', '等待采样', 'default', '无数据', 0),
+      buildCard('disk', '磁盘使用', '-', '等待采样', 'default', '无数据', 0),
+      buildCard('network', '网络吞吐', '-', '等待采样', 'default', '无数据', 0),
+    ];
   }
 
-  .dashboard-content {
+  return [
+    buildCard(
+      'cpu',
+      '系统 CPU',
+      toPercent(snapshot.cpu.systemUsage),
+      `负载 ${snapshot.cpu.systemLoadAverage.toFixed(2)} · ${snapshot.cpu.availableProcessors} 核`,
+      usageTheme(snapshot.cpu.systemUsage),
+      usageTag(snapshot.cpu.systemUsage),
+      clampPercent(snapshot.cpu.systemUsage),
+    ),
+    buildCard(
+      'processCpu',
+      '进程 CPU',
+      toPercent(snapshot.cpu.processUsage),
+      '当前 Java 进程占用',
+      usageTheme(snapshot.cpu.processUsage),
+      usageTag(snapshot.cpu.processUsage),
+      clampPercent(snapshot.cpu.processUsage),
+    ),
+    buildCard(
+      'memory',
+      '系统内存',
+      toPercent(snapshot.systemMemory.usage),
+      `${bytes(snapshot.systemMemory.usedBytes)} / ${bytes(snapshot.systemMemory.totalBytes)}`,
+      usageTheme(snapshot.systemMemory.usage),
+      usageTag(snapshot.systemMemory.usage),
+      clampPercent(snapshot.systemMemory.usage),
+    ),
+    buildCard(
+      'heap',
+      'JVM 堆',
+      toPercent(snapshot.jvmMemory.heapUsage),
+      `${bytes(snapshot.jvmMemory.heapUsedBytes)} / ${bytes(heapLimitBytes.value)}`,
+      usageTheme(snapshot.jvmMemory.heapUsage),
+      usageTag(snapshot.jvmMemory.heapUsage),
+      clampPercent(snapshot.jvmMemory.heapUsage),
+    ),
+    buildCard(
+      'disk',
+      '磁盘使用',
+      toPercent(snapshot.disk.usage),
+      `${bytes(snapshot.disk.usableBytes)} 可用`,
+      usageTheme(snapshot.disk.usage),
+      usageTag(snapshot.disk.usage),
+      clampPercent(snapshot.disk.usage),
+    ),
+    buildCard(
+      'network',
+      '网络吞吐',
+      `${bytes(snapshot.network.rxBytesPerSecond)}/s`,
+      `出站 ${bytes(snapshot.network.txBytesPerSecond)}/s${snapshot.network.source ? ` · ${snapshot.network.source}` : ''}`,
+      snapshot.network.available ? 'primary' : 'warning',
+      snapshot.network.available ? '在线' : '未知',
+      snapshot.network.available ? 100 : 36,
+    ),
+  ];
+});
+
+const cpuPanelMeta = computed(() => {
+  if (!latest.value) return '展示系统与当前进程的 CPU 波动';
+  return `系统 ${toPercent(latest.value.cpu.systemUsage)} · 进程 ${toPercent(latest.value.cpu.processUsage)} · 线程 ${formatCount(latest.value.jvm.threadCount)}`;
+});
+
+const memoryPanelMeta = computed(() => {
+  if (!latest.value) return '对比系统内存与 JVM 堆占用';
+  return `系统 ${bytes(latest.value.systemMemory.usedBytes)} / ${bytes(latest.value.systemMemory.totalBytes)} · JVM 堆 ${toPercent(latest.value.jvmMemory.heapUsage)}`;
+});
+
+const diskChartMeta = computed(() => {
+  if (!latest.value) return '展示磁盘使用率与可用容量变化';
+  if (!latest.value.disk.ioAvailable) {
+    return `使用率 ${toPercent(latest.value.disk.usage)} · 可用 ${bytes(latest.value.disk.usableBytes)} · 暂未识别磁盘读写吞吐`;
+  }
+  return `使用率 ${toPercent(latest.value.disk.usage)} · 读 ${bytes(latest.value.disk.readBytesPerSecond)}/s · 写 ${bytes(latest.value.disk.writeBytesPerSecond)}/s`;
+});
+
+const networkPanelMeta = computed(() => {
+  if (!latest.value) return '查看入站与出站吞吐趋势';
+  if (!latest.value.network.available) return '当前环境暂未识别有效网络吞吐来源';
+  return `入站 ${bytes(latest.value.network.rxBytesPerSecond)}/s · 出站 ${bytes(latest.value.network.txBytesPerSecond)}/s`;
+});
+
+const jvmPanelMeta = computed(() => {
+  if (!latest.value) return '堆内存、非堆内存与运行时状态';
+  return `堆 ${toPercent(latest.value.jvmMemory.heapUsage)} · GC ${formatCount(latest.value.jvm.gcCount)} 次 · 运行 ${formatDuration(latest.value.jvm.uptimeMillis)}`;
+});
+
+const diskPanelMeta = computed(() => {
+  if (!latest.value) return '展示挂载路径容量与使用率';
+  if (!monitorMeta.value.diskDetailEnabled) return '当前环境未开启磁盘路径明细';
+  return `${diskRows.value.length} 个路径 · 总可用 ${bytes(latest.value.disk.usableBytes)}`;
+});
+
+const baseChartOption = computed(() => ({
+  ...chartThemeConfig.value,
+  backgroundColor: 'transparent',
+  textStyle: {
+    color: chartPalette.value.text,
+  },
+  legend: {
+    top: 0,
+    icon: 'circle',
+    itemWidth: 10,
+    itemHeight: 10,
+    textStyle: {
+      color: chartPalette.value.muted,
+      fontSize: 12,
+    },
+  },
+  tooltip: {
+    trigger: 'axis',
+    backgroundColor: chartPalette.value.tooltipBackground,
+    borderColor: chartPalette.value.tooltipBorder,
+    borderWidth: 1,
+    textStyle: {
+      color: chartPalette.value.title,
+    },
+    extraCssText: `box-shadow: 0 10px 24px ${chartPalette.value.isDark ? 'rgb(0 0 0 / 26%)' : 'rgb(15 23 42 / 10%)'}; border-radius: 10px;`,
+  },
+  grid: {
+    left: 12,
+    right: 12,
+    top: 42,
+    bottom: 12,
+    containLabel: true,
+  },
+  xAxis: {
+    type: 'category',
+    boundaryGap: false,
+    axisLine: {
+      lineStyle: {
+        color: chartPalette.value.axisLine,
+      },
+    },
+    axisTick: {
+      show: false,
+    },
+    axisLabel: {
+      color: chartPalette.value.text,
+      margin: 12,
+    },
+    splitLine: {
+      show: false,
+    },
+  },
+  yAxis: {
+    type: 'value',
+    axisLine: {
+      show: false,
+    },
+    axisTick: {
+      show: false,
+    },
+    axisLabel: {
+      color: chartPalette.value.text,
+      margin: 12,
+    },
+    splitLine: {
+      lineStyle: {
+        color: chartPalette.value.splitLine,
+      },
+    },
+  },
+}));
+
+const cpuChartOption = computed(() => ({
+  ...baseChartOption.value,
+  xAxis: {
+    ...baseChartOption.value.xAxis,
+    data: chartLabels.value,
+  },
+  tooltip: {
+    ...baseChartOption.value.tooltip,
+    formatter: (params: any) => {
+      const list = Array.isArray(params) ? params : [params];
+      const timeLabel = list[0]?.axisValueLabel || '--';
+      const lines = list.map((item: any) => {
+        if (item.seriesName === '线程数') {
+          return `${item.marker}${item.seriesName} ${formatCount(Number(item.value))}`;
+        }
+        return `${item.marker}${item.seriesName} ${Number(item.value).toFixed(1)}%`;
+      });
+      return [timeLabel, ...lines].join('<br/>');
+    },
+  },
+  yAxis: [
+    {
+      ...baseChartOption.value.yAxis,
+      min: 0,
+      max: 100,
+      axisLabel: {
+        ...baseChartOption.value.yAxis.axisLabel,
+        formatter: '{value}%',
+      },
+    },
+    {
+      ...baseChartOption.value.yAxis,
+      axisLabel: {
+        ...baseChartOption.value.yAxis.axisLabel,
+        formatter: '{value}',
+      },
+    },
+  ],
+  series: [
+    {
+      name: '系统 CPU',
+      type: 'line',
+      smooth: true,
+      showSymbol: false,
+      data: timeline.value.samples.map((item) => roundMetricValue(item.cpu.systemUsage)),
+    },
+    {
+      name: '进程 CPU',
+      type: 'line',
+      showSymbol: false,
+      data: timeline.value.samples.map((item) => roundMetricValue(item.cpu.processUsage)),
+    },
+    {
+      name: '线程数',
+      type: 'line',
+      smooth: true,
+      yAxisIndex: 1,
+      showSymbol: false,
+      data: timeline.value.samples.map((item) => item.jvm.threadCount),
+    },
+  ],
+}));
+
+const memoryChartOption = computed(() => ({
+  ...baseChartOption.value,
+  xAxis: {
+    ...baseChartOption.value.xAxis,
+    data: chartLabels.value,
+  },
+  yAxis: {
+    ...baseChartOption.value.yAxis,
+    min: 0,
+    max: 100,
+    axisLabel: {
+      ...baseChartOption.value.yAxis.axisLabel,
+      formatter: '{value}%',
+    },
+  },
+  series: [
+    {
+      name: '系统内存',
+      type: 'line',
+      smooth: true,
+      showSymbol: false,
+      data: timeline.value.samples.map((item) => roundMetricValue(item.systemMemory.usage)),
+    },
+    {
+      name: 'JVM 堆',
+      type: 'line',
+      smooth: true,
+      showSymbol: false,
+      data: timeline.value.samples.map((item) => roundMetricValue(item.jvmMemory.heapUsage)),
+    },
+  ],
+}));
+
+const diskChartOption = computed(() => ({
+  ...baseChartOption.value,
+  xAxis: {
+    ...baseChartOption.value.xAxis,
+    data: chartLabels.value,
+  },
+  tooltip: {
+    ...baseChartOption.value.tooltip,
+    formatter: (params: any) => {
+      const list = Array.isArray(params) ? params : [params];
+      const timeLabel = list[0]?.axisValueLabel || '--';
+      const lines = list.map((item: any) => {
+        if (item.seriesName === '读取吞吐' || item.seriesName === '写入吞吐') {
+          return `${item.marker}${item.seriesName} ${bytes(Number(item.value))}`;
+        }
+        return `${item.marker}${item.seriesName} ${Number(item.value).toFixed(1)}%`;
+      });
+      return [timeLabel, ...lines].join('<br/>');
+    },
+  },
+  yAxis: [
+    {
+      ...baseChartOption.value.yAxis,
+      min: 0,
+      max: 100,
+      axisLabel: {
+        ...baseChartOption.value.yAxis.axisLabel,
+        formatter: '{value}%',
+      },
+    },
+    latest.value?.disk?.ioAvailable
+      ? {
+        ...baseChartOption.value.yAxis,
+        axisLabel: {
+          ...baseChartOption.value.yAxis.axisLabel,
+          formatter: (value: number) => bytes(value),
+        },
+      }
+      : {
+        ...baseChartOption.value.yAxis,
+        show: false,
+        splitLine: {
+          show: false,
+        },
+      },
+  ],
+  series: [
+    {
+      name: '使用率',
+      type: 'line',
+      smooth: true,
+      showSymbol: false,
+      data: timeline.value.samples.map((item) => roundMetricValue(item.disk.usage)),
+    },
+    {
+      name: '读取吞吐',
+      type: 'line',
+      smooth: true,
+      yAxisIndex: 1,
+      showSymbol: false,
+      data: timeline.value.samples.map((item) => roundMetricValue(item.disk.readBytesPerSecond)),
+    },
+    {
+      name: '写入吞吐',
+      type: 'line',
+      smooth: true,
+      yAxisIndex: 1,
+      showSymbol: false,
+      data: timeline.value.samples.map((item) => roundMetricValue(item.disk.writeBytesPerSecond)),
+    },
+  ].filter((item) => item.name === '使用率' || latest.value?.disk?.ioAvailable),
+}));
+
+const networkChartOption = computed(() => ({
+  ...baseChartOption.value,
+  tooltip: {
+    ...baseChartOption.value.tooltip,
+    formatter: (params: any) => {
+      const list = Array.isArray(params) ? params : [params];
+      const timeLabel = list[0]?.axisValueLabel || '--';
+      const lines = list.map((item: any) => `${item.marker}${item.seriesName} ${bytes(item.value)}/s`);
+      return [timeLabel, ...lines].join('<br/>');
+    },
+  },
+  xAxis: {
+    ...baseChartOption.value.xAxis,
+    data: chartLabels.value,
+  },
+  yAxis: {
+    ...baseChartOption.value.yAxis,
+    axisLabel: {
+      ...baseChartOption.value.yAxis.axisLabel,
+      formatter: (value: number) => bytes(value),
+    },
+  },
+  series: [
+    {
+      name: '入站',
+      type: 'line',
+      smooth: true,
+      showSymbol: false,
+      data: timeline.value.samples.map((item) => roundMetricValue(item.network.rxBytesPerSecond)),
+    },
+    {
+      name: '出站',
+      type: 'line',
+      smooth: true,
+      showSymbol: false,
+      data: timeline.value.samples.map((item) => roundMetricValue(item.network.txBytesPerSecond)),
+    },
+  ],
+}));
+
+function buildCard(
+  key: string,
+  label: string,
+  value: string,
+  meta: string,
+  theme: 'default' | 'primary' | 'success' | 'warning' | 'danger',
+  tag: string,
+  progress: number,
+) {
+  return { key, label, value, meta, theme, tag, progress };
+}
+
+function clampPercent(value?: number) {
+  return Math.max(0, Math.min(100, Number(value || 0)));
+}
+
+function usageTheme(value = 0) {
+  if (value >= 90) return 'danger';
+  if (value >= 75) return 'warning';
+  if (value >= 50) return 'primary';
+  return 'success';
+}
+
+function usageTag(value = 0) {
+  if (value >= 90) return '高压';
+  if (value >= 75) return '偏高';
+  if (value >= 50) return '正常';
+  return '平稳';
+}
+
+function formatTime(timestamp?: number) {
+  if (!timestamp) return '--:--:--';
+  const date = new Date(timestamp);
+  return date.toLocaleTimeString('zh-CN', { hour12: false });
+}
+
+function formatDateTime(timestamp?: number) {
+  if (!timestamp) return '-';
+  return new Date(timestamp).toLocaleString('zh-CN', { hour12: false });
+}
+
+function bytes(value?: number) {
+  if (value === undefined || value === null) return '-';
+  const normalized = Number(value);
+  if (Number.isNaN(normalized) || normalized < 0) return '-';
+  if (normalized === 0) return '0 B';
+  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+  let size = normalized;
+  let unitIndex = 0;
+  while (size >= 1024 && unitIndex < units.length - 1) {
+    size /= 1024;
+    unitIndex += 1;
+  }
+  const digits = size >= 100 || unitIndex === 0 ? 0 : 1;
+  return `${size.toFixed(digits)} ${units[unitIndex]}`;
+}
+
+function toPercent(value?: number) {
+  return `${Number(value || 0).toFixed(1)}%`;
+}
+
+function formatPercentageValue(value?: number) {
+  return Number(Number(value || 0).toFixed(1));
+}
+
+function roundMetricValue(value?: number, digits = 2) {
+  return Number(Number(value || 0).toFixed(digits));
+}
+
+function formatDuration(value?: number) {
+  const total = Math.floor((value || 0) / 1000);
+  const hours = Math.floor(total / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  const seconds = total % 60;
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  if (minutes > 0) return `${minutes}m ${seconds}s`;
+  return `${seconds}s`;
+}
+
+function formatCount(value?: number) {
+  return Number(value || 0).toLocaleString('zh-CN');
+}
+
+async function loadMonitorData() {
+  if (!monitorMeta.value.enabled) {
+    timeline.value = {
+      generatedAt: Date.now(),
+      minutes: 0,
+      retentionMinutes: monitorMeta.value.retentionMinutes,
+      sampleIntervalSeconds: monitorMeta.value.sampleIntervalSeconds,
+      latest: null,
+      samples: [],
+    };
+    return;
+  }
+  loading.value = true;
+  try {
+    const res = await request.get<ApiResponse<MonitorTimelineResponse>>({
+      url: '/sys/monitor/timeline',
+      params: {
+        minutes: selectedMinutes.value,
+      },
+    });
+    if (res.code !== 0) {
+      MessagePlugin.error(res.msg || '监控数据加载失败');
+      return;
+    }
+    timeline.value = res.data;
+  } catch (error) {
+    console.error(error);
+    MessagePlugin.error('监控数据加载失败');
+  } finally {
+    loading.value = false;
+  }
+}
+
+async function loadMonitorMeta() {
+  const res = await request.get<ApiResponse<MonitorMetaResponse>>({
+    url: '/sys/monitor/meta',
+  });
+  if (res.code !== 0) {
+    throw new Error(res.msg || '监控状态加载失败');
+  }
+  monitorMeta.value = res.data;
+}
+
+async function refreshPageData() {
+  loading.value = true;
+  try {
+    await loadMonitorMeta();
+    await loadMonitorData();
+  } catch (error) {
+    console.error(error);
+    MessagePlugin.error('监控状态加载失败');
+  } finally {
+    loading.value = false;
+  }
+}
+
+function changeRange(minutes: number) {
+  if (selectedMinutes.value === minutes) return;
+  selectedMinutes.value = minutes;
+  loadMonitorData();
+}
+
+function updateTheme() {
+  currentTheme.value = themeManager.getCurrentTheme();
+  themeConfig.value = themeManager.getCurrentThemeConfig();
+  chartThemeVersion.value += 1;
+  requestAnimationFrame(() => window.dispatchEvent(new Event('resize')));
+}
+
+onMounted(() => {
+  refreshPageData();
+  refreshTimer = window.setInterval(refreshPageData, 5000);
+  themeObserver = new MutationObserver(updateTheme);
+  themeObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['theme-mode'],
+  });
+  window.addEventListener('echarts-theme-change', updateTheme);
+});
+
+onUnmounted(() => {
+  if (refreshTimer) {
+    window.clearInterval(refreshTimer);
+  }
+  themeObserver?.disconnect();
+  window.removeEventListener('echarts-theme-change', updateTheme);
+});
+</script>
+
+<style lang="less" scoped>
+.ops-monitor-page {
+  --ops-panel-title-color: var(--td-text-color-primary);
+  --ops-panel-subtitle-color: var(--td-text-color-secondary);
+
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  gap: 16px;
+}
+
+.ops-monitor-page :deep(.t-card) {
+  border: 1px solid var(--td-component-stroke);
+  box-shadow: none;
+}
+
+.hero-panel,
+.summary-card,
+.monitor-card {
+  :deep(.t-card__header) {
+    padding-bottom: 0;
+  }
+}
+
+.hero-panel {
+  position: relative;
+  overflow: hidden;
+  padding: 6px 12px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--td-brand-color) 10%, var(--td-bg-color-container)) 0%, var(--td-bg-color-container) 48%),
+    var(--td-bg-color-container);
+}
+
+.hero-panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--td-brand-color) 5%, transparent));
+  opacity: 0.8;
+}
+
+.hero-toolbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.hero-title-group {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.hero-inline-stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex: 1 1 240px;
+}
+
+.hero-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: var(--td-font-title-large);
+  font-weight: 600;
+  color: var(--td-text-color-primary);
+}
+
+.hero-title :deep(.t-icon) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--td-brand-color) 14%, transparent);
+  color: var(--td-brand-color);
+}
+
+.hero-subtitle {
+  flex: 1 1 320px;
+  min-width: 0;
+  color: var(--td-text-color-secondary);
+  font: var(--td-font-body-medium);
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.hero-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--td-bg-color-container-hover) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--td-brand-color) 8%, var(--td-component-stroke));
+}
+
+.hero-stat-label {
+  color: var(--td-text-color-placeholder);
+  font: var(--td-font-body-small);
+}
+
+.hero-stat-value {
+  color: var(--td-text-color-primary);
+  font: var(--td-font-body-medium);
+  font-weight: 600;
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.range-switch {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.range-switch :deep(.t-button) {
+  min-width: 72px;
+}
+
+.hero-actions :deep(.t-button) {
+  backdrop-filter: blur(8px);
+}
+
+.refresh-button {
+  width: 68px;
+}
+
+.refresh-button :deep(.t-loading) {
+  width: 16px;
+  min-width: 16px;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.disabled-panel {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  border: 1px dashed var(--td-component-stroke);
+  border-radius: var(--td-radius-large);
+  background: var(--td-bg-color-container);
+  color: var(--td-text-color-secondary);
+  text-align: center;
+  padding: 32px 20px;
+}
+
+.disabled-title {
+  color: var(--td-text-color-primary);
+  font: var(--td-font-title-large);
+  font-weight: 600;
+}
+
+.disabled-text {
+  max-width: 480px;
+  font: var(--td-font-body-medium);
+  line-height: 1.7;
+}
+
+.disabled-text code {
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--td-bg-color-secondarycontainer);
+}
+
+.summary-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 132px;
+  background: var(--td-bg-color-container);
+}
+
+.summary-card--default {
+  --summary-accent: var(--td-text-color-placeholder);
+}
+
+.summary-card--primary {
+  --summary-accent: var(--td-brand-color);
+}
+
+.summary-card--success {
+  --summary-accent: var(--td-success-color);
+}
+
+.summary-card--warning {
+  --summary-accent: var(--td-warning-color);
+}
+
+.summary-card--danger {
+  --summary-accent: var(--td-error-color);
+}
+
+.summary-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+}
+
+.summary-label {
+  color: var(--td-text-color-secondary);
+  font: var(--td-font-body-medium);
+}
+
+.summary-value {
+  margin-top: 14px;
+  font-size: 28px;
+  line-height: 1.15;
+  font-weight: 600;
+  color: var(--td-text-color-primary);
+}
+
+.summary-meta {
+  margin-top: 10px;
+  color: var(--td-text-color-secondary);
+  font: var(--td-font-body-small);
+  line-height: 1.6;
+}
+
+.summary-progress {
+  margin-top: 16px;
+  height: 5px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--td-text-color-placeholder) 18%, transparent);
+}
+
+.summary-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--summary-accent) 70%, #fff), var(--summary-accent));
+  transition: width 0.24s ease;
+}
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.panel-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.panel-title {
+  color: var(--ops-panel-title-color);
+  font: var(--td-font-title-medium);
+  font-weight: 600;
+}
+
+.panel-subtitle {
+  color: var(--ops-panel-subtitle-color);
+  font: var(--td-font-body-small);
+  line-height: 1.6;
+}
+
+.chart {
+  height: 320px;
+}
+
+.chart :deep(canvas),
+.chart :deep(div) {
+  background: transparent !important;
+}
+
+.jvm-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.metric-row {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr) 180px;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--td-bg-color-container-hover) 78%, transparent);
+}
+
+.metric-main {
+  min-width: 0;
+}
+
+.metric-value {
+  text-align: right;
+  color: var(--td-text-color-secondary);
+  font: var(--td-font-body-small);
+}
+
+.metric-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.metric-stat {
+  border: 1px solid var(--td-component-stroke);
+  border-radius: var(--td-radius-medium);
+  padding: 12px;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--td-bg-color-container-hover) 72%, transparent), transparent),
+    var(--td-bg-color-container);
+}
+
+.metric-stat-label {
+  color: var(--td-text-color-secondary);
+  font: var(--td-font-body-small);
+}
+
+.metric-stat-value {
+  margin-top: 8px;
+  font-size: 22px;
+  line-height: 1.2;
+  font-weight: 600;
+}
+
+.disk-table {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--td-component-stroke);
+}
+
+.disk-head {
+  color: var(--td-text-color-secondary);
+  font: var(--td-font-body-small);
+}
+
+.disk-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.6fr) repeat(4, minmax(88px, 1fr));
+  gap: 12px;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--td-component-stroke);
+  font: var(--td-font-body-medium);
+}
+
+.disk-head .disk-cell-label {
+  display: none;
+}
+
+.disk-path {
+  word-break: break-all;
+  color: var(--td-text-color-primary);
+}
+
+.disk-cell {
+  display: contents;
+}
+
+.disk-cell-label {
+  display: none;
+}
+
+.disk-empty {
+  padding: 36px 0;
+  text-align: center;
+  color: var(--td-text-color-secondary);
+}
+
+@media (width <=1400px) {
+  .summary-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (width <=1080px) {
+  .hero-toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 14px 16px;
+  }
+
+  .hero-title-group {
+    grid-column: 1 / -1;
+    gap: 10px 16px;
+  }
+
+  .hero-subtitle {
+    white-space: normal;
+  }
+
+  .hero-inline-stats {
+    grid-column: 1 / 2;
+    align-self: start;
+  }
+
+  .hero-actions {
+    grid-column: 2 / 3;
+    align-self: start;
+    margin-left: 0;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .range-switch {
+    justify-content: flex-end;
+  }
+
+  .range-switch :deep(.t-button) {
+    min-width: 64px;
+  }
+
+  .chart-grid,
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .metric-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (width <=768px) {
+  .ops-monitor-page {
+    gap: 12px;
+  }
+
+  .hero-toolbar {
     display: flex;
     flex-direction: column;
-    gap: var(--td-comp-margin-xl);
-
-    .content-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: var(--td-comp-margin-xl);
-
-      &:nth-child(1) {
-        grid-template-columns: 1fr 1fr 1fr;
-      }
-
-      &:nth-child(2) {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      &:nth-child(3) {
-        grid-template-columns: 1fr 1fr 1fr;
-      }
-
-      &:nth-child(4) {
-        grid-template-columns: 2fr 1fr;
-      }
-    }
-
-    .dashboard-card {
-      border-radius: var(--td-radius-large);
-      transition: all 0.3s ease;
-
-      &:hover {
-        transform: translateY(-2px);
-      }
-
-      .platform-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: var(--td-comp-margin-lg);
-
-        .platform-item {
-          border-radius: var(--td-radius-default);
-          transition: all 0.3s ease;
-
-          &:hover {
-            transform: scale(1.02);
-          }
-
-          .item-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            padding: var(--td-comp-margin-lg);
-
-            .value {
-              margin-top: var(--td-comp-margin-sm);
-              font-weight: bold;
-              font-size: 1.2em;
-            }
-          }
-
-          &.platform-primary {
-            background: var(--td-brand-color-light);
-            color: var(--td-brand-color);
-          }
-
-          &.platform-secondary {
-            background: var(--td-success-color-light);
-            color: var(--td-success-color);
-          }
-
-          &.platform-success {
-            background: var(--td-warning-color-light);
-            color: var(--td-warning-color);
-          }
-
-          &.platform-warning {
-            background: var(--td-error-color-light);
-            color: var(--td-error-color);
-          }
-        }
-      }
-
-      .status-content {
-        display: flex;
-        align-items: center;
-        gap: var(--td-comp-margin-xl);
-
-        .chart-container {
-          flex: 1;
-          height: 200px;
-
-          .status-chart {
-            height: 100%;
-            width: 100%;
-          }
-        }
-
-        .status-legend {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          gap: var(--td-comp-margin-md);
-        }
-      }
-
-      .resources-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: var(--td-comp-margin-lg);
-
-        .resource-item {
-          border-radius: var(--td-radius-default);
-          transition: all 0.3s ease;
-
-          &:hover {
-            transform: scale(1.02);
-          }
-
-          .item-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            padding: var(--td-comp-margin-lg);
-
-            .value {
-              margin-top: var(--td-comp-margin-sm);
-              font-weight: bold;
-              font-size: 1.2em;
-            }
-          }
-
-          &.resource-primary {
-            background: var(--td-brand-color-light);
-            color: var(--td-brand-color);
-          }
-
-          &.resource-secondary {
-            background: var(--td-success-color-light);
-            color: var(--td-success-color);
-          }
-
-          &.resource-success {
-            background: var(--td-warning-color-light);
-            color: var(--td-warning-color);
-          }
-
-          &.resource-warning {
-            background: var(--td-error-color-light);
-            color: var(--td-error-color);
-          }
-        }
-      }
-
-      .chart-container {
-        height: 200px;
-
-        .chart {
-          height: 100%;
-          width: 100%;
-        }
-      }
-
-      .jvm-content,
-      .db-content,
-      .cache-content {
-        .metric-item {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: var(--td-comp-margin-lg);
-          padding: var(--td-comp-margin-md);
-          border-radius: var(--td-radius-default);
-          background: var(--td-bg-color-container-hover);
-          transition: all 0.3s ease;
-
-          &:hover {
-            background: var(--td-bg-color-container-active);
-            transform: translateX(4px);
-          }
-
-          .progress-bar {
-            flex: 1;
-            margin: 0 var(--td-comp-margin-lg);
-          }
-
-          .value {
-            min-width: 80px;
-            text-align: right;
-            font-weight: bold;
-            font-size: 1.1em;
-          }
-        }
-      }
-
-      .alarm-content {
-        .alarm-stats {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: var(--td-comp-margin-lg);
-          margin-bottom: var(--td-comp-margin-xl);
-
-          .stat-item {
-            .stat-content {
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              text-align: center;
-              padding: var(--td-comp-margin-lg);
-              background: var(--td-brand-color-light);
-              border-radius: var(--td-radius-default);
-              transition: all 0.3s ease;
-
-              &:hover {
-                transform: scale(1.05);
-              }
-
-              .value {
-                margin-top: var(--td-comp-margin-sm);
-                font-weight: bold;
-                font-size: 1.2em;
-                color: var(--td-brand-color);
-              }
-            }
-          }
-        }
-
-        .alarm-table {
-          :deep(.t-table) {
-            font-size: var(--td-font-size-body-small);
-          }
-        }
-      }
-
-      .health-content {
-        .health-chart {
-          margin-bottom: var(--td-comp-margin-xl);
-          height: 200px;
-
-          .health-chart-component {
-            height: 100%;
-            width: 100%;
-          }
-        }
-
-        .service-list {
-          display: flex;
-          flex-direction: column;
-          gap: var(--td-comp-margin-md);
-
-          .service-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: var(--td-comp-margin-md);
-            border-radius: var(--td-radius-default);
-            background: var(--td-bg-color-container-hover);
-            transition: all 0.3s ease;
-
-            &:hover {
-              background: var(--td-bg-color-container-active);
-              transform: translateX(4px);
-            }
-          }
-        }
-      }
-    }
+    align-items: stretch;
+    gap: 10px;
   }
-}
 
-// 响应式设计
-@media (max-width: 1200px) {
-  .ops-dashboard {
-    .dashboard-content {
-      gap: var(--td-comp-margin-lg);
-
-      .content-row {
-        gap: var(--td-comp-margin-lg);
-
-        &:nth-child(1),
-        &:nth-child(3) {
-          grid-template-columns: 1fr 1fr;
-        }
-
-        &:nth-child(4) {
-          grid-template-columns: 1fr;
-        }
-      }
-    }
+  .hero-title-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
   }
-}
 
-@media (max-width: 768px) {
-  .ops-dashboard {
-    padding: var(--td-comp-margin-sm);
+  .hero-subtitle {
+    white-space: normal;
+  }
 
-    .dashboard-header {
-      margin-bottom: var(--td-comp-margin-md);
+  .hero-inline-stats {
+    flex: none;
+    gap: 6px;
+  }
 
-      .header-content {
-        padding: var(--td-comp-margin-md);
-        flex-direction: column;
-        gap: var(--td-comp-margin-md);
+  .hero-actions {
+    margin-left: 0;
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-between;
+  }
 
-        .header-left {
-          flex-direction: column;
-          gap: var(--td-comp-margin-md);
-        }
-      }
-    }
+  .range-switch {
+    justify-content: flex-start;
+  }
 
-    .dashboard-content {
-      gap: var(--td-comp-margin-md);
+  .range-switch :deep(.t-button) {
+    flex: 1 1 calc(50% - 4px);
+    min-width: 0;
+  }
 
-      .content-row {
-        grid-template-columns: 1fr !important;
-        gap: var(--td-comp-margin-md);
+  .refresh-button {
+    width: 100%;
+  }
 
-        .dashboard-card {
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
 
-          .platform-grid,
-          .resources-grid {
-            gap: var(--td-comp-margin-md);
-          }
+  .summary-value {
+    font-size: 24px;
+  }
 
-          .status-content {
-            gap: var(--td-comp-margin-md);
-            flex-direction: column;
-          }
-        }
-      }
-    }
+  .metric-row {
+    grid-template-columns: 1fr;
+  }
+
+  .metric-value {
+    text-align: left;
+  }
+
+  .metric-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .disk-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 14px 0;
+  }
+
+  .disk-head {
+    display: none;
+  }
+
+  .disk-cell {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: baseline;
+    color: var(--td-text-color-secondary);
+  }
+
+  .disk-cell-label {
+    display: inline;
+    color: var(--td-text-color-placeholder);
+    font: var(--td-font-body-small);
+  }
+
+  .chart {
+    height: 280px;
   }
 }
 </style>

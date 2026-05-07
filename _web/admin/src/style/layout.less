@@ -38,9 +38,12 @@
 }
 
 .t-layout.t-layout--with-sider {
+  min-height: 0;
+
   > .t-layout {
     flex: 1;
     min-width: 760px;
+    min-height: 0;
   }
 }
 
@@ -60,6 +63,7 @@
   // 布局元素调整
   &-wrapper {
     height: 100vh;
+    min-height: 0;
     display: flex;
     flex-direction: column;
   }
@@ -76,6 +80,7 @@
   }
 
   &-content-layout {
+    min-height: 0;
     padding: var(--td-comp-paddingTB-xl) var(--td-comp-paddingLR-xl);
   }
 
@@ -85,13 +90,9 @@
 
     &-tabs-nav {
       max-width: 100%;
-      position: fixed;
+      position: static;
       overflow: visible;
       z-index: 100;
-    }
-
-    &-tabs-nav + .@{starter-prefix}-content-layout {
-      padding-top: var(--td-comp-paddingTB-xxl);
     }
 
     &::-webkit-scrollbar {
@@ -105,6 +106,35 @@
       background-clip: content-box;
       background-color: var(--td-scrollbar-color);
     }
+  }
+
+  &-main-layout {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    scrollbar-gutter: stable both-edges;
+  }
+
+  &-main-header {
+    position: sticky;
+    top: 0;
+    z-index: 1002;
+    height: auto;
+    background: transparent;
+  }
+
+  &-main-content {
+    min-height: 0;
+  }
+
+  &-main-content > .@{starter-prefix}-layout {
+    height: auto;
+    min-height: 100%;
+    overflow: visible;
+  }
+
+  &-main-content > .@{starter-prefix}-layout > .@{starter-prefix}-content-layout {
+    padding-bottom: calc(var(--td-comp-paddingTB-xl) + 24px);
   }
 
   &-footer-layout {
@@ -219,7 +249,6 @@
   margin-top: 16px;
 }
 
-
 .form-basic-container.form-basic-container-radius {
   border-radius: var(--td-radius-medium);
 }
@@ -290,7 +319,6 @@
   }
 }
 
-
 .t-dialog--default {
   padding: 20px;
 }
@@ -304,7 +332,6 @@
     padding: 0;
   }
 }
-
 
 .list-card-container {
   box-sizing: border-box;

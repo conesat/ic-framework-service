@@ -12,7 +12,7 @@ import cn.icframework.system.module.chatuser.def.ChatUserDef;
 import cn.icframework.system.module.chatuser.service.ChatUserService;
 import cn.icframework.system.module.user.User;
 import cn.icframework.system.module.user.service.UserService;
-import cn.icframework.system.module.ws.api.ApiWebSocket;
+import cn.icframework.system.module.ws.WebSocketMessageService;
 import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.mapping.SqlCommandType;
 import org.springframework.stereotype.Service;
@@ -32,6 +32,7 @@ public class ChatMsgService extends BasicService<ChatMsgMapper, ChatMsg> {
     private final ChatService chatService;
     private final UserService userService;
     private final ChatUserService chatUserService;
+    private final WebSocketMessageService webSocketMessageService;
 
 
     /**
@@ -81,7 +82,7 @@ public class ChatMsgService extends BasicService<ChatMsgMapper, ChatMsg> {
                 msgDTO.setToUserId(userId);
                 msgDTO.setUserName(user.getName());
                 msgDTO.setUserPic(user.getAvatarFileUrl());
-                ApiWebSocket.send(msgDTO);
+                webSocketMessageService.send(msgDTO);
             }
         }
         if (sqlCommandType == SqlCommandType.INSERT || sqlCommandType == SqlCommandType.UPDATE) {

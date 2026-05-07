@@ -1,7 +1,7 @@
 package cn.icframework.system.module.sysfile.pojo.vo;
 
 import cn.icframework.system.enums.FileType;
-import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson2.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
 

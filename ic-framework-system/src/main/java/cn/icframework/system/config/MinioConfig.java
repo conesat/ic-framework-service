@@ -4,10 +4,10 @@ import io.minio.MinioClient;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 
 /**
  * MinIO配置类
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
  */
 @Getter
 @Setter
-@Component
 @ConfigurationProperties(prefix = "app.minio")
 public class MinioConfig {
     /**
@@ -45,7 +44,8 @@ public class MinioConfig {
     private boolean secure = false;
 }
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnProperty(prefix = "ic.system", name = "file-storage.enabled", havingValue = "true", matchIfMissing = true)
 class MinioConfiguration {
     
     @Bean

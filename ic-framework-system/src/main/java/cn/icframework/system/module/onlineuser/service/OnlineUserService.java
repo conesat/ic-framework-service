@@ -6,6 +6,7 @@ import cn.icframework.auth.standard.IOnlineUserService;
 import cn.icframework.auth.utils.JWTUtils;
 import cn.icframework.common.consts.TokenInfo;
 import cn.icframework.core.basic.service.BasicService;
+import cn.icframework.core.common.exception.OtherLoginException;
 import cn.icframework.core.common.exception.TokenOutTimeException;
 import cn.icframework.core.utils.Assert;
 import cn.icframework.core.utils.BeanUtils;
@@ -226,7 +227,19 @@ public class OnlineUserService extends BasicService<OnlineUserMapper, OnlineUser
      */
     @Override
     public void verify(String userId, Long sessionId) {
-
+        if (sessionId == null || !StringUtils.hasLength(userId)) {
+            throw new TokenOutTimeException();
+        }
+        OnlineUser onlineUser = selectById(sessionId);
+        if (onlineUser == null || onlineUser.getExpireTime() == null) {
+            throw new TokenOutTimeException();
+        }
+        if (onlineUser.getExpireTime().isBefore(LocalDateTime.now())) {
+            throw new TokenOutTimeException();
+        }
+        if (!Objects.equals(onlineUser.getUserId(), userId)) {
+            throw new OtherLoginException();
+        }
     }
 
     /**

@@ -3,7 +3,6 @@ package cn.icframework.system.config;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 /**
  * 文件存储配置类
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Component;
  */
 @Getter
 @Setter
-@Component
 @ConfigurationProperties(prefix = "app.file-storage")
 public class FileStorageConfig {
     /**

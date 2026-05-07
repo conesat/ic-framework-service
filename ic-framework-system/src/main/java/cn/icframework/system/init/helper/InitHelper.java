@@ -3,7 +3,7 @@ package cn.icframework.system.init.helper;
 import cn.icframework.core.utils.FileUtils;
 import cn.icframework.core.utils.MD5Util;
 import cn.icframework.system.utils.InitMd5Utils;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

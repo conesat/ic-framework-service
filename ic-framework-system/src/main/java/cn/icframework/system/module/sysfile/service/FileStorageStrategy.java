@@ -3,6 +3,8 @@ package cn.icframework.system.module.sysfile.service;
 import cn.icframework.system.config.FileStorageConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -17,16 +19,22 @@ import java.util.Optional;
 @Slf4j
 public class FileStorageStrategy {
     private final FileStorageConfig fileStorageConfig;
-    private final OssFileHelper ossFileHelper;
-    private final Optional<MinioFileHelper> minioFileHelper;
+    private final Optional<IFileHelper> ossFileHelper;
+    private final Optional<IFileHelper> minioFileHelper;
+    private final DisabledFileHelper disabledFileHelper;
+    private final boolean fileStorageEnabled;
 
     @Autowired
     public FileStorageStrategy(FileStorageConfig fileStorageConfig,
-                               @Autowired(required = false) OssFileHelper ossFileHelper,
-                               @Autowired(required = false) MinioFileHelper minioFileHelper) {
+                               ObjectProvider<OssFileHelper> ossFileHelper,
+                               ObjectProvider<MinioFileHelper> minioFileHelper,
+                               DisabledFileHelper disabledFileHelper,
+                               @Value("${ic.system.file-storage.enabled:true}") boolean fileStorageEnabled) {
         this.fileStorageConfig = fileStorageConfig;
-        this.ossFileHelper = ossFileHelper;
-        this.minioFileHelper = Optional.ofNullable(minioFileHelper);
+        this.ossFileHelper = Optional.ofNullable(ossFileHelper.getIfAvailable()).map(IFileHelper.class::cast);
+        this.minioFileHelper = Optional.ofNullable(minioFileHelper.getIfAvailable()).map(IFileHelper.class::cast);
+        this.disabledFileHelper = disabledFileHelper;
+        this.fileStorageEnabled = fileStorageEnabled;
     }
 
     /**
@@ -35,27 +43,35 @@ public class FileStorageStrategy {
      * @return 文件存储帮助类
      */
     public IFileHelper getFileHelper() {
+        if (!fileStorageEnabled) {
+            log.warn("文件存储能力已关闭");
+            return disabledFileHelper;
+        }
+
         String storageType = fileStorageConfig.getType();
         log.info("当前文件存储类型: {}", storageType);
 
         if (storageType == null) {
-            log.warn("存储类型为null，使用默认OSS存储");
-            return ossFileHelper;
+            log.warn("存储类型为null，尝试使用默认OSS存储");
+            return ossFileHelper.orElse(disabledFileHelper);
         }
 
         switch (storageType.toLowerCase()) {
             case "oss":
-                return ossFileHelper;
+                return ossFileHelper.orElseGet(() -> {
+                    log.warn("OSS配置不可用，回退到禁用文件存储");
+                    return disabledFileHelper;
+                });
             case "minio":
                 if (minioFileHelper.isPresent()) {
                     return minioFileHelper.get();
                 } else {
-                    log.warn("MinIO配置不可用，使用默认OSS存储");
-                    return ossFileHelper;
+                    log.warn("MinIO配置不可用，尝试使用默认OSS存储");
+                    return ossFileHelper.orElse(disabledFileHelper);
                 }
             default:
-                log.warn("未知的存储类型: {}，使用默认OSS存储", storageType);
-                return ossFileHelper;
+                log.warn("未知的存储类型: {}，尝试使用默认OSS存储", storageType);
+                return ossFileHelper.orElse(disabledFileHelper);
         }
     }
 

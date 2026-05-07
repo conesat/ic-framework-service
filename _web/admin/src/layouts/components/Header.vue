@@ -1,16 +1,31 @@
 <template>
   <div :class="layoutCls">
-    <t-head-menu :class="menuCls" :theme="menuTheme" expand-type="popup" :value="active">
-      <template #logo>
-        <span v-if="showLogo" class="header-logo-container" @click="handleNav('/dashboard/base')">
-          <logo-full class="t-logo" />
-        </span>
-        <div v-else class="header-operate-left">
-          <t-button theme="default" shape="square" variant="text" @click="changeCollapsed">
-            <t-icon class="collapsed-icon" name="view-list" />
-          </t-button>
-          <search :layout="layout" />
+    <div v-if="layout === 'side'" :class="sideHeaderCls">
+      <div v-if="showMenu" class="side-header-topbar">
+        <div class="header-left-content">
+          <l-breadcrumb v-if="settingStore.state.showBreadcrumb" in-header />
         </div>
+        <div class="operations-container">
+          <notice />
+          <t-tooltip placement="bottom" content="帮助文档">
+            <t-button theme="default" shape="square" variant="text" @click="navToHelper">
+              <t-icon name="help-circle" />
+            </t-button>
+          </t-tooltip>
+          <t-tooltip placement="bottom" content="系统设置">
+            <t-button theme="default" shape="square" variant="text" @click="toggleSettingPanel">
+              <t-icon name="setting" />
+            </t-button>
+          </t-tooltip>
+        </div>
+      </div>
+      <div v-if="settingStore.state.isUseTabsRouter" class="side-header-tabs-wrap">
+        <layout-tabs :class="`${prefix}-header-tabs`" />
+      </div>
+    </div>
+    <t-head-menu v-else-if="showMenu" :class="menuCls" :theme="menuTheme" expand-type="popup" :value="active">
+      <template #logo>
+        <div class="header-left-content"></div>
       </template>
       <template v-if="layout !== 'side'" #default>
         <menu-content class="header-menu" :nav-data="menu" />
@@ -32,44 +47,27 @@
               <t-icon name="setting" />
             </t-button>
           </t-tooltip>
-          <t-dropdown :min-column-width="120" trigger="click">
-            <template #dropdown>
-              <t-dropdown-menu>
-                <t-dropdown-item class="operations-dropdown-container-item" @click="handleNav('/mine/mine-index')">
-                  <t-icon name="user-circle"></t-icon>个人中心
-                </t-dropdown-item>
-                <t-dropdown-item class="operations-dropdown-container-item" @click="handleNav('/mine/edit-password')">
-                  <t-icon name="user-password"></t-icon>修改密码
-                </t-dropdown-item>
-                <t-dropdown-item class="operations-dropdown-container-item" @click="handleLogout">
-                  <t-icon name="poweroff"></t-icon>退出登录
-                </t-dropdown-item>
-              </t-dropdown-menu>
-            </template>
-            <t-avatar size="32px" style="margin-left: 20px;cursor: pointer"
-              :image="user.userInfo.avatarFileUrl ? user.userInfo.avatarFileUrl : ''">
-              {{ user.userInfo.name.substring(0, 1) }}</t-avatar>
-          </t-dropdown>
         </div>
       </template>
     </t-head-menu>
+    <layout-tabs v-if="layout !== 'side' && settingStore.state.isUseTabsRouter" :class="`${prefix}-header-tabs`" />
   </div>
 </template>
 
 <script setup lang="ts">
 import type { PropType } from 'vue';
 import { computed } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { useRoute } from 'vue-router';
 
-import LogoFull from '@/assets/assets-logo-full.svg?component';
 import { prefix } from '@/config/global';
 import { getActive } from '@/router';
-import { useSettingStore, useUserStore } from '@/store';
+import { useSettingStore } from '@/store';
 import type { MenuRoute } from '@/types/interface';
 
+import LBreadcrumb from './Breadcrumb.vue';
+import LayoutTabs from './LayoutTabs.vue';
 import MenuContent from './MenuContent.vue';
 import Notice from './Notice.vue';
-import Search from './Search.vue';
 
 const props = defineProps({
   theme: {
@@ -81,6 +79,10 @@ const props = defineProps({
     default: 'top',
   },
   showLogo: {
+    type: Boolean,
+    default: true,
+  },
+  showMenu: {
     type: Boolean,
     default: true,
   },
@@ -102,10 +104,8 @@ const props = defineProps({
   },
 });
 
-const router = useRouter();
 const route = useRoute();
 const settingStore = useSettingStore();
-const user = useUserStore();
 
 const toggleSettingPanel = () => {
   settingStore.updateConfig({
@@ -115,7 +115,20 @@ const toggleSettingPanel = () => {
 
 const active = computed(() => getActive(route));
 
-const layoutCls = computed(() => [`${prefix}-header-layout`]);
+const layoutCls = computed(() => [
+  `${prefix}-header-layout`,
+  {
+    [`${prefix}-header-layout-fixed`]: props.showMenu && props.isFixed && props.layout !== 'side',
+  },
+]);
+
+const sideHeaderCls = computed(() => [
+  `${prefix}-header-side-shell`,
+  {
+    [`${prefix}-header-side-shell-fixed`]: props.isFixed,
+    [`${prefix}-header-side-shell-fixed-compact`]: props.isFixed && props.isCompact,
+  },
+]);
 
 const menuCls = computed(() => {
   const { isFixed, layout, isCompact } = props;
@@ -129,29 +142,53 @@ const menuCls = computed(() => {
   ];
 });
 const menuTheme = computed(() => props.theme as 'light' | 'dark');
-const changeCollapsed = () => {
-  settingStore.updateConfig({
-    isSidebarCompact: !settingStore.state.isSidebarCompact,
-  });
-};
-
-const handleNav = (url: string) => {
-  router.push(url);
-};
-
-const handleLogout = () => {
-  router.push({
-    path: '/login',
-    query: { redirect: encodeURIComponent(router.currentRoute.value.fullPath) },
-  });
-};
 
 const navToHelper = () => {
   window.open('http://icframework.chinahg.top');
 };
 </script>
 <style lang="less" scoped>
+@layout-min-width: 900px;
+
 .@{starter-prefix}-header {
+  &-layout {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background: transparent;
+
+    &-fixed {
+      padding-top: 0;
+    }
+  }
+
+  &-side-shell {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    box-sizing: border-box;
+    margin: 20px 0 10px;
+    background-color: var(--td-bg-color-container);
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--td-component-stroke) 70%, transparent);
+    box-shadow: 0 10px 30px color-mix(in srgb, var(--td-bg-color-container-hover) 18%, transparent);
+
+    &-fixed {
+      position: relative;
+      top: auto !important;
+      right: auto !important;
+      left: auto !important;
+      z-index: 1001;
+      transform: none !important;
+      transition: none;
+
+      &-compact {
+        left: auto !important;
+      }
+    }
+  }
+
   &-menu-fixed {
     position: fixed;
     top: 0;
@@ -178,6 +215,31 @@ const navToHelper = () => {
     cursor: pointer;
     display: inline-flex;
   }
+
+  &-tabs {
+    width: 100%;
+  }
+}
+
+.side-header-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-width: 0;
+  min-height: 56px;
+  padding: 0 20px 0 24px;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--td-brand-color) 10%, transparent), transparent),
+    var(--td-bg-color-secondarycontainer);
+}
+
+.side-header-tabs-wrap {
+  overflow: hidden;
+  min-width: 0;
+  padding: 0 20px;
+  background-color: var(--td-bg-color-secondarycontainer);
+  border-top: 1px solid color-mix(in srgb, var(--td-component-stroke) 72%, transparent);
 }
 
 .header-menu {
@@ -189,9 +251,38 @@ const navToHelper = () => {
   }
 }
 
+.header-left-content {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+  flex: 1;
+
+  :deep(.t-breadcrumb) {
+    min-width: 0;
+    white-space: nowrap;
+    font: var(--td-font-body-small);
+  }
+
+  :deep(.t-breadcrumb__item) {
+    color: var(--td-text-color-secondary);
+  }
+
+  :deep(.t-breadcrumb__inner) {
+    color: inherit;
+  }
+
+  :deep(.t-breadcrumb__item:last-child) {
+    color: var(--td-text-color-primary);
+  }
+}
+
 .operations-container {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  gap: 6px;
 
   .t-popup__reference {
     display: flex;
@@ -200,7 +291,7 @@ const navToHelper = () => {
   }
 
   .t-button {
-    margin-left: var(--td-comp-margin-l);
+    margin-left: 0;
   }
 }
 
@@ -242,6 +333,29 @@ const navToHelper = () => {
   border-bottom: 1px solid var(--td-component-stroke);
 }
 
+:deep(.tdesign-starter-header-tabs .t-tabs__header) {
+  margin: 0;
+}
+
+:deep(.tdesign-starter-header-tabs .t-tabs__nav-wrap) {
+  overflow: hidden;
+}
+
+:deep(.tdesign-starter-header-tabs .t-tabs__nav) {
+  min-height: auto;
+  padding: 0;
+  background: transparent;
+}
+
+:deep(.tdesign-starter-header-tabs .t-tabs__nav-item) {
+  margin-top: 0;
+  border-radius: 8px 8px 0 0;
+}
+
+:deep(.tdesign-starter-header-tabs.t-tabs) {
+  background: transparent;
+}
+
 .t-menu--light {
   .header-user-account {
     color: var(--td-text-color-primary);
@@ -253,45 +367,15 @@ const navToHelper = () => {
     border-bottom: 1px solid var(--td-gray-color-10);
   }
 
+  .side-header-tabs-wrap {
+    background: color-mix(in srgb, var(--td-gray-color-11) 35%, transparent);
+  }
+
   .header-user-account {
     color: rgba(255, 255, 255, 0.55);
-  }
-}
-
-.operations-dropdown-container-item {
-  width: 100%;
-  display: flex;
-  align-items: center;
-
-  :deep(.t-dropdown__item-text) {
-    display: flex;
-    align-items: center;
-  }
-
-  .t-icon {
-    font-size: var(--td-comp-size-xxxs);
-    margin-right: var(--td-comp-margin-s);
-  }
-
-  :deep(.t-dropdown__item) {
-    width: 100%;
-    margin-bottom: 0px;
-  }
-
-  &:last-child {
-    :deep(.t-dropdown__item) {
-      margin-bottom: 8px;
-    }
   }
 }
 </style>
 
 <!-- eslint-disable-next-line vue-scoped-css/enforce-style-type -->
-<style lang="less">
-.operations-dropdown-container-item {
-  .t-dropdown__item-text {
-    display: flex;
-    align-items: center;
-  }
-}
-</style>
+<style lang="less"></style>

@@ -9,7 +9,7 @@ import cn.icframework.system.module.menu.Menu;
 import cn.icframework.system.module.menu.def.MenuDef;
 import cn.icframework.system.module.menu.pojo.dto.MenuInitDTO;
 import cn.icframework.system.module.menu.service.MenuService;
-import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson2.JSONArray;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

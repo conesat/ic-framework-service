@@ -36,7 +36,7 @@ class LightAppTheme {
         borderRadius: BorderRadius.circular(4), // 内边距2
       ),
     ),
-    dialogTheme: const DialogTheme(
+    dialogTheme: const DialogThemeData(
         surfaceTintColor: Colors.white,
         backgroundColor: Colors.white,
         titleTextStyle: TextStyle(

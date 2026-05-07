@@ -9,9 +9,10 @@ import { store } from './store';
 
 import 'tdesign-vue-next/es/style/index.css';
 import '@/style/index.less';
+import '@/assets/theme/tencent-cloud.css';
+import '@/style/premium-theme.less';
 import './permission';
 
-import '@/assets/theme/tencent-cloud.css';
 
 const app = createApp(App);
 

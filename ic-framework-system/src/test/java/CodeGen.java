@@ -1,7 +1,7 @@
 import cn.icframework.core.utils.MD5Util;
 import cn.icframework.core.utils.RsaUtils;
 import cn.icframework.system.module.setting.pojo.vo.ActivationInfoVO;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import org.junit.jupiter.api.Test;
 
 /**

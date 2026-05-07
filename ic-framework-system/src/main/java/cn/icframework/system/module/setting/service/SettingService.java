@@ -26,7 +26,7 @@ import cn.icframework.system.module.setting.pojo.vo.ActivationInfoVO;
 import cn.icframework.system.module.setting.pojo.vo.SettingVO;
 import cn.icframework.system.module.setting.pojo.vo.SettingVOConverter;
 import cn.icframework.system.module.userrole.service.UserRoleService;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;

@@ -8,11 +8,13 @@ import cn.icframework.system.module.sysfile.dao.SysFileMapper;
 import cn.icframework.system.module.sysfile.pojo.dto.SysFileDTO;
 import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.mapping.SqlCommandType;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URL;
 import java.util.Date;
+import java.util.Optional;
 
 /**
  * @author create by ic gen
@@ -22,8 +24,9 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class SysFileService extends BasicService<SysFileMapper, SysFile> {
 
-    //创建OSSClient实例。
-    private final OssConfig ossConfig;
+    private final Optional<OssConfig> ossConfig;
+    @Value("${ic.system.file-storage.enabled:true}")
+    private boolean fileStorageEnabled;
 
 
     @Override
@@ -37,8 +40,8 @@ public class SysFileService extends BasicService<SysFileMapper, SysFile> {
     public void after(SqlCommandType sqlCommandType, SysFile entity) {
         if (sqlCommandType == SqlCommandType.DELETE || sqlCommandType == SqlCommandType.UPDATE) {
             if (entity.getRefCount() <= 0) {
-                if (ossConfig != null && ossConfig.getOss() != null) {
-                    ossConfig.getOss().deleteObject(entity.getBucketName(), entity.getOssObjectName());
+                if (fileStorageEnabled && ossConfig.isPresent() && ossConfig.get().getOss() != null) {
+                    ossConfig.get().getOss().deleteObject(entity.getBucketName(), entity.getOssObjectName());
                 }
             }
         }
@@ -90,12 +93,12 @@ public class SysFileService extends BasicService<SysFileMapper, SysFile> {
     }
 
     public String generatePreviewUrl(String bucketName, String objectName) {
-        if (ossConfig == null || ossConfig.getOss() == null) {
+        if (!fileStorageEnabled || ossConfig.isEmpty() || ossConfig.get().getOss() == null) {
             return "";
         }
         // 设置签名URL过期时间，单位为毫秒。
         Date expiration = new Date(new Date().getTime() + 3600 * 1000);
-        URL url = ossConfig.getOss().generatePresignedUrl(bucketName, objectName, expiration);
+        URL url = ossConfig.get().getOss().generatePresignedUrl(bucketName, objectName, expiration);
         return url == null ? "" : url.toString();
     }
 }

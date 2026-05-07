@@ -49,15 +49,15 @@ function calcHeight() {
     return;
   }
   let clientHeight = 0;
-  const { showFooter, isUseTabsRouter, showBreadcrumb } = settingStore.state;
-  const headerHeight = parseFloat(sizeXxxl);
+  const { showFooter, isUseTabsRouter, showBreadcrumb, showHeader, layout } = settingStore.state;
+  const headerHeight = showHeader ? parseFloat(sizeXxxl) : 0;
   const navDom = document.querySelector('.t-tabs__nav');
-  const navHeight = isUseTabsRouter ? getOuterHeight(navDom) : 0;
+  const navHeight = isUseTabsRouter && navDom ? getOuterHeight(navDom) : 0;
   const breadcrumbDom = document.querySelector('.t-breadcrumb');
-  const breadcrumbHeight = showBreadcrumb ? getOuterHeight(breadcrumbDom) : 0;
+  const breadcrumbHeight = showBreadcrumb && layout !== 'side' && breadcrumbDom ? getOuterHeight(breadcrumbDom) : 0;
   const contentPadding = parseFloat(paddingTBXxl) * 2;
   const footerDom = document.querySelector('.t-layout__footer');
-  const footerHeight = showFooter ? getOuterHeight(footerDom) : 0;
+  const footerHeight = showFooter && footerDom ? getOuterHeight(footerDom) : 0;
   const top = headerHeight + navHeight + breadcrumbHeight + contentPadding + footerHeight + 2;
   heightRef.value = window.innerHeight - top;
   clientHeight = document.documentElement.clientHeight - top;
@@ -75,7 +75,13 @@ useWindowSizeFn((_: unknown): void => {
 }, { immediate: true });
 
 watch(
-  [() => settingStore.state.showFooter, () => settingStore.state.isUseTabsRouter, () => settingStore.state.showBreadcrumb],
+  [
+    () => settingStore.state.showFooter,
+    () => settingStore.state.isUseTabsRouter,
+    () => settingStore.state.showBreadcrumb,
+    () => settingStore.state.showHeader,
+    () => settingStore.state.layout,
+  ],
   debounce(calcHeight, 250),
 );
 </script>

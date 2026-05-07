@@ -6,8 +6,8 @@ import cn.icframework.system.init.helper.InitHelper;
 import cn.icframework.system.module.position.Position;
 import cn.icframework.system.module.position.def.PositionDef;
 import cn.icframework.system.module.position.service.PositionService;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

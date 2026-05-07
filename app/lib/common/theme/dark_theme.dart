@@ -38,7 +38,7 @@ class DarkAppTheme {
         borderRadius: BorderRadius.circular(4), // 内边距2
       ),
     ),
-    dialogTheme: const DialogTheme(
+    dialogTheme: const DialogThemeData(
         surfaceTintColor: Colors.black87,
         backgroundColor: Colors.black87,
         titleTextStyle: TextStyle(

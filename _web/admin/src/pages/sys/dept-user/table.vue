@@ -281,7 +281,7 @@ const serManager = (row?: any) => {
 const headerAffixedTop = computed(
   () =>
     ({
-      offsetTop: store.state.isUseTabsRouter ? 48 : 0,
+      offsetTop: 0,
       container: `.${prefix}-layout`,
     } as any),
 );

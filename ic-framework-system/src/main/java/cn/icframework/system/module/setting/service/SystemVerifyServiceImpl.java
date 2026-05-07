@@ -5,7 +5,7 @@ import cn.icframework.core.utils.MD5Util;
 import cn.icframework.core.utils.RsaUtils;
 import cn.icframework.system.module.setting.Setting;
 import cn.icframework.system.module.setting.pojo.vo.ActivationInfoVO;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

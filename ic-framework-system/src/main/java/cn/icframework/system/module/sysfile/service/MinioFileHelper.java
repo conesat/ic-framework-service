@@ -22,6 +22,7 @@ import java.util.UUID;
  */
 @Service
 @Slf4j
+@ConditionalOnProperty(prefix = "ic.system", name = "file-storage.enabled", havingValue = "true", matchIfMissing = true)
 @ConditionalOnProperty(name = "app.file-storage.type", havingValue = "minio", matchIfMissing = false)
 public class MinioFileHelper implements IFileHelper {
     private final SysFileService sysFileService;

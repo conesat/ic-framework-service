@@ -1,5 +1,5 @@
 server:
-  port: 9999
+  port: 9998
   servlet:
     context-path: /api
 #mybatis的配置
@@ -74,6 +74,12 @@ ic:
   jwt:
     secret: iceFire_123
     timeout: 5
+  system:
+    monitor:
+      enabled: true
+      sample-interval-seconds: 5
+      retention-minutes: 60
+      disk-detail-enabled: true
   snowflake:
     worker-id: 1
     data-center-id: 1
