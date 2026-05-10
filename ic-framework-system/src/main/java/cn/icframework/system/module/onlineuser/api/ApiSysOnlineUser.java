@@ -44,6 +44,7 @@ public class ApiSysOnlineUser extends BasicApi {
      */
     @PostMapping(value = "/page", name = "分页查询")
     public PageResponse<OnlineUserVO> page(HttpServletRequest request, PageRequest page) {
+        onlineUserService.clearExpiredRecords();
         SqlWrapper sqlWrapper = wrapperBuilder.build(getQueryParams(request));
         return onlineUserService.page(sqlWrapper, page, OnlineUserVO.class);
     }

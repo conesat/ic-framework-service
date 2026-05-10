@@ -1,6 +1,7 @@
 <template>
   <div v-if="currentCrumb" :class="breadcrumbCls">
-    <component v-if="parentIconComponent" :is="parentIconComponent" class="breadcrumb-icon breadcrumb-icon--component" />
+    <component v-if="parentIconComponent" :is="parentIconComponent"
+      class="breadcrumb-icon breadcrumb-icon--component" />
     <t-icon v-else :name="parentIconName" class="breadcrumb-icon" />
     <span v-if="parentCrumb" class="breadcrumb-parent">{{ parentCrumb.title }}</span>
     <span v-if="parentCrumb" class="breadcrumb-separator">|</span>
@@ -144,6 +145,7 @@ const parentIconName = computed(() => {
   flex-shrink: 0;
   font-size: 13px;
   color: var(--td-text-color-placeholder);
+  margin: 0 6px;
 }
 
 .breadcrumb-current {

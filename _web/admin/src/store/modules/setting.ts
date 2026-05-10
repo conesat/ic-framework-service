@@ -22,6 +22,7 @@ export type TStateKey = keyof typeof defaultState;
 export const useSettingStore = defineStore('setting', () => {
   // state
   const state = ref({ ...defaultState });
+  state.value.layout = 'side'; // 强制使用 side 布局
 
   // getters
   const showSidebar = computed(() => state.value.layout !== 'top');
@@ -50,7 +51,7 @@ export const useSettingStore = defineStore('setting', () => {
       }
     }
     const isDarkMode = theme === 'dark';
-    document.documentElement.setAttribute('theme-mode', isDarkMode ? 'dark' : 'light');
+    document.documentElement.setAttribute('theme-mode', isDarkMode ? 'dark' : '');
     state.value.chartColors = isDarkMode ? DARK_CHART_COLORS : LIGHT_CHART_COLORS;
   }
 

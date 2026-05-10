@@ -5,7 +5,6 @@ import cn.icframework.system.module.sysfile.service.FileStorageStrategy;
 import cn.icframework.system.module.ws.WebSocketRouteStore;
 import cn.icframework.system.module.ws.WebSocketSessionRegistry;
 import cn.icframework.system.module.ws.api.ApiWebSocket;
-import cn.icframework.system.task.ClearOnlineUser;
 import cn.icframework.system.task.ClearSysFile;
 import org.mockito.Mockito;
 import org.junit.jupiter.api.Test;
@@ -67,7 +66,6 @@ class SystemAutoConfigurationTest {
                         "ic.system.jobs.enabled=false"
                 )
                 .run(context -> {
-                    assertThat(context).doesNotHaveBean(ClearOnlineUser.class);
                     assertThat(context).doesNotHaveBean(ClearSysFile.class);
                 });
     }

@@ -4,6 +4,7 @@ import cn.icframework.auth.config.IcJwtConfig;
 import cn.icframework.auth.entity.UserProps;
 import cn.icframework.auth.standard.IOnlineUserService;
 import cn.icframework.auth.utils.JWTUtils;
+import cn.icframework.cache.utils.CacheUtils;
 import cn.icframework.common.consts.TokenInfo;
 import cn.icframework.core.basic.service.BasicService;
 import cn.icframework.core.common.exception.OtherLoginException;
@@ -47,6 +48,8 @@ import java.util.Objects;
 @Slf4j
 @RequiredArgsConstructor
 public class OnlineUserService extends BasicService<OnlineUserMapper, OnlineUser> implements IOnlineUserService {
+    private static final String TOKEN_CACHE_SESSION_ID_PREFIX = "IC:TOKEN:SESSION_ID:";
+
     private final SysFileService sysFileService;
     private final RegisterLoginHelper registerLoginHelper;
     private final UserRoleService userRoleService;
@@ -214,7 +217,7 @@ public class OnlineUserService extends BasicService<OnlineUserMapper, OnlineUser
         onlineUser.setSessionId(sessionId);
         onlineUser.setExpireTime(LocalDateTimeUtils.parse(timeOut));
         int i = updateById(onlineUser);
-        if (i == 0) {
+        if (i == 0 && CacheUtils.get(TOKEN_CACHE_SESSION_ID_PREFIX + sessionId) == null) {
             throw new TokenOutTimeException();
         }
     }
@@ -230,16 +233,19 @@ public class OnlineUserService extends BasicService<OnlineUserMapper, OnlineUser
         if (sessionId == null || !StringUtils.hasLength(userId)) {
             throw new TokenOutTimeException();
         }
+        if (CacheUtils.get(TOKEN_CACHE_SESSION_ID_PREFIX + sessionId) == null) {
+            deleteById(sessionId);
+            throw new TokenOutTimeException();
+        }
         OnlineUser onlineUser = selectById(sessionId);
-        if (onlineUser == null || onlineUser.getExpireTime() == null) {
-            throw new TokenOutTimeException();
-        }
-        if (onlineUser.getExpireTime().isBefore(LocalDateTime.now())) {
-            throw new TokenOutTimeException();
-        }
-        if (!Objects.equals(onlineUser.getUserId(), userId)) {
+        if (onlineUser != null && !Objects.equals(onlineUser.getUserId(), userId)) {
             throw new OtherLoginException();
         }
+    }
+
+    public void clearExpiredRecords() {
+        OnlineUserDef onlineUserDef = OnlineUserDef.table();
+        delete(DELETE().FROM(onlineUserDef).WHERE(onlineUserDef.expireTime.lt(LocalDateTime.now())), true, true);
     }
 
     /**

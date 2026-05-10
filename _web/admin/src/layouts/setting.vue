@@ -1,92 +1,102 @@
 <template>
-  <t-drawer
-    v-model:visible="showSettingPanel"
-    size="408px"
-    :footer="false"
-    header="页面配置"
-    :close-btn="true"
-    class="setting-drawer-container"
-    @close-btn-click="handleCloseDrawer"
-  >
+  <t-drawer v-model:visible="showSettingPanel" size="408px" :footer="false" :close-btn="true"
+    class="setting-drawer-container premium-glass-drawer" @close-btn-click="handleCloseDrawer">
+    <template #header>
+      <div class="setting-drawer-header">
+        <div class="header-content">
+          <t-icon name="setting" size="24px" class="header-icon" />
+          <div class="header-text">
+            <h3>页面配置</h3>
+            <p>自定义您的工作空间视觉体验</p>
+          </div>
+        </div>
+      </div>
+    </template>
+
     <div class="setting-container">
-      <t-form ref="form" :data="formData" label-align="left">
-        <div class="setting-group-title">主题模式</div>
-        <t-radio-group v-model="formData.mode">
-          <div v-for="(item, index) in MODE_OPTIONS" :key="index" class="setting-layout-drawer">
-            <div>
-              <t-radio-button :key="index" :value="item.type"
-                ><component :is="getModeIcon(item.type)"
-              /></t-radio-button>
-              <p :style="{ textAlign: 'center', marginTop: '8px' }">{{ item.text }}</p>
+      <div class="setting-section">
+        <div class="section-title">
+          <span>外观模式</span>
+        </div>
+        <div class="mode-selection-grid">
+          <div v-for="item in MODE_OPTIONS" :key="item.type" class="mode-card"
+            :class="{ active: formData.mode === item.type }" @click="formData.mode = item.type">
+            <div class="mode-card-icon">
+              <component :is="getModeIcon(item.type)" />
+            </div>
+            <span class="mode-card-text">{{ item.text }}</span>
+            <div class="active-indicator"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="setting-section">
+        <div class="section-title">
+          <span>系统主题色</span>
+        </div>
+        <div class="color-selection-grid">
+          <div v-for="item in DEFAULT_COLOR_OPTIONS" :key="item" class="color-swatch-wrapper"
+            :class="{ active: formData.brandTheme === item }" @click="formData.brandTheme = item">
+            <div class="color-swatch" :style="{ backgroundColor: item }">
+              <t-icon v-if="formData.brandTheme === item" name="check" size="14px" style="color: #fff" />
             </div>
           </div>
-        </t-radio-group>
-        <div class="setting-group-title">主题色</div>
-        <t-radio-group v-model="formData.brandTheme">
-          <div v-for="(item, index) in DEFAULT_COLOR_OPTIONS" :key="index" class="setting-layout-drawer">
-            <t-radio-button :key="index" :value="item" class="setting-layout-color-group">
-              <color-container :value="item" />
-            </t-radio-button>
-          </div>
-          <div class="setting-layout-drawer">
-            <t-popup
-              destroy-on-close
-              expand-animation
-              placement="bottom-right"
-              trigger="click"
-              :visible="isColoPickerDisplay"
-              :overlay-style="{ padding: 0 }"
-              @visible-change="onPopupVisibleChange"
-            >
+          <div class="color-swatch-wrapper custom-color">
+            <t-popup destroy-on-close expand-animation placement="bottom-right" trigger="click"
+              :visible="isColoPickerDisplay" :overlay-style="{ padding: 0 }" @visible-change="onPopupVisibleChange">
               <template #content>
-                <t-color-picker-panel
-                  :on-change="changeColor"
-                  :color-modes="['monochrome']"
-                  format="HEX"
-                  :swatch-colors="[]"
-                />
+                <t-color-picker-panel :on-change="changeColor" :color-modes="['monochrome']" format="HEX"
+                  :swatch-colors="[]" />
               </template>
-              <t-radio-button :value="dynamicColor" class="setting-layout-color-group dynamic-color-btn">
-                <color-container :value="dynamicColor" />
-              </t-radio-button>
+              <div class="color-swatch dynamic-color-btn"
+                :style="{ backgroundColor: dynamicColor || 'var(--td-component-stroke)' }">
+                <t-icon name="edit" size="14px"
+                  :style="{ color: dynamicColor ? '#fff' : 'var(--td-text-color-placeholder)' }" />
+              </div>
             </t-popup>
           </div>
-        </t-radio-group>
+        </div>
+      </div>
 
-        <div class="setting-group-title">导航布局</div>
-        <t-radio-group v-model="formData.layout">
-          <div v-for="(item, index) in LAYOUT_OPTION" :key="index" class="setting-layout-drawer">
-            <t-radio-button :key="index" :value="item">
-              <thumbnail :src="getThumbnailUrl(item)" />
-            </t-radio-button>
+      <div class="setting-section">
+        <div class="section-title">
+          <span>界面元素显示</span>
+        </div>
+        <div class="premium-switch-list">
+          <div class="switch-item">
+            <div class="switch-info">
+              <span class="switch-label">显示顶部栏 (Header)</span>
+              <span class="switch-desc">控制主页面顶部的可见性</span>
+            </div>
+            <t-switch v-model="formData.showHeader" size="medium" />
           </div>
-        </t-radio-group>
-
-        <t-form-item v-show="formData.layout === 'mix'" label="分割菜单（混合模式下有效）" name="splitMenu">
-          <t-switch v-model="formData.splitMenu" />
-        </t-form-item>
-
-        <t-form-item v-show="formData.layout === 'mix'" label="固定 Sidebar" name="isSidebarFixed">
-          <t-switch v-model="formData.isSidebarFixed" />
-        </t-form-item>
-
-        <div class="setting-group-title">元素开关</div>
-        <t-form-item v-show="formData.layout === 'side'" label="显示 Header" name="showHeader">
-          <t-switch v-model="formData.showHeader" />
-        </t-form-item>
-        <t-form-item label="显示 Breadcrumbs" name="showBreadcrumb">
-          <t-switch v-model="formData.showBreadcrumb" />
-        </t-form-item>
-        <t-form-item label="显示 Footer" name="showFooter">
-          <t-switch v-model="formData.showFooter" />
-        </t-form-item>
-        <t-form-item label="使用 多标签Tab页" name="isUseTabsRouter">
-          <t-switch v-model="formData.isUseTabsRouter"></t-switch>
-        </t-form-item>
-      </t-form>
+          <div class="switch-item">
+            <div class="switch-info">
+              <span class="switch-label">显示面包屑 (Breadcrumbs)</span>
+              <span class="switch-desc">显示当前页面的路径导航</span>
+            </div>
+            <t-switch v-model="formData.showBreadcrumb" size="medium" />
+          </div>
+          <div class="switch-item">
+            <div class="switch-info">
+              <span class="switch-label">显示页脚 (Footer)</span>
+              <span class="switch-desc">显示页面底部的版权信息</span>
+            </div>
+            <t-switch v-model="formData.showFooter" size="medium" />
+          </div>
+          <div class="switch-item">
+            <div class="switch-info">
+              <span class="switch-label">使用多标签页 (Tabs)</span>
+              <span class="switch-desc">开启多任务快速切换导航</span>
+            </div>
+            <t-switch v-model="formData.isUseTabsRouter" size="medium" />
+          </div>
+        </div>
+      </div>
     </div>
   </t-drawer>
 </template>
+
 <script setup lang="ts">
 import type { PopupVisibleChangeContext } from 'tdesign-vue-next';
 import { computed, onMounted, ref, watchEffect } from 'vue';
@@ -94,15 +104,11 @@ import { computed, onMounted, ref, watchEffect } from 'vue';
 import SettingAutoIcon from '@/assets/assets-setting-auto.svg';
 import SettingDarkIcon from '@/assets/assets-setting-dark.svg';
 import SettingLightIcon from '@/assets/assets-setting-light.svg';
-import ColorContainer from '@/components/color/index.vue';
-import Thumbnail from '@/components/thumbnail/index.vue';
 import { DEFAULT_COLOR_OPTIONS } from '@/config/color';
 import STYLE_CONFIG from '@/config/style';
 import { useSettingStore } from '@/store';
 
 const settingStore = useSettingStore();
-
-const LAYOUT_OPTION = ['side', 'top', 'mix'];
 
 const MODE_OPTIONS = [
   { type: 'light', text: '明亮' },
@@ -143,9 +149,12 @@ const changeColor = (hex: string) => {
 };
 
 onMounted(() => {
-  document.querySelector('.dynamic-color-btn').addEventListener('click', () => {
-    isColoPickerDisplay.value = true;
-  });
+  const btn = document.querySelector('.dynamic-color-btn');
+  if (btn) {
+    btn.addEventListener('click', () => {
+      isColoPickerDisplay.value = true;
+    });
+  }
 });
 
 const onPopupVisibleChange = (visible: boolean, context: PopupVisibleChangeContext) => {
@@ -170,156 +179,228 @@ const handleCloseDrawer = () => {
   });
 };
 
-const getThumbnailUrl = (name: string): string => {
-  return `https://tdesign.gtimg.com/tdesign-pro/setting/${name}.png`;
-};
-
 watchEffect(() => {
   if (formData.value.brandTheme) settingStore.updateConfig(formData.value);
 });
 </script>
-<!-- teleport导致drawer 内 scoped样式问题无法生效 先规避下 -->
-<!-- eslint-disable-next-line vue-scoped-css/enforce-style-type -->
+
 <style lang="less">
-.tdesign-setting {
-  z-index: 100;
-  position: fixed;
-  bottom: 200px;
-  right: 0;
-  transition: transform 0.3s cubic-bezier(0.7, 0.3, 0.1, 1), visibility 0.3s cubic-bezier(0.7, 0.3, 0.1, 1);
-  height: 40px;
-  width: 40px;
-  border-radius: 20px 0 0 20px;
-  transition: all 0.3s;
-
-  .t-icon {
-    margin-left: 8px;
+.premium-glass-drawer {
+  .t-drawer__content-wrapper {
+    backdrop-filter: blur(20px);
+    background: color-mix(in srgb, var(--td-bg-color-container) 85%, transparent) !important;
   }
 
-  .tdesign-setting-text {
-    font-size: 12px;
-    display: none;
+  .t-drawer__header {
+    padding: 24px;
+    border-bottom: 1px solid var(--td-component-stroke);
+    background: transparent;
   }
 
-  &:hover {
-    width: 96px;
+  .t-drawer__body {
+    padding: 0;
+  }
+}
 
-    .tdesign-setting-text {
-      display: inline-block;
+.setting-drawer-header {
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .header-icon {
+      color: var(--td-brand-color);
+      padding: 8px;
+      background: var(--td-brand-color-light);
+      border-radius: 12px;
+    }
+
+    .header-text {
+      h3 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--td-text-color-primary);
+      }
+
+      p {
+        margin: 4px 0 0 0;
+        font-size: 12px;
+        color: var(--td-text-color-placeholder);
+      }
     }
   }
 }
 
-.setting-layout-color-group {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 50% !important;
-  padding: 6px !important;
-  border: 2px solid transparent !important;
-
-  > .t-radio-button__label {
-    display: inline-flex;
-  }
-}
-
-.tdesign-setting-close {
-  position: fixed;
-  bottom: 200px;
-  right: 300px;
-}
-
-.setting-group-title {
-  font-size: 14px;
-  line-height: 22px;
-  margin: 32px 0 24px 0;
-  text-align: left;
-  font-family: PingFang SC;
-  font-style: normal;
-  font-weight: 500;
-  color: var(--td-text-color-primary);
-}
-
-.setting-link {
-  cursor: pointer;
-  color: var(--td-brand-color);
-  margin-bottom: 8px;
-}
-
-.setting-info {
-  position: absolute;
+.setting-container {
   padding: 24px;
-  bottom: 0;
-  left: 0;
-  line-height: 20px;
-  font-size: 12px;
-  text-align: center;
-  color: var(--td-text-color-placeholder);
-  width: 100%;
-  background: var(--td-bg-color-container);
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
 }
 
-.setting-drawer-container {
-  .setting-container {
-    padding-bottom: 100px;
-  }
-  .t-radio-group.t-size-m {
-    min-height: 32px;
-    width: 100%;
-    justify-content: space-between;
+.setting-section {
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--td-text-color-primary);
+    margin-bottom: 16px;
+    display: flex;
     align-items: center;
-  }
+    gap: 8px;
 
-  .t-radio-group.t-size-m .t-radio-button {
-    height: auto;
+    &::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, var(--td-component-stroke), transparent);
+    }
   }
+}
 
-  .setting-layout-drawer {
+.mode-selection-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+
+  .mode-card {
+    position: relative;
+    padding: 16px 8px;
+    background: var(--td-bg-color-component);
+    border: 2px solid transparent;
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 16px;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-    .t-radio-button {
-      display: inline-flex;
-      max-height: 78px;
-      padding: 8px;
-      border-radius: var(--td-radius-default);
-      border: 2px solid var(--td-component-border);
-      > .t-radio-button__label {
-        display: inline-flex;
+    &:hover {
+      transform: translateY(-2px);
+      background: var(--td-bg-color-container-hover);
+    }
+
+    &.active {
+      background: var(--td-bg-color-container);
+      border-color: var(--td-brand-color);
+      box-shadow: var(--td-shadow-1);
+
+      .mode-card-icon {
+        color: var(--td-brand-color);
+      }
+
+      .active-indicator {
+        opacity: 1;
+        transform: scaleX(1);
       }
     }
 
-    .t-is-checked {
-      border: 2px solid var(--td-brand-color) !important;
+    .mode-card-icon {
+      font-size: 24px;
+      color: var(--td-text-color-secondary);
+      transition: color 0.3s;
     }
 
-    .t-form__controls-content {
-      justify-content: end;
+    .mode-card-text {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--td-text-color-primary);
     }
-  }
 
-  .t-form__controls-content {
-    justify-content: end;
+    .active-indicator {
+      position: absolute;
+      bottom: 0;
+      left: 20%;
+      right: 20%;
+      height: 3px;
+      background: var(--td-brand-color);
+      border-radius: 3px 3px 0 0;
+      opacity: 0;
+      transform: scaleX(0);
+      transition: all 0.3s;
+    }
   }
 }
 
-.setting-route-theme {
-  .t-form__label {
-    min-width: 310px !important;
-    color: var(--td-text-color-secondary);
+.color-selection-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+
+  .color-swatch-wrapper {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+
+    &.active {
+      border-color: var(--td-brand-color);
+      padding: 2px;
+    }
+
+    .color-swatch {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+    }
   }
 }
 
-.setting-color-theme {
-  .setting-layout-drawer {
-    .t-radio-button {
-      height: 32px;
+.premium-switch-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .switch-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--td-bg-color-component);
+    border-radius: 12px;
+    transition: background 0.3s;
+
+    &:hover {
+      background: var(--td-bg-color-container-hover);
     }
 
-    &:last-child {
-      margin-right: 0;
+    .switch-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+
+      .switch-label {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--td-text-color-primary);
+      }
+
+      .switch-desc {
+        font-size: 12px;
+        color: var(--td-text-color-placeholder);
+      }
+    }
+  }
+}
+
+// 适配暗黑模式
+[theme-mode='dark'] {
+  .premium-glass-drawer {
+    .t-drawer__content-wrapper {
+      background: rgba(30, 30, 30, 0.8) !important;
     }
   }
 }

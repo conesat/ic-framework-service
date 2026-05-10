@@ -42,6 +42,7 @@ public class ApiSysMineOnlineUser extends BasicApi {
      */
     @PostMapping(value = "/page-mine", name = "分页查询")
     public PageResponse<OnlineUserVO> pageMine(HttpServletRequest request, PageRequest page) {
+        onlineUserService.clearExpiredRecords();
         QueryParams queryParams = getQueryParams(request);
         queryParams.put("userId", JWTUtils.getUserId());
         SqlWrapper sqlWrapper = wrapperBuilder.build(queryParams);

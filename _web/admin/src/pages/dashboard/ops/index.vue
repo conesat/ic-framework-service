@@ -994,9 +994,6 @@ onUnmounted(() => {
   position: relative;
   overflow: hidden;
   padding: 6px 12px;
-  background:
-    linear-gradient(135deg, color-mix(in srgb, var(--td-brand-color) 10%, var(--td-bg-color-container)) 0%, var(--td-bg-color-container) 48%),
-    var(--td-bg-color-container);
 }
 
 .hero-panel::after {
@@ -1259,8 +1256,7 @@ onUnmounted(() => {
   height: 320px;
 }
 
-.chart :deep(canvas),
-.chart :deep(div) {
+.chart :deep(canvas) {
   background: transparent !important;
 }
 
@@ -1300,9 +1296,6 @@ onUnmounted(() => {
   border: 1px solid var(--td-component-stroke);
   border-radius: var(--td-radius-medium);
   padding: 12px;
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--td-bg-color-container-hover) 72%, transparent), transparent),
-    var(--td-bg-color-container);
 }
 
 .metric-stat-label {

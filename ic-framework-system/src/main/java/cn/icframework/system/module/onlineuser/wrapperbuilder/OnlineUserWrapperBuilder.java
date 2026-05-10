@@ -13,6 +13,7 @@ import cn.icframework.system.module.onlineuser.pojo.vo.OnlineUserVO;
 import cn.icframework.system.module.user.def.UserDef;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -47,7 +48,8 @@ public class OnlineUserWrapperBuilder extends BasicWrapperBuilder<OnlineUserDef>
                 userDef.username.as(OnlineUserVO::getUsername),
                 userDef.avatarFileUrl.as(OnlineUserVO::getAvatarFileUrl))
                 .FROM(def)
-                .LEFT_JOIN(userDef).ON(userDef.id.eq(def.userId));
+                .LEFT_JOIN(userDef).ON(userDef.id.eq(def.userId))
+                .WHERE(def.expireTime.ge(LocalDateTime.now()));
         params.forEach((key, rv) -> {
             Object value = rv.getValue(); // 单个参数
             Object[] values = rv.getValues(); // 数组参数

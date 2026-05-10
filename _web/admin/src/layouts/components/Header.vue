@@ -229,16 +229,14 @@ const navToHelper = () => {
   min-width: 0;
   min-height: 56px;
   padding: 0 20px 0 24px;
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--td-brand-color) 10%, transparent), transparent),
-    var(--td-bg-color-secondarycontainer);
+  background: var(--td-bg-color-container);
 }
 
 .side-header-tabs-wrap {
   overflow: hidden;
   min-width: 0;
   padding: 0 20px;
-  background-color: var(--td-bg-color-secondarycontainer);
+  background-color: var(--td-bg-color-container);
   border-top: 1px solid color-mix(in srgb, var(--td-component-stroke) 72%, transparent);
 }
 
@@ -348,8 +346,9 @@ const navToHelper = () => {
 }
 
 :deep(.tdesign-starter-header-tabs .t-tabs__nav-item) {
-  margin-top: 0;
-  border-radius: 8px 8px 0 0;
+  margin: 0;
+  border-radius: 2px !important;
+  border: none !important;
 }
 
 :deep(.tdesign-starter-header-tabs.t-tabs) {
