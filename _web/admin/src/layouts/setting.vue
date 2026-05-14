@@ -188,7 +188,7 @@ watchEffect(() => {
 .premium-glass-drawer {
   .t-drawer__content-wrapper {
     backdrop-filter: blur(20px);
-    background: color-mix(in srgb, var(--td-bg-color-container) 85%, transparent) !important;
+    background: var(--td-bg-color-container) !important;
   }
 
   .t-drawer__header {
