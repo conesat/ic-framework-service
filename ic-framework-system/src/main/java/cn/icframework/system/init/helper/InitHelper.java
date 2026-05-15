@@ -12,6 +12,8 @@ import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Objects;
 
 /**
@@ -38,8 +40,26 @@ public class InitHelper {
         }
         File[] files = file.listFiles();
         assert files != null;
+        Set<String> currentMd5Keys = key == null ? null : new HashSet<>();
         for (File f : files) {
-            processFile(f.getPath().substring(rootDic.length() - 1), key, callback);
+            String filePath = f.getPath().substring(rootDic.length() - 1);
+            if (currentMd5Keys != null) {
+                currentMd5Keys.add(toMd5Key(filePath));
+            }
+            processFile(filePath, key, callback);
+        }
+        if (key != null) {
+            JSONObject md5Json = InitMd5Utils.getMd5Json(key);
+            boolean change = false;
+            for (String md5Key : new HashSet<>(md5Json.keySet())) {
+                if (!currentMd5Keys.contains(md5Key)) {
+                    md5Json.remove(md5Key);
+                    change = true;
+                }
+            }
+            if (change) {
+                InitMd5Utils.saveMd5Json(key, md5Json);
+            }
         }
     }
 
@@ -55,10 +75,7 @@ public class InitHelper {
             return;
         }
         if (key != null) {
-            String md5Key = path.replace('\\', '_').replace('/', '_');
-            if (md5Key.startsWith("_")) {
-                md5Key = md5Key.substring(1);
-            }
+            String md5Key = toMd5Key(path);
             String oldMd5 = md5Json.getString(md5Key);
             String md5 = MD5Util.encode(json);
             if (Objects.equals(oldMd5, md5)) {
@@ -71,5 +88,13 @@ public class InitHelper {
         if (change) {
             InitMd5Utils.saveMd5Json(key, md5Json);
         }
+    }
+
+    private String toMd5Key(String path) {
+        String md5Key = path.replace('\\', '_').replace('/', '_');
+        if (md5Key.startsWith("_")) {
+            md5Key = md5Key.substring(1);
+        }
+        return md5Key;
     }
 }

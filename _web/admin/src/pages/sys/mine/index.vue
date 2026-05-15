@@ -22,13 +22,13 @@
             <t-descriptions-item label="手机号：">{{ mineInfo.phone ? mineInfo.phone : '无' }}</t-descriptions-item>
             <t-descriptions-item label="邮箱：">{{ mineInfo.email ? mineInfo.email : '无' }}</t-descriptions-item>
             <t-descriptions-item label="角色：">
-              {{ mineInfo.roles ? mineInfo.roles.map((item: any) => item.name).join('/') : '无' }}
+              {{mineInfo.roles ? mineInfo.roles.map((item: any) => item.name).join('/') : '无'}}
             </t-descriptions-item>
             <t-descriptions-item label="部门：">
-              {{ mineInfo.deps ? mineInfo.deps.map((item: any) => item.name).join('/') : '无' }}
+              {{mineInfo.deps ? mineInfo.deps.map((item: any) => item.name).join('/') : '无'}}
             </t-descriptions-item>
             <t-descriptions-item label="职务：">
-              {{ mineInfo.pos ? mineInfo.pos.map((item: any) => item.name).join('/') : '无' }}
+              {{mineInfo.pos ? mineInfo.pos.map((item: any) => item.name).join('/') : '无'}}
             </t-descriptions-item>
           </t-descriptions>
         </t-card>
@@ -43,26 +43,18 @@
       <t-space direction="vertical" style="width: 100%">
         <t-card class="card-container" :bordered="false">
           <div style="display: flex">
-            <cropper
-              style="border-radius: 50%"
-              :width="80"
-              :height="80"
-              :cover-width="400"
-              :cover-height="400"
-              :use-type="FileUseTypes.avatar"
-              :url="mineInfo.avatarFileUrl"
-              :show-delete="false"
-              @uploaded="onAvatarUploaded"
-            ></cropper>
+            <cropper style="border-radius: 50%" :width="80" :height="80" :cover-width="400" :cover-height="400"
+              :use-type="FileUseTypes.avatar" :url="mineInfo.avatarFileUrl" :show-delete="false"
+              @uploaded="onAvatarUploaded"></cropper>
             <div style="flex: 1; display: flex; align-items: center">
               <div style="width: 100%; text-align: center">
                 <div class="name">
                   {{ mineInfo.name }}
                 </div>
                 <div class="position">
-                  {{ mineInfo.deps ? mineInfo.deps.map((item: any) => item.name).join(',') : '无部门' }}
+                  {{mineInfo.deps ? mineInfo.deps.map((item: any) => item.name).join(',') : '无部门'}}
                   <span style="margin: 0 6px">/</span>
-                  {{ mineInfo.pos ? mineInfo.pos.map((item: any) => item.name).join(',') : '无职位' }}
+                  {{mineInfo.pos ? mineInfo.pos.map((item: any) => item.name).join(',') : '无职位'}}
                 </div>
               </div>
             </div>
@@ -80,19 +72,9 @@
                   </template>
                 </t-list-item-meta>
               </t-list-item>
-              <t-pagination
-                :total="pagination.total"
-                :page-size="depUserParams.pageSize"
-                :current="pagination.current"
-                size="small"
-                :folded-max-page-btn="1"
-                :max-page-btn="1"
-                show-page-number
-                :show-page-size="false"
-                :total-content="false"
-                show-previous-and-next-btn
-                @change="changeDepUserPage"
-              />
+              <t-pagination :total="pagination.total" :page-size="depUserParams.pageSize" :current="pagination.current"
+                size="small" :folded-max-page-btn="1" :max-page-btn="1" show-page-number :show-page-size="false"
+                :total-content="false" show-previous-and-next-btn @change="changeDepUserPage" />
             </t-list>
           </t-loading>
         </t-card>
@@ -204,7 +186,7 @@ const toEditUserInfo = () => {
   background: var(--td-bg-color-container);
   color: var(--td-text-color-primary);
   text-align: left;
-  border-radius: var(--td-radius-medium);
+  border-radius: 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;

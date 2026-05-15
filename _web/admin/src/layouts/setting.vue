@@ -395,13 +395,4 @@ watchEffect(() => {
     }
   }
 }
-
-// 适配暗黑模式
-[theme-mode='dark'] {
-  .premium-glass-drawer {
-    .t-drawer__content-wrapper {
-      background: rgba(30, 30, 30, 0.8) !important;
-    }
-  }
-}
 </style>

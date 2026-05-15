@@ -15,8 +15,11 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 初始化菜单栏
@@ -33,13 +36,26 @@ public class MenuInit {
 
     public void initMenu() {
         try {
-            List<MenuInitDTO> menuInitDTOS = new ArrayList<>();
-            initHelper.processDic("/init/menu/", InitMd5Keys.MENU_INIT_MD5, json -> {
-                menuInitDTOS.addAll(JSONArray.parseArray(json, MenuInitDTO.class));
+            List<MenuInitDTO> allMenuInitDTOS = new ArrayList<>();
+            initHelper.processDic("/init/menu/", null, json -> {
+                allMenuInitDTOS.addAll(JSONArray.parseArray(json, MenuInitDTO.class));
             });
-            if (!menuInitDTOS.isEmpty()) {
+            List<MenuInitDTO> changedMenuInitDTOS = new ArrayList<>();
+            initHelper.processDic("/init/menu/", InitMd5Keys.MENU_INIT_MD5, json -> {
+                changedMenuInitDTOS.addAll(JSONArray.parseArray(json, MenuInitDTO.class));
+            });
+            if (!allMenuInitDTOS.isEmpty()) {
                 List<String> systemPathList = new ArrayList<>();
-                handlerMenu(menuInitDTOS, null, MenuPlatformType.SYS, systemPathList);
+                collectSystemPaths(allMenuInitDTOS, systemPathList);
+                Set<String> systemPathSet = new HashSet<>(systemPathList);
+                Set<String> dbSystemPathSet = menuService.select(MenuDef.table().system.eq(true).menuPlatformType.eq(MenuPlatformType.SYS.code()))
+                        .stream()
+                        .map(Menu::getPath)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toSet());
+                if (!changedMenuInitDTOS.isEmpty() || !dbSystemPathSet.equals(systemPathSet)) {
+                    handlerMenu(allMenuInitDTOS, null, MenuPlatformType.SYS, new ArrayList<>());
+                }
                 // 有调整，已被移出的系统菜单删除掉
                 menuService.delete(MenuDef.table().path.notIn(systemPathList).system.eq(true).menuPlatformType.eq(MenuPlatformType.SYS.code()), true, true);
             }
@@ -49,6 +65,15 @@ public class MenuInit {
         try {
             menuService.removeAllCache();
         } catch (Exception ignored) {
+        }
+    }
+
+    private void collectSystemPaths(List<MenuInitDTO> menuInitDTOS, List<String> systemPathList) {
+        for (MenuInitDTO menuInitDTO : menuInitDTOS) {
+            systemPathList.add(menuInitDTO.getPath());
+            if (menuInitDTO.getChildren() != null) {
+                collectSystemPaths(menuInitDTO.getChildren(), systemPathList);
+            }
         }
     }
 
