@@ -14,7 +14,6 @@ import cn.icframework.core.utils.BeanUtils;
 import cn.icframework.core.utils.IpUtils;
 import cn.icframework.core.utils.LocalDateTimeUtils;
 import cn.icframework.system.common.RegisterLoginHelper;
-import cn.icframework.system.consts.UserType;
 import cn.icframework.system.module.iplock.IpLock;
 import cn.icframework.system.module.iplock.service.IpLockService;
 import cn.icframework.system.module.onlineuser.OnlineUser;
@@ -73,7 +72,6 @@ public class OnlineUserService extends BasicService<OnlineUserMapper, OnlineUser
         }
     }
 
-
     /**
      * 构建登录信息
      *
@@ -84,29 +82,30 @@ public class OnlineUserService extends BasicService<OnlineUserMapper, OnlineUser
      * @return
      */
     public UserLoginInfo login(HttpServletRequest request,
-                               String username,
-                               String passwd,
-                               String userType,
-                               String verifyCode,
-                               String captchaCode,
-                               Integer refreshTokenTimOut) {
+            String username,
+            String passwd,
+            String userType,
+            String verifyCode,
+            String captchaCode,
+            Integer refreshTokenTimOut) {
         return login(request, username, passwd, userType, verifyCode, captchaCode, refreshTokenTimOut, false);
     }
 
     public UserLoginInfo login(HttpServletRequest request,
-                               String username,
-                               String passwd,
-                               String userType,
-                               String verifyCode,
-                               String captchaCode,
-                               Integer refreshTokenTimOut,
-                               Boolean app) {
+            String username,
+            String passwd,
+            String userType,
+            String verifyCode,
+            String captchaCode,
+            Integer refreshTokenTimOut,
+            Boolean app) {
         String ipAddress = IpUtils.getIpAddress(request);
         IpLock ipLock = ipLockService.selectById(ipAddress);
 
         if (ipLock != null && ipLock.getLockEndTime().isAfter(LocalDateTime.now())) {
-            Assert.isTrue(ipLock.getLoginFailCount() < IpLock.MAX_LOGIN_FAIL_COUNT, String.format("账号锁定，请稍%s后再试", LocalDateTimeUtils.getFormatSeconds(
-                    Duration.between(LocalDateTime.now(), ipLock.getLockEndTime()).getSeconds())));
+            Assert.isTrue(ipLock.getLoginFailCount() < IpLock.MAX_LOGIN_FAIL_COUNT,
+                    String.format("账号锁定，请稍%s后再试", LocalDateTimeUtils.getFormatSeconds(
+                            Duration.between(LocalDateTime.now(), ipLock.getLockEndTime()).getSeconds())));
             if (ipLock.getLoginFailCount() >= 3 && !app) {
                 Assert.isNotEmpty(verifyCode, "验证码不能为空");
                 // 校验验证码
@@ -184,19 +183,12 @@ public class OnlineUserService extends BasicService<OnlineUserMapper, OnlineUser
         }
     }
 
-
     public TokenInfo refreshToken() {
         return JWTUtils.refreshToken();
     }
 
-    /**
-     * 调用 JWTUtils.createToken 会触发这个方法
-     * 记录登录信息
-     *
-     * @param onlineInfo 登录信息
-     */
     @Override
-    public void login(OnlineInfo onlineInfo) {
+    public void recordLoginSession(OnlineInfo onlineInfo) {
         OnlineUser onlineUser = new OnlineUser();
         onlineUser.setSessionId(onlineInfo.getSessionId());
         onlineUser.setUserId(onlineInfo.getUserId().toString());
@@ -209,6 +201,11 @@ public class OnlineUserService extends BasicService<OnlineUserMapper, OnlineUser
         onlineUser.setPlatform(onlineInfo.getPlatform());
         onlineUser.setUserType(onlineInfo.getUserType());
         insert(onlineUser);
+    }
+
+    @Override
+    public void login(OnlineInfo onlineInfo) {
+        recordLoginSession(onlineInfo);
     }
 
     @Override
@@ -265,7 +262,8 @@ public class OnlineUserService extends BasicService<OnlineUserMapper, OnlineUser
 
     public void logout(List<Long> ids, Long userId) {
         OnlineUserDef onlineUserDef = OnlineUserDef.table();
-        List<Long> mineIds = select(SELECT(onlineUserDef.sessionId).FROM(onlineUserDef).WHERE(onlineUserDef.sessionId.in(ids).userId.eq(userId)), Long.class);
+        List<Long> mineIds = select(SELECT(onlineUserDef.sessionId).FROM(onlineUserDef)
+                .WHERE(onlineUserDef.sessionId.in(ids).userId.eq(userId)), Long.class);
         logout(mineIds);
     }
 
