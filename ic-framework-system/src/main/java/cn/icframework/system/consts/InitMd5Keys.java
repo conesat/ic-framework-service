@@ -8,6 +8,7 @@ package cn.icframework.system.consts;
 public interface InitMd5Keys {
     String MENU_INIT_MD5 = "MENU_INIT";
     String ROLE_INIT_MD5 = "ROLE_INIT_JSON";
+    String ROLE_PERMISSION_INIT_MD5 = "ROLE_PERMISSION_INIT_JSON";
     String POS_INIT_MD5 = "POS_INIT";
     String PERMISSION_INIT_MD5 = "PERMISSION_INIT_JSON";
 }

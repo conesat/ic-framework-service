@@ -46,24 +46,38 @@ public class RpInit {
 
     public void initRp() {
         List<Role> newRoles = initRoles();
-        initRPs(newRoles);
+        initRPs(newRoles.stream().map(Role::getSign).collect(Collectors.toList()));
     }
 
 
     /**
-     * 只处理新增护具
+     * 按角色权限配置同步指定角色权限。
      *
-     * @param newRoles
-     * @throws IOException
+     * @param forceRoleSigns 本次新增或被更新的角色标识
      */
-    private void initRPs(List<Role> newRoles) {
-        if (CollectionUtils.isEmpty(newRoles)) {
+    private void initRPs(List<String> forceRoleSigns) {
+        List<String> roleSigns = new ArrayList<>(forceRoleSigns);
+        RolePermissionDef rolePermissionDef = RolePermissionDef.table();
+
+        initHelper.processFile("/init/rp/rolePermissions.json", InitMd5Keys.ROLE_PERMISSION_INIT_MD5, content -> {
+            JSONArray rolesArr = JSONArray.parseArray(content);
+            roleSigns.addAll(rolesArr.stream()
+                    .map(item -> ((JSONObject) item).getString("sign"))
+                    .toList());
+        });
+        if (CollectionUtils.isEmpty(roleSigns)) {
             return;
         }
-        Map<String, Role> roleMap = newRoles.stream().collect(Collectors.toMap(Role::getSign, r -> r));
-        RolePermissionDef rolePermissionDef = RolePermissionDef.table();
-        // 移除角色所有旧权限
-        rpService.delete(rolePermissionDef.roleId.in(newRoles.stream().map(Role::getId).collect(Collectors.toList())));
+
+        RoleDef roleDef = RoleDef.table();
+        List<Role> roles = roleService.select(roleDef.sign.in(roleSigns));
+        if (CollectionUtils.isEmpty(roles)) {
+            return;
+        }
+        Map<String, Role> roleMap = roles.stream().collect(Collectors.toMap(Role::getSign, r -> r, (oldRole, newRole) -> oldRole));
+
+        // 移除配置内角色所有旧权限，确保开发期权限模板调整后能直接替换生效。
+        rpService.delete(rolePermissionDef.roleId.in(roles.stream().map(Role::getId).collect(Collectors.toList())));
 
         initHelper.processFile("/init/rp/rolePermissions.json", null, content -> {
             JSONArray rolesArr = JSONArray.parseArray(content);
@@ -93,7 +107,7 @@ public class RpInit {
                     SqlWrapper sqlWrapper = SELECT(permissionDef.id)
                             .FROM(permissionDef, permissionGroupDef)
                             .WHERE(permissionDef.groupId.eq(permissionGroupDef.id), permissionGroupDef.path.eq(groupPath));
-                    if (allGroup == null || allGroup) {
+                    if (allGroup == null || !allGroup) {
                         sqlWrapper.WHERE(permissionDef.path.in(paths));
                     }
                     List<Long> permissionIds = permissionService.select(sqlWrapper, Long.class);
@@ -104,6 +118,9 @@ public class RpInit {
     }
 
     private void insertRP(List<Long> allPermissionIds, Role role) {
+        if (CollectionUtils.isEmpty(allPermissionIds)) {
+            return;
+        }
         List<RolePermission> insertRolePermissions = new ArrayList<>();
         for (Long permissionId : allPermissionIds) {
             RolePermission rp = new RolePermission();
