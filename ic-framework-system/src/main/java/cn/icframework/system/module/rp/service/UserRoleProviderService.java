@@ -67,10 +67,14 @@ public class UserRoleProviderService implements IUserRPService {
                 }
             }
             SqlWrapper selectPermissionPathWrapper;
+            SqlWrapper selectPermissionIdWrapper;
             if (su) {
                 selectPermissionPathWrapper = SELECT(CONCAT(permissionGroupDef.path, permissionDef.path))
                         .FROM(permissionDef)
                         .LEFT_JOIN(permissionGroupDef).ON(permissionGroupDef.id.eq(permissionDef.groupId))
+                        .WHERE(permissionDef.userType.eq(userType));
+                selectPermissionIdWrapper = SELECT(permissionDef.id)
+                        .FROM(permissionDef)
                         .WHERE(permissionDef.userType.eq(userType));
             } else {
                 selectPermissionPathWrapper = SELECT(CONCAT(permissionGroupDef.path, permissionDef.path))
@@ -78,9 +82,15 @@ public class UserRoleProviderService implements IUserRPService {
                         .LEFT_JOIN(permissionDef).ON(rolePermissionDef.permissionId.eq(permissionDef.id))
                         .LEFT_JOIN(permissionGroupDef).ON(permissionGroupDef.id.eq(permissionDef.groupId))
                         .WHERE(rolePermissionDef.roleId.in(roleIds), permissionDef.userType.eq(userType));
+                selectPermissionIdWrapper = SELECT(permissionDef.id)
+                        .FROM(rolePermissionDef)
+                        .LEFT_JOIN(permissionDef).ON(rolePermissionDef.permissionId.eq(permissionDef.id))
+                        .WHERE(rolePermissionDef.roleId.in(roleIds), permissionDef.userType.eq(userType));
             }
             List<String> permissionPaths = rolePermissionService.select(selectPermissionPathWrapper, String.class);
             rp.setPermissionPaths(new HashSet<>(permissionPaths));
+            List<Long> permissionIds = rolePermissionService.select(selectPermissionIdWrapper, Long.class);
+            rp.setPermissionIds(new HashSet<>(permissionIds));
         }
         return rp;
     }

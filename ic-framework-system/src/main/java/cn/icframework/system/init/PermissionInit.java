@@ -1,6 +1,7 @@
 package cn.icframework.system.init;
 
 import cn.icframework.auth.entity.PermissionGroupInit;
+import cn.icframework.auth.processor.PermissionHelper;
 import cn.icframework.auth.standard.IPermissionInitService;
 import cn.icframework.core.utils.MD5Util;
 import cn.icframework.system.consts.InitMd5Keys;
@@ -43,6 +44,7 @@ public class PermissionInit implements IPermissionInitService {
         String md5 = MD5Util.encode(permissionGroupInits.toString());
         if (Objects.equals(oldMd5, md5)) {
             // md5一致无需更新
+            refreshRuntimePermissionIds();
             return;
         }
 
@@ -123,6 +125,22 @@ public class PermissionInit implements IPermissionInitService {
         try {
             permissionGroupService.removeAllCache();
         }catch (Exception ignored){}
+        refreshRuntimePermissionIds();
+    }
+
+    private void refreshRuntimePermissionIds() {
+        List<Permission> permissions = permissionService.selectAll();
+        Map<Long, String> groupPathMap = permissionGroupService.selectAll().stream()
+                .collect(Collectors.toMap(PermissionGroup::getId, PermissionGroup::getPath));
+        Map<String, Long> permissionIdMap = new HashMap<>();
+        for (Permission permission : permissions) {
+            String groupPath = groupPathMap.get(permission.getGroupId());
+            if (groupPath != null) {
+                String permissionPath = groupPath + permission.getPath();
+                permissionIdMap.put(permissionPath, permission.getId());
+            }
+        }
+        PermissionHelper.refreshPermissionIds(permissionIdMap);
     }
 
 }
