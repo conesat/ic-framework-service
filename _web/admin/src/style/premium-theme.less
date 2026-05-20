@@ -120,10 +120,25 @@ body,
 
 /* --- Header --- */
 .t-layout__header {
-  background-color: var(--td-bg-color-page) !important;
+  /* Frosted glass / glassmorphism header */
+  /* Fallback for browsers without color-mix */
+  background-color: rgba(255, 255, 255, 0.65) !important;
+  /* Prefer mixing the theme page color with transparency so blur shows through */
+  background-color: color-mix(in srgb, var(--td-bg-color-page) 70%, transparent) !important;
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  backdrop-filter: blur(8px) saturate(120%);
   box-shadow: none !important;
   height: auto;
   z-index: 10;
+
+  /* Ensure content behind header doesn't show overflow artifacts */
+  background-clip: padding-box;
+}
+
+/* Dark theme variant for the frosted header */
+:root[theme-mode='dark'] .t-layout__header {
+  background-color: rgba(12, 14, 18, 0.5) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 /* --- Card & Stats --- */
@@ -184,9 +199,10 @@ body,
 
 .tdesign-starter-header-side-shell {
   border-radius: 16px !important;
-  margin: 16px 0px !important;
   overflow: hidden;
   border: none !important;
+  box-shadow: none;
+  background: none!important;
 }
 
 .tdesign-starter-header-side-shell-fixed {

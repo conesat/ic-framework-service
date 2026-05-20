@@ -227,9 +227,9 @@ const navToHelper = () => {
   justify-content: space-between;
   gap: 16px;
   min-width: 0;
-  min-height: 56px;
-  padding: 0 20px 0 24px;
-  background: var(--td-bg-color-container);
+  min-height: 40px;
+  padding: 0 20px 0 10px;
+  background: transition;
 }
 
 .side-header-tabs-wrap {
