@@ -59,8 +59,7 @@ public class PermissionWrapperBuilder extends BasicWrapperBuilder<PermissionDef>
      */
     public SqlWrapper allWithGroup(String userType) {
         PermissionGroupDef permissionGroupDef = PermissionGroupDef.table();
-        PermissionDef permissionDef = PermissionDef.table();
-        permissionDef.as(PermissionGroupVO::getPermissionVOS);
+        PermissionDef permissionDef = PermissionDef.table().alias(PermissionGroupVO::getPermissionVOS);
         SqlWrapper sqlWrapper = SELECT(permissionGroupDef, permissionDef)
                 .FROM(permissionGroupDef).LEFT_JOIN(permissionDef).ON(permissionGroupDef.id.eq(permissionDef.groupId));
         if (StringUtils.hasLength(userType)) {

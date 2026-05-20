@@ -36,6 +36,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Objects;
 
@@ -231,13 +232,41 @@ public class OnlineUserService extends BasicService<OnlineUserMapper, OnlineUser
             throw new TokenOutTimeException();
         }
         if (CacheUtils.get(TOKEN_CACHE_SESSION_ID_PREFIX + sessionId) == null) {
-            deleteById(sessionId);
-            throw new TokenOutTimeException();
+            boolean recovered = recoverOnlineSession(userId, sessionId, System.currentTimeMillis() + icJwtConfig.getTimeout() * 60_000L);
+            if (!recovered) {
+                throw new TokenOutTimeException();
+            }
         }
         OnlineUser onlineUser = selectById(sessionId);
         if (onlineUser != null && !Objects.equals(onlineUser.getUserId(), userId)) {
             throw new OtherLoginException();
         }
+    }
+
+    @Override
+    public boolean recoverOnlineSession(String userId, Long sessionId, long tokenExpireTime) {
+        if (sessionId == null || !StringUtils.hasLength(userId)) {
+            return false;
+        }
+        OnlineUser onlineUser = selectById(sessionId);
+        if (onlineUser == null) {
+            return false;
+        }
+        if (!Objects.equals(onlineUser.getUserId(), userId)) {
+            throw new OtherLoginException();
+        }
+        if (onlineUser.getExpireTime() == null || onlineUser.getExpireTime().isBefore(LocalDateTime.now())) {
+            deleteById(sessionId);
+            return false;
+        }
+        long onlineExpireTime = onlineUser.getExpireTime().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        long expireSeconds = (Math.min(onlineExpireTime, tokenExpireTime) - System.currentTimeMillis()) / 1000;
+        if (expireSeconds <= 0) {
+            deleteById(sessionId);
+            return false;
+        }
+        CacheUtils.set(TOKEN_CACHE_SESSION_ID_PREFIX + sessionId, 1, expireSeconds);
+        return true;
     }
 
     public void clearExpiredRecords() {

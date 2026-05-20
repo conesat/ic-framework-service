@@ -63,7 +63,7 @@ public class MenuWrapperBuilder extends BasicWrapperBuilder<MenuDef> {
      */
     public SqlWrapper detail(Serializable id) {
         MenuDef menuDef = MenuDef.table();
-        MenuDef menuParentDef = MenuDef.table().as("parent");
+        MenuDef menuParentDef = MenuDef.table().alias("parent");
         return SELECT(menuDef._all, menuParentDef.name.as("parentName"))
                 .FROM(menuDef)
                 .LEFT_JOIN(menuParentDef).ON(menuDef.parentId.eq(menuParentDef.id))
