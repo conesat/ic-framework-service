@@ -12,8 +12,10 @@ import cn.icframework.system.module.permissiongroup.PermissionGroup;
 import cn.icframework.system.module.permissiongroup.service.PermissionGroupService;
 import cn.icframework.system.utils.InitMd5Utils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,6 +32,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PermissionInit implements IPermissionInitService {
 
     private final PermissionService permissionService;
@@ -38,6 +41,11 @@ public class PermissionInit implements IPermissionInitService {
     @Transactional
     @Override
     public void init(List<PermissionGroupInit> permissionGroupInits) {
+        if (CollectionUtils.isEmpty(permissionGroupInits)) {
+            log.warn("Skip permission initialization because no permission groups were scanned.");
+            refreshRuntimePermissionIds();
+            return;
+        }
 
         String oldMd5 = InitMd5Utils.getMd5String(InitMd5Keys.PERMISSION_INIT_MD5);
 
