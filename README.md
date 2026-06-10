@@ -116,7 +116,7 @@ ic-framework-service/
 
 ### 后端技术栈
 
-- **Java 21** - 最新 LTS 版本
+- **Java 25** - 当前后端编译版本
 - **Spring Boot 3.x** - 微服务框架
 - **MyBatis** - 数据持久层框架
 - **MySQL** - 关系型数据库
@@ -184,7 +184,7 @@ ic-framework-service/
 
 ### 后端环境
 
-- **JDK 21** 或更高版本
+- **JDK 25** 或更高版本
 - **Maven 3.6+**
 - **MySQL 8.0+**
 - **Redis 6.0+**
@@ -215,7 +215,7 @@ cd ic-framework-service
 
 #### 环境准备
 
-1. 安装 JDK 21
+1. 安装 JDK 25
 2. 安装 MySQL 8.0+ 并创建数据库
 3. 安装 Redis 6.0+
 4. 配置数据库连接信息
