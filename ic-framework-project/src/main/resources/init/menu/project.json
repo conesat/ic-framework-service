@@ -1,1 +1,66 @@
-[]
+[
+  {
+    "path": "/energy",
+    "menuType": "Layout",
+    "redirect": "/energy/swap-station-index",
+    "name": "能源管理",
+    "iconType": 2,
+    "icon": "layers",
+    "userType": "SYSTEM_USER",
+    "orderNo": 10,
+    "children": [
+      {
+        "path": "swap-station-index",
+        "url": "/energy/swap-station/index.vue",
+        "name": "换电站",
+        "orderNo": 0
+      },
+      {
+        "path": "swap-station-edit",
+        "url": "/energy/swap-station/edit.vue",
+        "belong": "/energy/swap-station-index",
+        "hidden": true,
+        "name": "编辑换电站"
+      },
+      {
+        "path": "swap-battery-index",
+        "url": "/energy/swap-battery/index.vue",
+        "name": "电池管理",
+        "orderNo": 1
+      },
+      {
+        "path": "swap-battery-edit",
+        "url": "/energy/swap-battery/edit.vue",
+        "belong": "/energy/swap-battery-index",
+        "hidden": true,
+        "name": "编辑换电电池"
+      },
+      {
+        "path": "swap-order-index",
+        "url": "/energy/swap-order/index.vue",
+        "name": "换电订单",
+        "orderNo": 2
+      },
+      {
+        "path": "swap-order-edit",
+        "url": "/energy/swap-order/edit.vue",
+        "belong": "/energy/swap-order-index",
+        "hidden": true,
+        "name": "编辑换电订单"
+      },
+      {
+        "path": "repair-order-index",
+        "url": "/energy/repair-order/index.vue",
+        "name": "维修工单",
+        "orderNo": 3
+      },
+      {
+        "path": "repair-order-edit",
+        "url": "/energy/repair-order/edit.vue",
+        "belong": "/energy/repair-order-index",
+        "hidden": true,
+        "name": "编辑维修工单"
+      }
+    ]
+  }
+]

@@ -1,259 +1,172 @@
 <template>
-	<view class="main">
-		<view class="content">
-			<swiper class="swiper" :current="current" vertical @change="swiperChange">
-				<swiper-item v-for="(item,index) in datas" :key="index">
-					<view class="media-content">
-						<swiper class="swiper" :current="imageIndex" circular
-							style="height: 100%;box-sizing: border-box;"
-							:style="{'padding-bottom':item.hotel?'200rpx':'0'}" @change="swiperMediaChange">
-							<swiper-item v-for="(media, index) in item.medias" :key="index"
-								style="height: 100%;width: 100%;">
-								<image style="height: 100%;width: 100%;" :src="media.url" v-if="media.type === 1">
-								</image>
-								<video style="height: 100%;width: 100%;" :src="media.url"
-									v-if="media.type === 2"></video>
-							</swiper-item>
-						</swiper>
-						<view class="bottom">
-							<view style="position: absolute;right: 30rpx;top: -260rpx;font-size: 24rpx;">
-								<view style="text-align: center;">
-									<uv-avatar src="https://via.placeholder.com/200x200.png/2878ff"
-										size="36"></uv-avatar>
-									<view>试试</view>
-								</view>
-								<view style="height: 20rpx;"></view>
-								<view style="text-align: center;">
-									<uv-avatar icon="star-fill" size="36"></uv-avatar>
-									<view>20</view>
-								</view>
-							</view>
-							<view class="bottom-content">
-								<view style="display: flex;align-items: center;">
-									<view style="flex: 1;">
-										<view class="title">
-											{{item.title}}
-										</view>
-										<view class="tag"
-											style="display: flex;align-items: center;color: #3fabff;margin: 10rpx 0;">
-											<view v-for="(t,index) in item.tags" :key="key" style="font-size: 22rpx;">
-												{{t}}<text v-if="index<item.tags.length-1">·</text>
-											</view>
-										</view>
-									</view>
-								</view>
-								<view class="indicator">
-									<view class="indicator-item" :class="{'active':imageIndex === index}"
-										v-for="(item,index) in item.medias" @tap="imageIndex = index"></view>
-								</view>
-							</view>
-							<view v-if="item.hotel" style="background-color: #000;padding: 0 40rpx;">
-								<view>
-									<view style="margin-bottom: 10rpx;font-size: 40rpx;">
-										{{item.hotel.name}}
-									</view>
-									<view style="display: flex;align-items: center;margin-bottom: 10rpx">
-										<uv-icon color='rgba(255,255,255,0.7)' size='24rpx'
-											name="empty-address"></uv-icon>
-										<view style="color:rgba(255,255,255,0.7);font-size: 24rpx;">{{item.hotel.addr}}
-										</view>
-										<uv-icon color='rgba(255,255,255,0.7)' size='24rpx'
-											name="arrow-right"></uv-icon>
-									</view>
-									<view style="display: flex;align-items: center;">
-										<view style="font-size: 50rpx;color: #f1ca5d;margin-right: 10rpx;">
-											{{item.hotel.start}}
-										</view>
-										<view style="width: 0;flex: 1">
-											<uv-rate :readonly="true" :allowHalf="true" size='24rpx' :count="5"
-												v-model="item.hotel.start" activeColor="#f1ca5d"></uv-rate>
-											<view
-												style="font-size: 22rpx;color: rgba(255,255,255,0.7);margin-left: 6rpx;;">
-												999+评论>
-											</view>
-										</view>
-										<view>
-											<uv-button :custom-style="{
-												background: '#f1d152',
-												color: '#000',
-											}" type="primary" color="#f1d152" size="small" shape="circle" text="查看酒店"></uv-button>
-										</view>
-									</view>
-								</view>
-							</view>
-						</view>
-					</view>
-				</swiper-item>
-			</swiper>
-		</view>
-		<view class="top-bar">
-			<view class="top-bar-item" v-for="item in bars" :class="{'active':activeBar===item.key}"
-				@tap="activeBar=item.key" :key="item.key">
-				{{item.title}}
-			</view>
-		</view>
-	</view>
+  <scroll-view class="home-scroll" scroll-y :show-scrollbar="false">
+    <view class="home-page">
+      <view class="topbar">
+        <view class="location" @tap="switchMainTab(1)">
+          <uv-icon name="map-fill" color="#2E86F6" size="17"></uv-icon>
+          <text>深圳市 · 南山区</text>
+          <uv-icon name="arrow-right" color="#9AA5B5" size="12"></uv-icon>
+        </view>
+        <view class="weather">多云 26°C <text class="air-dot"></text> 空气优</view>
+      </view>
+
+      <view class="brand-card">
+        <view class="hero-glow hero-glow-one"></view>
+        <view class="hero-glow hero-glow-two"></view>
+        <view class="scan-button" @tap="switchMainTab(2)"><uv-icon name="scan" color="#FFFFFF" size="18"></uv-icon><text>扫一扫</text></view>
+        <view class="brand-lockup">
+          <view class="brand-mark"><view class="brand-bolt"></view></view>
+          <view><text class="brand-name">电能行</text><text class="brand-caption">智能出行</text></view>
+        </view>
+        <view class="hero-copy">
+          <text>智能换电</text>
+          <text>安心续航</text>
+          <view class="hero-tip">3 步换电 30 秒满电出发 <uv-icon name="arrow-right" color="#DDEBFF" size="13"></uv-icon></view>
+        </view>
+        <view class="hero-station-visual" aria-label="换电柜示意图">
+          <view v-for="item in 6" :key="item" class="cabinet-cell"></view>
+          <view class="hero-battery"><view></view></view>
+        </view>
+      </view>
+
+      <view class="service-heading"><text>快捷服务</text></view>
+      <view class="quick-grid">
+        <view v-for="item in quickActions" :key="item.title" class="quick-item" @tap="handleQuickAction(item)">
+          <view class="quick-icon" :class="item.iconClass"><uv-icon :name="item.icon" :color="item.color" size="25"></uv-icon></view>
+          <text class="quick-title">{{ item.title }}</text>
+          <text class="quick-desc">{{ item.desc }}</text>
+        </view>
+      </view>
+
+      <view class="station-section">
+        <view class="section-header"><text>附近换电站</text><view class="more-link" @tap="switchMainTab(1)">更多站点 <uv-icon name="arrow-right" color="#A4ADBA" size="13"></uv-icon></view></view>
+        <view v-if="station" class="station-card" @tap="openStation(station)">
+          <view class="station-top">
+            <view class="station-icon"><view class="station-grid"><view v-for="item in 6" :key="item"></view></view></view>
+            <view class="station-info">
+              <view class="station-name-row"><text>{{ station.name }}</text><text class="open-tag">{{ station.status === 1 ? '营业中' : '维护中' }}</text></view>
+              <view class="station-address"><uv-icon name="map" color="#9DA7B5" size="14"></uv-icon><text>距离{{ station.distance || '326m' }} ｜{{ station.address }}</text></view>
+            </view>
+          </view>
+          <view class="station-line"></view>
+          <view class="station-bottom">
+            <view class="stock"><text>{{ station.availableBatteryCount || 0 }}</text><text>可用电池</text></view>
+            <view class="stock"><text>{{ station.availableReturnSlots || 0 }}</text><text>可还空位</text></view>
+            <view class="go-button" @tap.stop="openStation(station)">去这里</view>
+          </view>
+        </view>
+      </view>
+
+      <view class="coupon-banner" @tap="claimCoupon">
+        <view class="coupon-badge"><text>20</text><text>元换电券</text></view>
+        <view class="coupon-copy"><text>{{ couponClaimed ? '礼包已领取' : '新用户专享礼包' }}</text><text>{{ couponClaimed ? '20 元换电券已放入账户' : '注册即送 20 元换电券' }}</text></view>
+        <view class="coupon-action">{{ couponClaimed ? '已领取' : '立即领取' }}</view>
+      </view>
+
+      <view class="stats-section">
+        <view class="section-header"><text>骑行数据</text><view class="more-link" @tap="showRideData">本月数据 <uv-icon name="arrow-right" color="#A4ADBA" size="13"></uv-icon></view></view>
+        <view class="stats-card">
+          <view class="main-stat"><view class="main-stat-value"><text>12</text><text>次</text></view><view>换电次数</view></view>
+          <view class="stat"><text>186km</text><text>骑行里程</text></view>
+          <view class="stat"><text>24 kg</text><text>减少碳排</text></view>
+          <view class="stat"><text>68元</text><text>节约费用</text></view>
+        </view>
+      </view>
+      <view class="bottom-spacer"></view>
+    </view>
+  </scroll-view>
 </template>
 
 <script>
-	export default {
-		name: 'home',
-		data() {
-			return {
-				current: 0,
-				activeBar: 2,
-				imageIndex: 0,
-				bars: [{
-					key: 0,
-					title: '酒店/民宿'
-				}, {
-					key: 1,
-					title: '攻略'
-				}, {
-					key: 2,
-					title: '景点'
-				}],
-				datas: [{
-					title: '昨夜星辰昨夜风，画楼西畔桂堂东',
-					tags: ['网红打卡点', '绝了', '酒店推荐', '美不胜收'],
-					hotel: {
-						name: '北海大酒店',
-						start: 4.5,
-						addr: '北海市海城区银滩路步行街231号'
-					},
-					medias: [{
-						type: 2,
-						url: 'https://cdn.uviewui.com/uview/resources/video.mp4',
-						title: '昨夜星辰昨夜风，画楼西畔桂堂东',
-						poster: 'https://gd-hbimg.huaban.com/4147fc6a4e8d197229f634274c79947ad50169731563c6-rMBPgr_fw658webp'
-					}, {
-						type: 1,
-						url: 'https://q7.itc.cn/q_70/images03/20240506/06d5954320e247ef99d7bac9530ba7be.jpeg',
-						title: '身无彩凤双飞翼，心有灵犀一点通'
-					}, {
-						type: 1,
-						url: 'https://img0.baidu.com/it/u=1745064536,1448839045&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=749',
-						title: '谁念西风独自凉，萧萧黄叶闭疏窗，沉思往事立残阳'
-					}]
-				}, {
-					title: '昨夜星辰昨夜风，画楼西畔桂堂东',
-					tags: ['网红打卡点', '绝了', '酒店推荐', '美不胜收'],
-					hotel: {
-						name: '北海大酒店',
-						start: 4.5,
-						addr: '北海市海城区银滩路步行街231号'
-					},
-					medias: [{
-						type: 1,
-						url: 'https://q7.itc.cn/q_70/images03/20240506/06d5954320e247ef99d7bac9530ba7be.jpeg',
-						title: '身无彩凤双飞翼，心有灵犀一点通'
-					}, {
-						type: 1,
-						url: 'https://img0.baidu.com/it/u=1745064536,1448839045&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=749',
-						title: '谁念西风独自凉，萧萧黄叶闭疏窗，沉思往事立残阳'
-					}]
-				}]
-			}
-		},
-		methods: {
-			swiperChange(e) {
-				const newIndex = e.detail.current;
-				this.current = newIndex;
-				this.imageIndex = 0
-			},
-			swiperMediaChange(e) {
-				this.imageIndex = e.detail.current;
-			},
-		}
-	}
+import { getNearbyStations } from '../../api/energy'
+
+const DEFAULT_STATION = {
+  name: '科技园换电站', city: '深圳市', district: '南山区', address: '科技园南区科苑路15号',
+  distance: '326m', status: 1, availableBatteryCount: 12, availableReturnSlots: 8
+}
+
+export default {
+  name: 'EnergyHome',
+  data() {
+    return {
+      station: DEFAULT_STATION,
+      couponClaimed: Boolean(uni.getStorageSync('energy_new_user_coupon')),
+      quickActions: [
+        { title: '扫码换电', desc: '30秒换电', icon: 'scan', color: '#3389F7', iconClass: 'blue' },
+        { title: '我的电池', desc: '电池状态', icon: 'coupon', color: '#7584F7', iconClass: 'purple' },
+        { title: '电池暂存', desc: '安全存放', icon: 'lock', color: '#27B99A', iconClass: 'mint' },
+        { title: '故障上报', desc: '快速维修', icon: 'edit-pen', color: '#F29A55', iconClass: 'orange' },
+        { title: '我的订单', desc: '历史记录', icon: 'file-text', color: '#F07880', iconClass: 'pink' }
+      ]
+    }
+  },
+  mounted() { this.loadStations() },
+  methods: {
+    async loadStations() {
+      try {
+        const stations = await getNearbyStations(1)
+        if (stations && stations.length) this.station = stations[0]
+      } catch (error) { console.warn(error.message) }
+    },
+    switchMainTab(key) { this.$emit('switch-tab', key) },
+    openStation(station = this.station) {
+      // 后端暂未返回站点时，仍打开设计稿的默认详情，避免首页入口被拦截。
+      const stationId = station?.id
+      uni.navigateTo({ url: stationId ? `/pages/station/detail?id=${stationId}` : '/pages/station/detail' })
+    },
+    handleQuickAction(item) {
+      if (item.title === '扫码换电') return this.switchMainTab(2)
+      if (item.title === '我的电池') return uni.navigateTo({ url: '/pages/battery/index' })
+      if (item.title === '电池暂存') return uni.navigateTo({ url: '/pages/storage/index' })
+      if (item.title === '故障上报') return uni.navigateTo({ url: '/pages/repair/create' })
+      if (item.title === '我的订单') return this.switchMainTab(3)
+      uni.showToast({ title: '服务已打开', icon: 'none' })
+    },
+    claimCoupon() {
+      if (this.couponClaimed) return uni.showToast({ title: '礼包已在优惠券账户中', icon: 'none' })
+      this.couponClaimed = true
+      uni.setStorageSync('energy_new_user_coupon', true)
+      uni.showToast({ title: '20 元换电券已到账', icon: 'success' })
+    },
+    showRideData() {
+      uni.showModal({
+        title: '本月骑行数据',
+        content: '已换电 12 次\n骑行里程 186 km\n减少碳排 24 kg\n预计节约 68 元',
+        showCancel: false
+      })
+    }
+  }
+}
 </script>
 
 <style scoped>
-	.main {
-		position: relative;
-		width: 100%;
-		height: 100%;
-		color: #fff;
+.home-scroll,.home-page{height:100%;background:#F9FAFC}.home-page{min-height:100%;padding:calc(var(--status-bar-height,0px) + 92rpx) 28rpx 0;box-sizing:border-box;color:#202938}.topbar{height:84rpx;padding:0 2rpx;box-sizing:border-box}.location{display:flex;align-items:center;gap:8rpx;font-size:28rpx;font-weight:600}.weather{margin:12rpx 0 0 40rpx;color:#8A95A5;font-size:24rpx}.air-dot{display:inline-block;width:7rpx;height:7rpx;border-radius:50%;margin:0 5rpx;background:#29C492;vertical-align:middle}.brand-card{height:250rpx;border-radius:26rpx;position:relative;overflow:hidden;background:linear-gradient(120deg,#2D80EE 0%,#4BA0FB 100%);box-shadow:0 16rpx 32rpx rgba(46,132,241,.2)}.hero-glow{position:absolute;border:2rpx solid rgba(255,255,255,.17);border-radius:50%}.hero-glow-one{width:260rpx;height:260rpx;right:-100rpx;bottom:-145rpx}.hero-glow-two{width:170rpx;height:170rpx;right:155rpx;top:-105rpx}.scan-button{position:absolute;z-index:3;right:20rpx;top:16rpx;height:48rpx;padding:0 16rpx;border-radius:15rpx;background:rgba(255,255,255,.18);display:flex;align-items:center;gap:6rpx;color:#fff;font-size:24rpx}.brand-lockup{position:absolute;right:28rpx;top:70rpx;z-index:2;display:flex;align-items:center;color:#fff}.brand-mark{width:38rpx;height:38rpx;border-radius:12rpx;background:#fff;position:relative}.brand-bolt{position:absolute;width:9rpx;height:23rpx;left:15rpx;top:7rpx;border-radius:2rpx;transform:skewX(-19deg);background:#378AF4}.brand-bolt:after{content:'';position:absolute;right:-4rpx;top:8rpx;width:12rpx;height:6rpx;background:#fff}.brand-lockup>view:last-child{display:flex;flex-direction:column;margin-left:10rpx}.brand-name{font-size:28rpx;font-weight:700;letter-spacing:2rpx}.brand-caption{margin-top:3rpx;color:rgba(255,255,255,.7);font-size:20rpx}.hero-copy{position:absolute;z-index:2;left:31rpx;top:80rpx;width:470rpx;color:#fff;display:flex;flex-wrap:wrap;align-items:center;column-gap:14rpx;font-size:42rpx;font-weight:700;line-height:1.15;letter-spacing:1rpx}.hero-copy>text{display:block;white-space:nowrap}.hero-tip{flex-basis:100%;margin-top:12rpx;display:flex;align-items:center;color:#DFECFF;font-size:24rpx;font-weight:400;letter-spacing:0}.hero-station-visual{position:absolute;right:42rpx;bottom:10rpx;width:90rpx;height:105rpx;padding:12rpx;box-sizing:border-box;display:grid;grid-template-columns:repeat(2,1fr);gap:7rpx;border:4rpx solid rgba(255,255,255,.73);border-radius:12rpx;background:rgba(21,105,211,.18);transform:skewY(-4deg)}.cabinet-cell{border-radius:3rpx;background:rgba(255,255,255,.6)}.hero-battery{position:absolute;right:-37rpx;bottom:22rpx;width:35rpx;height:55rpx;border:4rpx solid #E4F0FF;border-radius:7rpx}.hero-battery:after{content:'';position:absolute;right:-7rpx;top:13rpx;width:5rpx;height:14rpx;border-radius:0 3rpx 3rpx 0;background:#E4F0FF}.hero-battery view{width:17rpx;height:21rpx;position:absolute;left:6rpx;bottom:5rpx;border-radius:2rpx;background:#E5F2FF}.service-heading{margin:39rpx 4rpx 0;color:#1F2838;font-size:32rpx;font-weight:700}.quick-grid{margin-top:40rpx;display:flex}.quick-item{width:20%;display:flex;align-items:center;flex-direction:column;min-width:0}.quick-icon{width:76rpx;height:76rpx;border-radius:24rpx;display:flex;align-items:center;justify-content:center}.quick-icon.blue{background:#E5F0FF}.quick-icon.purple{background:#F0ECFF}.quick-icon.mint{background:#E3F8F2}.quick-icon.orange{background:#FFF0E3}.quick-icon.pink{background:#FFECEE}.quick-title{margin-top:12rpx;color:#313C4E;font-size:24rpx;white-space:nowrap}.quick-desc{margin-top:5rpx;color:#A0A9B6;font-size:21rpx;white-space:nowrap}.station-section{margin-top:72rpx}.section-header{display:flex;align-items:center;justify-content:space-between;margin:0 4rpx 18rpx}.section-header>text{font-size:30rpx;font-weight:700;color:#202938}.more-link{display:flex;align-items:center;color:#99A3B2;font-size:24rpx}.station-card{padding:25rpx 24rpx 22rpx;border-radius:24rpx;background:#fff;box-shadow:0 10rpx 30rpx rgba(36,63,95,.06)}.station-top{display:flex;align-items:center}.station-icon{width:82rpx;height:82rpx;border-radius:20rpx;display:flex;align-items:center;justify-content:center;background:#E7F2FF;flex-shrink:0}.station-grid{width:42rpx;height:46rpx;padding:5rpx;box-sizing:border-box;display:grid;grid-template-columns:repeat(2,1fr);gap:4rpx;border:3rpx solid #398BF3;border-radius:6rpx}.station-grid view{border-radius:2rpx;background:#398BF3}.station-info{min-width:0;flex:1;margin-left:17rpx}.station-name-row{display:flex;align-items:center;gap:10rpx}.station-name-row>text:first-child{color:#232D3B;font-size:29rpx;font-weight:600}.open-tag{padding:4rpx 8rpx;color:#26A976;border-radius:7rpx;background:#E5F8F0;font-size:21rpx}.station-address{margin-top:11rpx;display:flex;align-items:center;gap:5rpx;color:#929CAA;font-size:22rpx;white-space:nowrap;overflow:hidden}.station-address text{overflow:hidden;text-overflow:ellipsis}.station-line{height:2rpx;margin:23rpx 0 19rpx;background:#F0F2F6}.station-bottom{display:flex;align-items:center}.stock{display:flex;align-items:baseline}.stock:first-child{margin-right:42rpx}.stock text{font-size:35rpx;color:#2D86F3;font-weight:700}.stock>text:last-child{margin-left:7rpx;color:#909AA9;font-size:23rpx}.go-button{margin-left:auto;padding:14rpx 19rpx;border-radius:13rpx;background:#E8F2FF;color:#2D83F1;font-size:24rpx;font-weight:600}.coupon-banner{height:151rpx;margin-top:28rpx;padding:0 25rpx;border-radius:23rpx;box-sizing:border-box;display:flex;align-items:center;overflow:hidden;background:linear-gradient(112deg,#FFF5E8,#FFE8CF)}.coupon-badge{width:98rpx;height:98rpx;box-sizing:border-box;padding-top:13rpx;border-radius:15rpx;display:flex;align-items:center;flex-direction:column;background:#F49A54;color:#fff;line-height:1}.coupon-badge text{font-size:39rpx;font-weight:700}.coupon-badge>text:last-child{margin-top:7rpx;font-size:20rpx}.coupon-copy{margin-left:19rpx;display:flex;flex:1;flex-direction:column}.coupon-copy text{color:#8B552F;font-size:28rpx;font-weight:600}.coupon-copy>text:last-child{margin-top:10rpx;color:#B77D53;font-size:23rpx}.coupon-action{color:#D47B39;font-size:24rpx;font-weight:600}.stats-section{margin-top:40rpx}.stats-card{min-height:142rpx;padding:20rpx 18rpx;box-sizing:border-box;border-radius:23rpx;display:flex;align-items:center;background:#fff;box-shadow:0 10rpx 30rpx rgba(36,63,95,.06)}.main-stat{width:142rpx;padding-left:9rpx;box-sizing:border-box;border-right:2rpx solid #EFF2F7}.main-stat-value{display:flex;align-items:baseline;gap:5rpx;color:#253042}.main-stat-value>text:first-child{font-size:43rpx;font-weight:700}.main-stat-value>text:last-child{font-size:24rpx;font-weight:400}.main-stat>view:last-child{margin-top:8rpx;color:#98A1AE;font-size:22rpx}.stat{flex:1;display:flex;align-items:center;flex-direction:column}.stat text{color:#354257;font-size:25rpx;font-weight:600}.stat>text:last-child{margin-top:10rpx;color:#9CA5B2;font-size:21rpx}.bottom-spacer{height:170rpx}
+@media screen and (max-height:700px){.coupon-banner{height:130rpx;margin-top:18rpx}.stats-section{margin-top:20rpx}.stats-card{min-height:132rpx;padding-top:10rpx;padding-bottom:10rpx}}
 
-		.content {
-			width: 100%;
-			height: 100%;
-			position: relative;
-
-			.swiper {
-				width: 100%;
-				height: 100%;
-				position: relative;
-
-				.media-content {
-					width: 100%;
-					height: 100%;
-					position: relative;
-
-					.bottom {
-						width: 100%;
-						position: absolute;
-						bottom: 0;
-						border-top-right-radius: 40rpx;
-						border-top-left-radius: 40rpx;
-						box-sizing: border-box;
-
-						.indicator {
-							display: flex;
-							width: 100%;
-							box-sizing: border-box;
-
-							.indicator-item.active {
-								background-color: rgba(200, 200, 200, 0.9);
-							}
-
-							.indicator-item {
-								flex: 1;
-								margin: 10rpx;
-								height: 4rpx;
-								background-color: rgba(200, 200, 200, 0.5);
-								border-radius: 10rpx;
-							}
-						}
-
-						.bottom-content {
-							background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1));
-							border-top-right-radius: 40rpx;
-							border-top-left-radius: 40rpx;
-							backdrop-filter: blur(6rpx);
-							-webkit-backdrop-filter: blur(6rpx);
-							padding: 30rpx 40rpx;
-							padding-bottom: 10rpx;
-							color: #fff;
-						}
-					}
-				}
-
-			}
-		}
-
-		.top-bar {
-			color: rgba(255, 255, 255, 0.6);
-			position: absolute;
-			top: 0;
-			box-sizing: border-box;
-			padding: 20rpx 40rpx;
-			padding-bottom: 80rpx;
-			width: 100%;
-			text-align: right;
-			display: flex;
-			align-items: center;
-			justify-content: end;
-			background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.1), transparent);
+/* visual polish: keep density while improving hierarchy */
+.home-page{background:linear-gradient(180deg,#FBFDFF 0,#F5F8FC 58%,#F5F8FC 100%)}
+.brand-card{height:266rpx;border-radius:30rpx;box-shadow:0 18rpx 42rpx rgba(45,126,232,.22)}
+.scan-button{height:52rpx;padding:0 18rpx;border:1rpx solid rgba(255,255,255,.16);border-radius:17rpx;backdrop-filter:blur(8rpx)}
+.quick-grid{margin-top:34rpx}.quick-icon{width:80rpx;height:80rpx;border-radius:25rpx;box-shadow:0 8rpx 20rpx rgba(49,79,116,.055)}
+.quick-title{margin-top:14rpx;font-weight:600}.quick-desc{margin-top:6rpx}
+.station-section{margin-top:66rpx}.station-card{padding:28rpx 26rpx 25rpx;border-radius:28rpx;box-shadow:var(--gy-card-shadow)}
+.coupon-banner{height:156rpx;border:1rpx solid rgba(232,157,91,.1);border-radius:27rpx;box-shadow:0 9rpx 25rpx rgba(171,104,46,.06)}
+.stats-card{min-height:148rpx;padding:23rpx 20rpx;border-radius:27rpx;box-shadow:var(--gy-card-shadow)}
+@media screen and (max-width:360px){.brand-card{height:258rpx}.station-section{margin-top:58rpx}.quick-icon{width:76rpx;height:76rpx}}
+@media screen and (max-height:700px){.coupon-banner{height:138rpx}.stats-card{min-height:136rpx;padding-top:14rpx;padding-bottom:14rpx}}
 
 
-			.top-bar-item.active {
-				color: #fff;
-			}
 
-			.top-bar-item {
-				margin: 10rpx 20rpx;
-			}
-		}
-	}
+/* Keep the location / weather context available while the home feed scrolls. */
+.topbar{height:calc(var(--status-bar-height,0px) + 176rpx);position:sticky;z-index:12;top:0;margin:calc(-1 * (var(--status-bar-height,0px) + 92rpx)) -28rpx 0;padding:calc(var(--status-bar-height,0px) + 92rpx) 28rpx 0;background:rgba(249,250,252,.96);box-shadow:0 8rpx 22rpx rgba(37,66,99,.06);backdrop-filter:blur(18rpx)}
+@media screen and (max-width:360px){.topbar{margin-right:-22rpx;margin-left:-22rpx;padding-right:22rpx;padding-left:22rpx}}
+
+
+
+/* Flat hierarchy: low-level content is separated by surface borders, not floating shadows. */
+.brand-card{box-shadow:var(--gy-shadow-brand)}
+.station-card,.stats-card{border:2rpx solid var(--gy-surface-border);box-shadow:none}
+.coupon-banner{border:2rpx solid rgba(239,218,193,.72);box-shadow:none}
+.quick-icon,.topbar{box-shadow:none}.topbar{border-bottom:2rpx solid rgba(229,235,243,.82)}
+
 </style>

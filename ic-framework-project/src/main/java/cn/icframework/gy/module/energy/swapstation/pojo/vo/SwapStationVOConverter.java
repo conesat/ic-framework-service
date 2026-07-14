@@ -1,0 +1,14 @@
+package cn.icframework.project.module.energy.swapstation.pojo.vo;
+
+import cn.icframework.core.basic.pojo.BasicConverter;
+import cn.icframework.project.module.energy.swapstation.SwapStation;
+import org.springframework.stereotype.Component;
+
+/**
+ * @author ic
+ * @since 2026/07/13
+ */
+@Component
+public class SwapStationVOConverter extends BasicConverter<SwapStation, SwapStationVO> {
+
+}
