@@ -74,36 +74,19 @@
       </view>
 
       <view class="selected-card" @tap="openStation">
-        <view class="station-logo">
-          <view class="cabinet-mini"><view v-for="n in 6" :key="n"></view></view>
-        </view>
+        <image class="selected-station-cover" src="/static/imgs/banner.png" mode="aspectFill"></image>
         <view class="station-copy">
           <view class="station-name">
             <text>{{ selectedStation.name }}</text>
             <text>营业中</text>
           </view>
-          <text class="station-address">{{ selectedStation.address }}</text>
-          <view class="station-meta">
-            <text>{{ selectedStation.distance }}</text>
-            <text>24 小时营业</text>
+          <view class="station-address"><text>距离 {{ selectedStation.distance }}</text><text>｜</text><text>{{ selectedStation.address }}</text></view>
+          <view class="selected-stock-row">
+            <view class="selected-stock"><view class="selected-stock-symbol battery"></view><text>{{ selectedStation.stock }}</text><text>可用电池</text></view>
+            <view class="selected-stock"><view class="selected-stock-symbol slot"></view><text>{{ selectedStation.slots }}</text><text>可还空位</text></view>
           </view>
         </view>
-        <uv-icon name="arrow-right" color="#A9B4C2" size="14"></uv-icon>
-      </view>
-
-      <view class="station-stock-row">
-        <view class="stock-item">
-          <text>{{ selectedStation.stock }}</text>
-          <text>可用满电电池</text>
-        </view>
-        <view class="stock-item">
-          <text>{{ selectedStation.slots }}</text>
-          <text>可还空位</text>
-        </view>
-        <view class="go-station" @tap="openStation">
-          <uv-icon name="map-fill" color="#FFFFFF" size="17"></uv-icon>
-          <text>去这里</text>
-        </view>
+        <view class="selected-route" @tap.stop="openStation"><view><uv-icon name="map-fill" color="#FFFFFF" size="15"></uv-icon></view><text>去这里</text></view>
       </view>
     </view>
 
@@ -124,25 +107,19 @@
       </view>
       <scroll-view class="station-list-scroll" scroll-y :show-scrollbar="false">
         <view v-for="station in filteredStations" :key="station.id" class="list-station-card" @tap="selectStationFromList(station)">
-          <view class="station-logo list-station-logo">
-            <view class="cabinet-mini"><view v-for="n in 6" :key="n"></view></view>
-          </view>
+          <image class="list-station-cover" src="/static/imgs/banner.png" mode="aspectFill"></image>
           <view class="list-station-copy">
             <view class="list-station-name">
               <text>{{ station.name }}</text>
               <text>{{ station.open24 ? '24小时' : '营业中' }}</text>
             </view>
-            <text class="list-station-address">{{ station.address }}</text>
-            <view class="list-station-meta">
-              <text>{{ station.distance }}</text>
-              <text>骑行约 {{ station.minutes }} 分钟</text>
-            </view>
+            <view class="list-station-address"><text>距离 {{ station.distance }}</text><text>｜</text><text>{{ station.address }}</text></view>
             <view class="list-stock-row">
-              <text><text>{{ station.stock }}</text> 块满电</text>
-              <text><text>{{ station.slots }}</text> 个可还位</text>
+              <view class="list-stock"><view class="list-stock-symbol battery"></view><text>{{ station.stock }}</text><text>可用电池</text></view>
+              <view class="list-stock"><view class="list-stock-symbol slot"></view><text>{{ station.slots }}</text><text>可还空位</text></view>
             </view>
           </view>
-          <view class="list-detail-button" @tap.stop="openStation(station)">详情</view>
+          <view class="list-detail-button" @tap.stop="openStation(station)"><view><uv-icon name="map-fill" color="#FFFFFF" size="15"></uv-icon></view><text>详情</text></view>
         </view>
         <view v-if="!filteredStations.length" class="station-empty">
           <uv-icon name="search" color="#9BA8B7" size="25"></uv-icon>
@@ -317,6 +294,9 @@ export default {
 <style scoped>
 .map-page { height: 100%; position: relative; overflow: hidden; color: #253043; background: #EAF2F9; }
 .map-canvas { width: 100%; height: 100%; position: absolute; inset: 0; }
+/* Keep the provider attribution legible in the gap above the app tab bar. */
+.map-canvas :deep(.amap-copyright),
+.map-canvas :deep(.amap-logo) { top: auto !important; bottom: calc(136rpx + env(safe-area-inset-bottom)) !important; }
 .map-header { position: absolute; z-index: 3; left: 0; right: 0; top: 0; padding: calc(var(--status-bar-height, 0px) + 38rpx) 30rpx 20rpx; background: linear-gradient(180deg, rgba(248,251,255,.98) 0%, rgba(248,251,255,.94) 78%, rgba(248,251,255,0) 100%); }
 .map-title-row { display: flex; align-items: center; justify-content: space-between; }
 .map-title-copy { display: flex; flex-direction: column; }
@@ -331,7 +311,7 @@ export default {
 .filter-chip { height: 55rpx; padding: 0 21rpx; display: flex; align-items: center; border: 2rpx solid rgba(218,226,235,.96); border-radius: 19rpx; color: #69788A; background: rgba(255,255,255,.94); font-size: 23rpx; }
 .filter-chip.active { border-color: #C7DDFC; color: #3488F3; background: #E8F2FF; font-weight: 600; }
 .location-button { width: 68rpx; height: 68rpx; position: absolute; z-index: 3; right: 28rpx; bottom: calc(538rpx + env(safe-area-inset-bottom)); display: flex; align-items: center; justify-content: center; border: 2rpx solid #E2EAF2; border-radius: 22rpx; background: rgba(255,255,255,.97); box-shadow: 0 9rpx 24rpx rgba(42,72,105,.12); }
-.station-sheet { position: absolute; z-index: 4; left: 18rpx; right: 18rpx; bottom: calc(144rpx + env(safe-area-inset-bottom)); padding: 15rpx 28rpx 23rpx; border: 2rpx solid rgba(226,233,241,.95); border-radius: 32rpx; background: rgba(255,255,255,.98); box-shadow: 0 -15rpx 42rpx rgba(35,65,98,.12); }
+.station-sheet { position: absolute; z-index: 4; left: 18rpx; right: 18rpx; bottom: calc(172rpx + env(safe-area-inset-bottom)); padding: 15rpx 28rpx 23rpx; border: 2rpx solid rgba(226,233,241,.95); border-radius: 32rpx; background: rgba(255,255,255,.98); box-shadow: 0 -15rpx 42rpx rgba(35,65,98,.12); }
 .sheet-handle { width: 65rpx; height: 7rpx; margin: 0 auto 13rpx; border-radius: 5rpx; background: #D9E0E8; }
 .sheet-heading { display: flex; align-items: center; justify-content: space-between; }
 .sheet-heading-copy { display: flex; align-items: baseline; min-width: 0; }
@@ -373,14 +353,15 @@ export default {
 
 /* Flat map controls retain contrast through outlines; only the bottom sheet keeps a restrained lift. */
 .map-help,.location-button{border:2rpx solid var(--gy-surface-border);box-shadow:none}
-.search-bar,.selected-card{border:2rpx solid var(--gy-surface-border);box-shadow:none}
+.search-bar{border:2rpx solid var(--gy-surface-border);box-shadow:none}
+.selected-card{border:0;box-shadow:none}
 .station-sheet{border-color:#E2E9F1;box-shadow:var(--gy-shadow-float)}
 .go-station{box-shadow:var(--gy-shadow-brand)}
 
 
 /* Station directory: a filter-aware list remains usable even when the map provider is unavailable. */
 .station-search-input{min-width:0;height:100%;margin-left:11rpx;flex:1;color:#354154;font-size:24rpx}
-.station-list-panel{position:absolute;z-index:8;top:calc(var(--status-bar-height, 0px) + 310rpx);right:18rpx;bottom:calc(144rpx + env(safe-area-inset-bottom));left:18rpx;padding:22rpx 20rpx 0;display:flex;flex-direction:column;border:2rpx solid var(--gy-surface-border);border-radius:30rpx;background:#F8FBFF;box-shadow:var(--gy-shadow-float)}
+.station-list-panel{position:absolute;z-index:8;top:32%;right:18rpx;bottom:calc(172rpx + env(safe-area-inset-bottom));left:18rpx;min-height:0;padding:22rpx 20rpx 0;display:flex;flex-direction:column;border:2rpx solid var(--gy-surface-border);border-radius:30rpx;background:#F8FBFF;box-shadow:var(--gy-shadow-float)}
 .list-panel-header{display:flex;align-items:center;justify-content:space-between;padding:0 4rpx}
 .list-panel-title{min-width:0;display:flex;align-items:baseline;gap:10rpx}
 .list-panel-title text:first-child{color:#283447;font-size:29rpx;font-weight:700}
@@ -388,20 +369,37 @@ export default {
 .close-list{width:64rpx;height:64rpx;display:flex;align-items:center;justify-content:center;border:2rpx solid var(--gy-surface-border);border-radius:20rpx;background:#FFFFFF}
 .list-filter-summary{min-height:52rpx;margin-top:13rpx;padding:0 14rpx;display:flex;align-items:center;gap:9rpx;border-radius:15rpx;color:#6B7C90;background:#EDF5FF;font-size:20rpx}
 .list-filter-summary text+text{padding-left:9rpx;border-left:2rpx solid #D8E6F7}
-.station-list-scroll{height:0;min-height:0;margin-top:12rpx;flex:1}
-.list-station-card{min-height:172rpx;margin-bottom:12rpx;padding:20rpx;display:flex;align-items:center;border:2rpx solid var(--gy-surface-border);border-radius:24rpx;background:#FFFFFF}
-.list-station-logo{width:72rpx;height:72rpx;flex-basis:72rpx;border-radius:20rpx}
-.list-station-copy{min-width:0;margin-left:14rpx;display:flex;flex:1;flex-direction:column}
+.station-list-scroll{height:0;min-height:0;margin-top:12rpx;flex:1;overscroll-behavior:contain}
+
+/* Match the homepage nearby-station card: cover image, compact detail column and circular route action. */
+.selected-card{min-height:176rpx;margin-top:17rpx;padding:16rpx 18rpx;display:flex;align-items:center;border-radius:22rpx;box-sizing:border-box;background:#FFFFFF}
+.selected-station-cover{width:130rpx;height:130rpx;flex:0 0 130rpx;border-radius:13rpx;background:#E7F2FF}
+.station-copy{min-width:0;margin-left:16rpx;align-self:stretch;display:flex;flex:1;flex-direction:column;justify-content:center}
+.station-name{gap:8rpx}.station-name text:first-child{font-size:25rpx;line-height:1.25}.station-name text:last-child{padding:3rpx 7rpx;border-radius:6rpx;font-size:18rpx;line-height:1.2}
+.station-address{height:28rpx;margin-top:8rpx;display:flex;align-items:center;gap:0;color:#919DAC;font-size:19rpx;line-height:28rpx}.station-address text{white-space:nowrap}.station-address text:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.selected-stock-row{margin-top:14rpx;display:flex;align-items:center;gap:18rpx}.selected-stock{display:flex;align-items:center;white-space:nowrap;color:#98A4B3;font-size:18rpx}.selected-stock>text:nth-of-type(1){margin-left:6rpx;color:#263449;font-size:29rpx;font-weight:700;line-height:1}.selected-stock>text:last-child{margin-left:4rpx}
+.selected-stock-symbol{width:16rpx;height:20rpx;border-radius:4rpx;position:relative}.selected-stock-symbol.battery{background:#55C69C}.selected-stock-symbol.battery:after{content:'';width:5rpx;height:7rpx;position:absolute;top:-4rpx;left:5.5rpx;border-radius:2rpx 2rpx 0 0;background:#55C69C}.selected-stock-symbol.slot{background:#67A9F3}.selected-stock-symbol.slot:after{content:'';width:8rpx;height:8rpx;position:absolute;top:6rpx;left:4rpx;border-radius:2rpx;background:rgba(255,255,255,.9)}
+.selected-route{width:56rpx;margin-left:10rpx;flex:0 0 56rpx;display:flex;align-items:center;flex-direction:column;color:#6D7E91;font-size:18rpx}.selected-route>view{width:44rpx;height:44rpx;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#3188F5;box-shadow:0 5rpx 14rpx rgba(49,136,245,.2)}.selected-route>text{margin-top:5rpx}
+.list-station-card{min-height:176rpx;margin-bottom:12rpx;padding:16rpx 18rpx;display:flex;align-items:center;box-sizing:border-box;border:0;border-radius:22rpx;background:#FFFFFF}
+.list-station-cover{width:130rpx;height:130rpx;flex:0 0 130rpx;border-radius:13rpx;background:#E7F2FF}
+.list-station-copy{min-width:0;margin-left:16rpx;align-self:stretch;display:flex;flex:1;flex-direction:column;justify-content:center}
 .list-station-name{min-width:0;display:flex;align-items:center;gap:8rpx}
-.list-station-name text:first-child{min-width:0;overflow:hidden;color:#2C394B;font-size:25rpx;font-weight:650;text-overflow:ellipsis;white-space:nowrap}
-.list-station-name text:last-child{flex-shrink:0;padding:4rpx 8rpx;border-radius:8rpx;color:#2E9B74;background:#E7F7F0;font-size:18rpx}
-.list-station-address{margin-top:7rpx;overflow:hidden;color:#8996A6;font-size:20rpx;text-overflow:ellipsis;white-space:nowrap}
-.list-station-meta,.list-stock-row{display:flex;align-items:center;color:#718094;font-size:19rpx}
-.list-station-meta{margin-top:9rpx}.list-station-meta text+text{margin-left:11rpx;padding-left:11rpx;border-left:2rpx solid #E3EAF1}
-.list-stock-row{margin-top:8rpx;gap:12rpx}.list-stock-row>text{white-space:nowrap}.list-stock-row text text{color:#348AF4;font-weight:700}
-.list-detail-button{height:64rpx;margin-left:11rpx;padding:0 15rpx;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:2rpx solid #B9D7FB;border-radius:18rpx;color:#3287F1;background:#F1F7FF;font-size:21rpx;font-weight:600}
+.list-station-name text:first-child{min-width:0;overflow:hidden;color:#253043;font-size:25rpx;font-weight:650;line-height:1.25;text-overflow:ellipsis;white-space:nowrap}
+.list-station-name text:last-child{flex-shrink:0;padding:3rpx 7rpx;border-radius:6rpx;color:#26A778;background:#E5F7F0;font-size:18rpx;line-height:1.2}
+.list-station-address{height:28rpx;margin-top:8rpx;display:flex;align-items:center;gap:0;overflow:hidden;color:#919DAC;font-size:19rpx;line-height:28rpx;white-space:nowrap}
+.list-station-address text:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.list-stock-row{margin-top:14rpx;display:flex;align-items:center;gap:18rpx}
+.list-stock{display:flex;align-items:center;white-space:nowrap;color:#98A4B3;font-size:18rpx}
+.list-stock>text:nth-of-type(1){margin-left:6rpx;color:#263449;font-size:29rpx;font-weight:700;line-height:1}
+.list-stock>text:last-child{margin-left:4rpx}
+.list-stock-symbol{width:16rpx;height:20rpx;position:relative;border-radius:4rpx}
+.list-stock-symbol.battery{background:#55C69C}.list-stock-symbol.battery:after{content:'';width:5rpx;height:7rpx;position:absolute;top:-4rpx;left:5.5rpx;border-radius:2rpx 2rpx 0 0;background:#55C69C}
+.list-stock-symbol.slot{background:#67A9F3}.list-stock-symbol.slot:after{content:'';width:8rpx;height:8rpx;position:absolute;top:6rpx;left:4rpx;border-radius:2rpx;background:rgba(255,255,255,.9)}
+.list-detail-button{width:56rpx;margin-left:10rpx;flex:0 0 56rpx;display:flex;align-items:center;flex-direction:column;color:#6D7E91;font-size:18rpx}
+.list-detail-button>view{width:44rpx;height:44rpx;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#3188F5;box-shadow:0 5rpx 14rpx rgba(49,136,245,.2)}
+.list-detail-button>text{margin-top:5rpx}
 .station-empty{min-height:280rpx;padding:30rpx 20rpx;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#65768A;font-size:23rpx}.station-empty text:nth-child(2){margin-top:16rpx;font-weight:600}.station-empty text:last-child{margin-top:9rpx;color:#9AA7B5;font-size:20rpx}.list-bottom-space{height:12rpx}
-@media screen and (max-width:360px){.station-list-panel{right:12rpx;left:12rpx;padding-right:16rpx;padding-left:16rpx}.list-station-card{min-height:164rpx;padding:17rpx}.list-station-logo{width:66rpx;height:66rpx;flex-basis:66rpx}.list-station-copy{margin-left:11rpx}.list-stock-row{gap:8rpx;font-size:18rpx}.list-detail-button{height:60rpx;margin-left:8rpx;padding:0 11rpx;font-size:20rpx}}
-@media screen and (max-height:700px){.station-list-panel{top:calc(var(--status-bar-height, 0px) + 292rpx);bottom:calc(136rpx + env(safe-area-inset-bottom))}.list-station-card{min-height:154rpx;padding-top:16rpx;padding-bottom:16rpx}.list-filter-summary{margin-top:9rpx}}
+@media screen and (max-width:360px){.station-list-panel{right:12rpx;left:12rpx;padding-right:16rpx;padding-left:16rpx}.list-station-card{min-height:164rpx;padding:14rpx}.list-station-cover{width:118rpx;height:118rpx;flex-basis:118rpx}.list-station-copy{margin-left:12rpx}.list-stock-row{gap:10rpx}.list-detail-button{width:50rpx;margin-left:6rpx;flex-basis:50rpx}}
+@media screen and (max-height:700px){.station-list-panel{top:30%;bottom:calc(164rpx + env(safe-area-inset-bottom))}.list-station-card{min-height:154rpx;padding-top:16rpx;padding-bottom:16rpx}.list-filter-summary{margin-top:9rpx}}
 
 </style>

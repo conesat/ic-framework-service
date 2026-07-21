@@ -108,8 +108,8 @@ export default {
   methods: {
     openMember() { uni.navigateTo({ url: '/pages/member/index' }) },
     switchOrders() { this.$emit('switch-tab', 3) },
-    openMessages() { uni.showModal({ title: '消息中心', content: '暂无未读消息。换电、暂存与维修进度会在这里同步通知。', showCancel: false }) },
-    openSettings() { uni.showModal({ title: '设置', content: '通知提醒：已开启\n定位服务：已开启\n当前版本：1.2.0', showCancel: false }) },
+    openMessages() { uni.navigateTo({ url: '/pages/message/index' }) },
+    openSettings() { uni.navigateTo({ url: '/pages/settings/index' }) },
     handleAsset(item) {
       const messages = {
         '余额（元）': '当前可用余额 ¥68.00。充值服务将在接入支付后自动可用。',
@@ -126,7 +126,7 @@ export default {
       if (item.title === '常用地址') return uni.showActionSheet({ itemList: ['家 · 科技园南区', '公司 · 软件产业基地'], success: () => uni.showToast({ title: '常用地址已选中', icon: 'none' }) })
       if (item.title === '安全中心') return uni.showModal({ title: '安全中心', content: '账户已实名认证，登录设备与异常换电行为均会受到安全保护。', showCancel: false })
       if (item.title === '客服中心') return uni.makePhoneCall({ phoneNumber: '4008888899', fail: () => uni.showToast({ title: '请拨打 400-888-8899', icon: 'none' }) })
-      if (item.title === '帮助与反馈') return uni.showModal({ title: '帮助与反馈', content: '常见问题：扫码无响应、无法开柜、电池异常。紧急安全问题请致电 400-888-8899。', showCancel: false })
+      if (item.title === '帮助与反馈') return uni.navigateTo({ url: '/pages/help/index' })
       if (item.title === '关于我们') return uni.showModal({ title: '电能行', content: '电能行智能换电\n版本 1.2.0\n让每一次出发都有满格能量。', showCancel: false })
     }
   }
@@ -589,5 +589,13 @@ export default {
 .asset-panel,.order-card,.service-card{border:2rpx solid var(--gy-surface-border);box-shadow:none}
 .round-action{border:2rpx solid var(--gy-surface-border);box-shadow:none}
 .service-row-highlight{box-shadow:none}
+
+
+
+/* Adversarial UI audit: use surface boundaries rather than stacked card shadows. */
+.avatar{box-shadow:none}
+.member-card{border:2rpx solid var(--gy-surface-border);box-shadow:none}
+.asset-card,.service-card{border:2rpx solid var(--gy-surface-border);box-shadow:none}
+.round-action{width:72rpx;height:72rpx;border:2rpx solid var(--gy-surface-border);box-shadow:none}
 
 </style>

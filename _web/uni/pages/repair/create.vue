@@ -260,4 +260,12 @@ export default {
   .quick-descriptions text{min-height:54rpx;padding-right:14rpx;padding-left:14rpx;font-size:20rpx}
 }
 
+
+
+/* Adversarial UI audit: remove decorative elevation from the persistent chrome. */
+.fixed-page-header{padding-right:28rpx;padding-left:28rpx;background:rgba(248,251,255,.97);box-shadow:none;border-bottom:2rpx solid var(--gy-surface-border)}
+.nav-button{width:88rpx;height:88rpx;flex:0 0 88rpx;border:0;background:transparent;box-shadow:none}
+.section-heading>view{min-height:60rpx;display:flex;align-items:center}
+@media screen and (max-width:360px){.fixed-page-header{padding-right:22rpx;padding-left:22rpx}}
+
 </style>

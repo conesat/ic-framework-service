@@ -129,4 +129,26 @@ export default {
 .submit-button{box-shadow:var(--gy-shadow-brand)}
 .nav-button{border:2rpx solid rgba(255,255,255,.20);box-shadow:none}
 
+
+
+/* Adversarial UI audit: stop carousel clipping from feeling accidental at 360px. */
+.fixed-page-header{padding-right:28rpx;padding-left:28rpx;border-bottom:0;background:linear-gradient(180deg,rgba(37,54,79,.98),rgba(37,54,79,.88) 76%,rgba(37,54,79,0))}
+.nav-button{width:88rpx;height:88rpx;flex:0 0 88rpx;border:0;background:transparent;box-shadow:none}
+.plan-scroll{padding-bottom:4rpx}
+.plan-row{padding-right:44rpx}
+.plan-card{border-width:2rpx;box-shadow:none}
+.plan-card.active{box-shadow:var(--gy-shadow-brand)}
+.benefit-item>view:last-child text:last-child{font-size:21rpx;line-height:1.45}
+.section-heading text:last-child{font-size:22rpx}
+.bottom-bar{box-shadow:none;border-top:2rpx solid rgba(225,232,240,.7)}
+.submit-button{min-height:88rpx;box-shadow:var(--gy-shadow-brand)}
+@media screen and (max-width:360px){.fixed-page-header{padding-right:22rpx;padding-left:22rpx}.plan-row{padding-right:38rpx}.benefit-item>view:last-child text:last-child{font-size:20rpx}}
+
+
+
+.member-stats text:last-child{font-size:21rpx;line-height:1.35}
+.saving-label{font-size:21rpx;line-height:1.4}
+.plan-tag{font-size:21rpx}
+@media screen and (max-width:360px){.member-stats text:last-child{font-size:20rpx}.saving-label{font-size:20rpx}}
+
 </style>

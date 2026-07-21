@@ -223,4 +223,23 @@ export default {
 .bottom-bar{box-shadow:none;border-top:2rpx solid var(--gy-surface-border)}
 .submit-button{box-shadow:var(--gy-shadow-brand)}
 
+
+
+/* Adversarial UI audit: remove ornamental elevation and enlarge compact actions. */
+.fixed-page-header{padding-right:28rpx;padding-left:28rpx;background:rgba(248,251,255,.97);box-shadow:none;border-bottom:2rpx solid var(--gy-surface-border)}
+.nav-button{width:88rpx;height:88rpx;flex:0 0 88rpx;border:0;background:transparent;box-shadow:none}
+.station-card,.storage-option,.notice-card,.service-notice{border:2rpx solid var(--gy-surface-border);box-shadow:none}
+.option-card{min-height:104rpx}
+.bottom-bar{box-shadow:none;border-top:2rpx solid var(--gy-surface-border)}
+.submit-button{min-height:88rpx;box-shadow:var(--gy-shadow-brand)}
+@media screen and (max-width:360px){.fixed-page-header{padding-right:22rpx;padding-left:22rpx}}
+
+
+
+.station-copy>view:first-child text:last-child{font-size:20rpx;line-height:1.35}
+.station-copy>text,.station-copy>view:last-child,.battery-copy>text:nth-child(2),.battery-copy>view,.notice-card>text{font-size:21rpx;line-height:1.45}
+.duration-tag{min-height:34rpx;padding:4rpx 9rpx;display:flex;align-items:center;font-size:19rpx;line-height:1}
+.price-copy>text:last-child{font-size:20rpx;line-height:1.35}
+@media screen and (max-width:360px){.station-copy>view:last-child{font-size:20rpx}.duration-tag{font-size:18rpx}}
+
 </style>

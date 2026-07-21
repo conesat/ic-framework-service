@@ -124,4 +124,18 @@ export default {
 .primary{box-shadow:var(--gy-shadow-brand)}
 .nav-button{border:2rpx solid var(--gy-surface-border);box-shadow:none}
 
+
+
+/* Adversarial UI audit: retain hierarchy without turning header controls into tiny cards. */
+.fixed-page-header{padding-right:28rpx;padding-left:28rpx;background:rgba(248,251,255,.97);box-shadow:none;border-bottom:2rpx solid var(--gy-surface-border)}
+.nav-button{width:88rpx;height:88rpx;flex:0 0 88rpx;border:0;background:transparent;box-shadow:none}
+.safety-status>view:nth-child(2) text:last-child,.data-item>view:last-child text:last-child,.service-copy text:last-child,.stored-card>view:nth-child(2) text:last-child{font-size:21rpx;line-height:1.4}
+.section-heading text:last-child,.service-badge,.stored-action{font-size:21rpx}
+@media screen and (max-width:360px){.fixed-page-header{padding-right:22rpx;padding-left:22rpx}}
+
+
+
+.battery-screen{font-size:19rpx}
+.power-card>text,.hero-stats text:last-child{font-size:21rpx;line-height:1.35}
+
 </style>

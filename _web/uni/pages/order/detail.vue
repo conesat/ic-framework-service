@@ -221,4 +221,14 @@ export default {
 .bottom-actions{box-shadow:none;border-top:2rpx solid var(--gy-surface-border)}
 .bottom-actions .primary{box-shadow:var(--gy-shadow-brand)}
 
+
+
+/* Adversarial UI audit: flat header and reliable hit areas. */
+.fixed-page-header{padding-right:28rpx;padding-left:28rpx;background:rgba(248,251,255,.97);box-shadow:none;border-bottom:2rpx solid var(--gy-surface-border)}
+.nav-button{width:88rpx;height:88rpx;flex:0 0 88rpx;border:0;background:transparent;box-shadow:none}
+.status-card,.progress-card,.order-card{border:2rpx solid var(--gy-surface-border);box-shadow:none}
+.bottom-bar{box-shadow:none;border-top:2rpx solid var(--gy-surface-border)}
+.submit-button{min-height:88rpx;box-shadow:var(--gy-shadow-brand)}
+@media screen and (max-width:360px){.fixed-page-header{padding-right:22rpx;padding-left:22rpx}}
+
 </style>

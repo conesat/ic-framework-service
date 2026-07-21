@@ -236,4 +236,19 @@ ${address}
 .review-empty{min-height:300rpx;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#63748A;font-size:23rpx}.review-empty text:nth-child(2){margin-top:16rpx;font-weight:600}.review-empty text:last-child{margin-top:9rpx;color:#9AA8B7;font-size:20rpx}.reviews-list-bottom{height:40rpx}
 @media screen and (max-width:360px){.reviews-panel-header{padding-right:22rpx;padding-left:22rpx}.reviews-panel-content{padding-right:22rpx;padding-left:22rpx}.reviews-overview{padding:20rpx}.reviews-score{width:90rpx;flex-basis:90rpx}.reviews-rating-copy{margin-left:16rpx}.reviews-write{min-width:auto;padding-right:9rpx;padding-left:9rpx;font-size:20rpx}.review-photo{width:104rpx;height:78rpx}.full-review-text{font-size:22rpx}}
 
+
+
+/* Adversarial UI audit: protect 360px readability and touch targets. */
+.fixed-page-header{height:calc(var(--status-bar-height, 0px) + 104rpx);padding-right:28rpx;padding-left:28rpx;background:rgba(249,251,255,.96);border-bottom:2rpx solid var(--gy-surface-border);box-shadow:none}
+.nav-button{width:88rpx;height:88rpx;flex:0 0 88rpx;border:0;background:transparent}
+.service-strip{padding:16rpx 12rpx;grid-template-columns:repeat(3,minmax(0,1fr));gap:12rpx;border:2rpx solid #DCEBFC;border-radius:24rpx;background:#F4F8FF}
+.service-strip>view{min-height:74rpx;justify-content:center;font-size:22rpx;line-height:1.25}
+.service-strip text{margin-top:7rpx;white-space:normal;line-height:1.25}
+.section-heading>view{min-height:64rpx;padding:0 4rpx;font-size:22rpx}
+.availability-card,.info-card,.review-card{border:2rpx solid var(--gy-surface-border);box-shadow:none}
+.reserve-mini{min-height:86rpx;padding:12rpx 15rpx;border:2rpx solid rgba(255,255,255,.34);box-shadow:var(--gy-shadow-brand)}
+.bottom-action-bar{box-shadow:none;border-top:2rpx solid var(--gy-surface-border)}
+.bottom-scan,.bottom-navigation{min-height:88rpx;box-shadow:none}
+@media screen and (max-width:360px){.fixed-page-header{padding-right:22rpx;padding-left:22rpx}.service-strip{gap:8rpx;padding-right:8rpx;padding-left:8rpx}.service-strip>view{font-size:21rpx}.reserve-mini{margin-left:9rpx;padding-right:11rpx;padding-left:11rpx}.reserve-mini text{font-size:21rpx}.reserve-mini>view>text:last-child{font-size:19rpx}}
+
 </style>

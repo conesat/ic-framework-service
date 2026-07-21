@@ -67,7 +67,7 @@ export default {
 .tab-item text { margin-top: 8rpx; white-space: nowrap; }
 .tab-item.active { color: #3389F7; font-weight: 600; }
 .tab-item.scan { margin-top: -39rpx; color: #3389F7; }
-.scan-tab-icon { width: 88rpx; height: 88rpx; display: flex; align-items: center; justify-content: center; border: 7rpx solid #FFFFFF; border-radius: 30rpx; background: linear-gradient(145deg, #4AA0FA, #2F82EE); box-shadow: 0 12rpx 24rpx rgba(47,130,238,.26); }
+.scan-tab-icon { width: 88rpx; height: 88rpx; display: flex; align-items: center; justify-content: center; border: 7rpx solid #FFFFFF; border-radius: 50%; background: linear-gradient(145deg, #4AA0FA, #2F82EE); box-shadow: 0 12rpx 24rpx rgba(47,130,238,.26); }
 .tab-item.scan text { margin-top: 8rpx; }
 
 
