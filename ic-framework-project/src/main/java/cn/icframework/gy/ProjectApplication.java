@@ -1,4 +1,4 @@
-package cn.icframework.project;
+package cn.icframework.gy;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

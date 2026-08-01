@@ -1,0 +1,9 @@
+mybatis:
+  config-location: classpath:mybatis-config-dev.xml
+spring:
+  redis:
+    host: localhost
+  datasource:
+    url: jdbc:mysql://localhost:3306/ic_demo?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&allowMultiQueries=true
+    username: root
+    password: <PASSWORD>

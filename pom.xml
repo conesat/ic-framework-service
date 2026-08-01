@@ -9,10 +9,8 @@
         <version>1.0.3</version>
     </parent>
     <artifactId>framework-service</artifactId>
-    <version>1.0.3</version>
     <packaging>pom</packaging>
     <modules>
-        <module>ic-framework-system</module>
         <module>ic-framework-project</module>
     </modules>
 
